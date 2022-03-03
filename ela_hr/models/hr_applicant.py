@@ -100,7 +100,7 @@ class HrApplicant(models.Model):
     benefit_offered_ids = fields.Many2many("hr.applicant.benefit", 'benefit_offered_applicant_rel', string='Avantages proposés', ondelete="restrict", tracking=True)
     comptage = fields.Integer(string='Comptage', tracking=True)
     date_naissance = fields.Date(string='Date de naissance', tracking=True)
-    disponibilite = fields.Date(string='Disponibilité', tracking=True)
+    #disponibilite = fields.Date(string='Disponibilité', tracking=True)
     dispositif = fields.Selection([
         ("dispositif_1", "Dispositif 1"),
         ("dispositif_2", "Dispositif 2"),
