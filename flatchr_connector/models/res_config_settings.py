@@ -40,8 +40,6 @@ class ResConfigSettings(models.TransientModel):
         sync_period = self.env['ir.config_parameter'].sudo().get_param('flatchr_connector.sync_period', "")
         cron_id = self.env.ref('flatchr_connector.cron_get_jobs_from_flatchr')
 
-        #raise ValidationError("HELLO *****: %s" %last_sync_date)
-
         res.update(flatchr_api_key=api_key,
                    flatchr_enterprise_slug=slug,
                    flatchr_company_key=cpny_key,
@@ -50,7 +48,7 @@ class ResConfigSettings(models.TransientModel):
                    last_sync_date=last_sync_date,
                    sync_period=sync_period
                    )
-        #raise ValidationError("HELLO ** %s" %last_sync_date), default=datetime.today()
+
         return res
 
     def test_flatchr_api_call(self):
