@@ -13,7 +13,7 @@ class ResConfigSettings(models.TransientModel):
     flatchr_company_key = fields.Char(string="Flatchr company key")
     flatchr_token = fields.Char(string="Flatchr token")
     flatchr_is_cron_active = fields.Boolean(string="Active", default=lambda self: self.env.ref('flatchr_connector.cron_get_jobs_from_flatchr').active)
-    last_sync_date = fields.Date("Last sync date", default=lambda self: self._context.get("date", fields.Date.context_today(self)), required=True)
+    last_sync_date = fields.Date("Last sync date", default=lambda self: self._context.get("date", fields.Date.context_today(self)))
     sync_period = fields.Integer("Sync period", default=365, required=True)
 
     def set_values(self):
