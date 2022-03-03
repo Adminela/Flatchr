@@ -13,7 +13,7 @@ class ResConfigSettings(models.TransientModel):
     flatchr_company_key = fields.Char(string="Flatchr company key")
     flatchr_token = fields.Char(string="Flatchr token")
     flatchr_is_cron_active = fields.Boolean(string="Active", default=lambda self: self.env.ref('flatchr_connector.cron_get_jobs_from_flatchr').active)
-    last_sync_date = fields.Date("Last sync date", default=lambda self: self._context.get("date", fields.Date.context_today(self)))
+    last_sync_date = fields.Date("Last sync date", default=lambda self: self._context.get("date", fields.Date.context_today(self)), required=True)
     sync_period = fields.Integer("Sync period", default=365, required=True)
 
     def set_values(self):
@@ -26,8 +26,6 @@ class ResConfigSettings(models.TransientModel):
         self.env['ir.config_parameter'].set_param('flatchr_connector.sync_period', self.sync_period)
 
         self.env.ref('flatchr_connector.cron_get_jobs_from_flatchr').write({'active': self.flatchr_is_cron_active})
-        
-
         return res
 
     def get_values(self):
@@ -36,10 +34,10 @@ class ResConfigSettings(models.TransientModel):
         slug = self.env['ir.config_parameter'].sudo().get_param('flatchr_connector.flatchr_enterprise_slug', "")
         cpny_key = self.env['ir.config_parameter'].sudo().get_param('flatchr_connector.flatchr_company_key', "")
         flatchr_token = self.env['ir.config_parameter'].sudo().get_param('flatchr_connector.flatchr_token', "")
-        last_sync_date = self.env['ir.config_parameter'].sudo().get_param('flatchr_connector.last_sync_date', "") or fields.Date.context_today(self)
+        last_sync_date = self.env['ir.config_parameter'].sudo().get_param('flatchr_connector.last_sync_date', "")
         sync_period = self.env['ir.config_parameter'].sudo().get_param('flatchr_connector.sync_period', "")
-        cron_id = self.env.ref('flatchr_connector.cron_get_jobs_from_flatchr')
 
+        cron_id = self.env.ref('flatchr_connector.cron_get_jobs_from_flatchr')
         res.update(flatchr_api_key=api_key,
                    flatchr_enterprise_slug=slug,
                    flatchr_company_key=cpny_key,
@@ -48,7 +46,6 @@ class ResConfigSettings(models.TransientModel):
                    last_sync_date=last_sync_date,
                    sync_period=sync_period
                    )
-
         return res
 
     def test_flatchr_api_call(self):

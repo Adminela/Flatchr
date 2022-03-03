@@ -68,7 +68,6 @@ class HrJob(models.Model):
             'remote': vacancy_dict['remote'],
             'handicap': vacancy_dict['handicap'],
             'partial': vacancy_dict['partial'],
-            'create_date': vacancy_dict['created_at'],
             'state': 'recruit' if vacancy_dict['status'] == 1 else 'open',
         }
 
@@ -77,6 +76,8 @@ class HrJob(models.Model):
         else:
             vacancy_id = existing_job_id[0]
             vacancy_id.write(content_dict)
+
+        self.env.cr.execute("UPDATE hr_job SET create_date = '%s' WHERE id = %s" %(vacancy_dict['created_at'], vacancy_id.id))
 
         if vacancy_id.state not in ['recruit']:
             vacancy_id.set_recruit()
@@ -105,27 +106,27 @@ class HrJob(models.Model):
         job_ids = vacancy_ids.search([("name", "=", applicant['vacancy'])])
         if job_ids:
             job_id = job_ids[0]
-        else:
-            raise ValidationError("Job %s not found !" % applicant['vacancy'])
+        #else:
+        #    raise ValidationError("Job %s not found !" % applicant['vacancy'])
+            if applicant['vacancy']:
+                content_dict = {
+                    'name': f"{applicant['firstname'].upper()} {applicant['lastname'].upper()} (Flatchr)",
+                    'partner_name': f"{applicant['firstname'].upper()} {applicant['lastname'].upper()}",
+                    'flatchr_applicant_id': applicant['applicant'],
+                    'date_source': datetime.now(),
+                    'partner_id': partner_id.id,
+                    'applicant_source': applicant['source'],
+                    'job_id': job_id.id,
+                }
 
-        if applicant['vacancy']:
-            content_dict = {
-                'name': f"{applicant['firstname'].upper()} {applicant['lastname'].upper()} (Flatchr)",
-                'partner_name': f"{applicant['firstname'].upper()} {applicant['lastname'].upper()}",
-                'flatchr_applicant_id': applicant['applicant'],
-                'create_date': applicant['created_at'],
-                'date_source': datetime.datetime.now(),
-                'partner_id': partner_id.id,
-                'applicant_source': applicant['source'],
-                'job_id': job_id.id,
-            }
+                if not existing_applicants:
+                    hr_applicant_id = self.env['hr.applicant'].create(content_dict)
+                    hr_applicant_id.user_id = False
 
-            if not existing_applicants:
-                hr_applicant_id = self.env['hr.applicant'].create(content_dict)
-                hr_applicant_id.user_id = False
-            #else:
-            #    hr_applicant_id = existing_applicants[0]
-            #    hr_applicant_id.write(content_dict)
+                    self.env.cr.execute("UPDATE hr_applicant SET create_date = '%s' WHERE id = %s" %(str(datetime.strptime(applicant['created_at'], "%d/%m/%y")), hr_applicant_id.id))
+                #else:
+                #    hr_applicant_id = existing_applicants[0]
+                #    hr_applicant_id.write(content_dict)
 
     def fetch_flatchr_data(self):
         date_start = datetime.now()
