@@ -69,12 +69,12 @@ class HrApplicant(models.Model):
         data = io.StringIO(file.decode("utf-8"))
         data.seek(0)
         file_reader = []
-        csv_reader = csv.reader(data, delimiter=';', quotechar='"')
+        csv_reader = csv.reader(data, delimiter=';')
         file_reader.extend(csv_reader)
         
         for row in file_reader:
-            row = row[0].replace('"', "")
-            row = row.split(";")
+            #row = row[0].replace('"', "")
+            #row = row.split(";")
             applicant_ids = env['hr.applicant'].search([('email_from', '=', row[1])]).filtered(lambda j: j.job_id.name == row[3])
             if applicant_ids:
                 applicant_id = applicant_ids[0]
