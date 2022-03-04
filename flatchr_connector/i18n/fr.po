@@ -260,8 +260,8 @@ msgstr "Informations générale"
 #: model:ir.actions.server,name:flatchr_connector.cron_get_jobs_from_flatchr_ir_actions_server
 #: model:ir.cron,cron_name:flatchr_connector.cron_get_jobs_from_flatchr
 #: model:ir.cron,name:flatchr_connector.cron_get_jobs_from_flatchr
-msgid "Get jobs from Flatchr"
-msgstr "Récupérer les candidatures et poste de recrutement de Flatchr"
+msgid "[ELA] Get jobs from Flatchr"
+msgstr "[ELA] Récupérer les candidatures et poste de recrutement de Flatchr"
 
 #. module: flatchr_connector
 #: model:ir.model,name:flatchr_connector.model_hr_activity

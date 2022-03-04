@@ -2,7 +2,7 @@
 # Copyright 2022 ELITE - Salim ROUMILI
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
 
-from datetime import timedelta, date
+from datetime import timedelta, date, datetime
 from odoo import fields, api, models, _
 from odoo.exceptions import ValidationError
 import logging
@@ -100,7 +100,6 @@ class HrApplicant(models.Model):
     benefit_offered_ids = fields.Many2many("hr.applicant.benefit", 'benefit_offered_applicant_rel', string='Avantages proposés', ondelete="restrict", tracking=True)
     comptage = fields.Integer(string='Comptage', tracking=True)
     date_naissance = fields.Date(string='Date de naissance', tracking=True)
-    #disponibilite = fields.Date(string='Disponibilité', tracking=True)
     dispositif = fields.Selection([
         ("dispositif_1", "Dispositif 1"),
         ("dispositif_2", "Dispositif 2"),
@@ -215,8 +214,25 @@ class HrApplicant(models.Model):
         
         return super(HrApplicant, self).write(vals)
 
-    def reset_applicant(self):
-        for record in self:
-            record.stage_id = False
-            for message_id in record.Message_ids:
+    @staticmethod
+    def reset_applicant(env):
+        all_applicants = env['hr.applicant'].filtered(lambda appl: appl.stage_id.is_reset 
+                                                      and ('date_last_stage_update' < (datetime.now() - timedelta(seconds=appl.stage_id.periode))))
+        for record in all_applicants:
+            record._reset_stage()
+            record.user_id = False
+            for message_id in record.message_ids:
                 message_id.is_manager = True
+
+    def _reset_stage(self):
+        for applicant in self:
+            if applicant.job_id:
+                stage_ids = self.env['hr.recruitment.stage'].search([
+                    '|',
+                    ('job_ids', '=', False),
+                    ('job_ids', '=', applicant.job_id.id),
+                    ('fold', '=', False)
+                ], order='sequence asc', limit=1).ids
+                applicant.stage_id = stage_ids[0] if stage_ids else False
+            else:
+                applicant.stage_id = False

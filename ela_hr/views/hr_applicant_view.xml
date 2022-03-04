@@ -16,10 +16,11 @@
             <xpath expr="//field[@name='priority']" position="replace">
                 <xpath expr="//field[@name='medium_id']" position="move"/>
             </xpath>
-            <xpath expr="//field[@name='type_id']" position="replace">
+            <xpath expr="//field[@name='partner_phone']" position="after">
                 <field name="date_naissance"/>
                 <field name="lieu_naissance"/>
             </xpath>
+
             <field name="partner_id" position="before">
                 <field name="genre" widget="radio" options="{'horizontal': true}" />
             </field>
@@ -36,10 +37,16 @@
                 <field name="contract_type_ids" widget="many2many_tags"/>
                 <xpath expr="//field[@name='availability']" position="move"/>
             </xpath>
+
+            <xpath expr="//label[@for='salary_expected']" position="replace"/>
+            <xpath expr="//label[@for='salary_proposed']" position="replace"/>
+            <xpath expr="//form[1]/sheet[1]/group[1]/group[4]/div" position="replace"/>
+            <xpath expr="//form[1]/sheet[1]/group[1]/group[4]/div" position="replace"/>
+
             <xpath expr="//form[1]/sheet[1]/group[1]" position="after">
                 <group name="formation" string="Formation">
                     <group>
-                        <field name="formation"/>
+                        <field name="formation" options="{'no_create_edit': True, 'no_quick_create': True}"/>
                         <field name="certification"/>
                         <field name="dispositif"/>
                         <field name="accompagnement"/>
@@ -57,18 +64,18 @@
                 <page string="Recrutement">
                     <group>
                         <group>
-                            <field name="workzone_ids" widget="many2many_tags"/>
-                            <field name="workhour_ids" widget="many2many_tags"/>
+                            <field name="workzone_ids" widget="many2many_tags" options="{'no_create_edit': True, 'no_quick_create': True}"/>
+                            <field name="workhour_ids" widget="many2many_tags" options="{'no_create_edit': True, 'no_quick_create': True}"/>
                             <field name="mobilite"/>
                             <field name="heure_semaine"/>
                             <field name="appreciation_hr" widget="priority"/>
                         </group>
                         <group>
-                            <field name="contract_type_ids" widget="many2many_tags"/>
+                            <field name="contract_type_ids" widget="many2many_tags" options="{'no_create_edit': True, 'no_quick_create': True}"/>
                             <field name="salaire_minimum"/>
                             <field name="salaire_propose"/>
-                            <field name="benefit_wished_ids" widget="many2many_tags"/>
-                            <field name="benefit_offered_ids" widget="many2many_tags"/>
+                            <field name="benefit_wished_ids" widget="many2many_tags" options="{'no_create_edit': True, 'no_quick_create': True}"/>
+                            <field name="benefit_offered_ids" widget="many2many_tags" options="{'no_create_edit': True, 'no_quick_create': True}"/>
                         </group>
                     </group>
                 </page>
@@ -78,7 +85,7 @@
                             <field name="login"/>
                             <field name="mot_de_passe"/>
                             <field name="date_entree"/>
-                            <field name="workhour_available_ids" widget="many2many_tags"/>
+                            <field name="workhour_available_ids" widget="many2many_tags" options="{'no_create_edit': True, 'no_quick_create': True}"/>
                         </group>
                         <group>
                             <field name="plateforme"/>
