@@ -6,7 +6,8 @@
         <field name="inherit_id" ref="project.task_type_edit"/>
         <field name="arch" type="xml">
             <field name="is_closed" position="after">
-                <field name="is_move_applicant_hr"/>
+                <field name="is_move_applicant"/>
+                <field name="stage_id" attrs="{'invisible': [('is_move_applicant', '=', False)], 'required': [('is_move_applicant', '=', True)]}"/>
             </field>
         </field>
     </record>

@@ -21,6 +21,7 @@
         "views/hr_recruitment_stage_view.xml",
         "views/project_task_type_view.xml",
         "security/security.xml",
+        "data/ir_cron.xml",
     ],
     "demo": [],
     "license": "AGPL-3",

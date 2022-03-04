@@ -20,7 +20,7 @@ class HrApplicant(models.Model):
     flatchr_applicant_id = fields.Char(string="Flatchr Applicant ID")
     job_state = fields.Selection(string="Job state", related="job_id.state", store=True)
     job_count = fields.Integer(compute='_compute_job_count', string="# Jobs")
-    date_source = fields.Datetime(string='Date enregistrement', help="Date à laquelle le candidat a été enregistré dans Odoo via l'API", tracking=True)
+    date_source = fields.Datetime(string='Date de synchronisation', help="Date à laquelle le candidat a été enregistré dans Odoo via l'API", tracking=True)
     #cv_link = fields.Char(string="CV link")
 
     @api.depends('application_count')
