@@ -24,4 +24,19 @@
             </group>
         </field>
     </record>
+
+    <record id="ela_hr_hr_recruitment_stage_tree" model="ir.ui.view">
+        <field name="name">ela.hr.hr.recruitment.stage.tree</field>
+        <field name="model">hr.recruitment.stage</field>
+        <field name="inherit_id" ref="hr_recruitment.hr_recruitment_stage_tree"/>
+        <field name="arch" type="xml">
+            <field name="fold" position="after">
+                <field name="is_create_project_task"/>
+                <field name="is_reset"/>
+                <field name="periode"/>
+                <field name="is_candidats_portfolio"/>
+                <field name="is_job_ready"/>
+            </field>
+        </field>
+    </record>
 </odoo>

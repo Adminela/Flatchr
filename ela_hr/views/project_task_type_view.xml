@@ -8,7 +8,20 @@
             <field name="is_closed" position="after">
                 <field name="is_move_applicant"/>
                 <field name="stage_id" attrs="{'invisible': [('is_move_applicant', '=', False)], 'required': [('is_move_applicant', '=', True)]}"/>
-                <field name="to_paiement" />
+                <field name="to_paiement"/>
+            </field>
+        </field>
+    </record>
+
+    <record id="ela_hr_task_type_tree" model="ir.ui.view">
+        <field name="name">ela.hr.task.type.tree</field>
+        <field name="model">project.task.type</field>
+        <field name="inherit_id" ref="project.task_type_tree"/>
+        <field name="arch" type="xml">
+            <field name="fold" position="after">
+                <field name="is_move_applicant"/>
+                <field name="stage_id"/>
+                <field name="to_paiement"/>
             </field>
         </field>
     </record>

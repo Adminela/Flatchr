@@ -220,7 +220,7 @@
     <menuitem id="menu_candidats_portfolio"
               name="Portefeuil candidat"
               parent="hr_recruitment.menu_crm_case_categ0_act_job"
-              sequence="2"
+              sequence="1"
               action="action_candidats_portfolio_tree"
     />
 
@@ -243,7 +243,7 @@
     <menuitem id="menu_job_ready"
               name="Prêt à l'emploi"
               parent="hr_recruitment.menu_crm_case_categ0_act_job"
-              sequence="2"
+              sequence="1"
               action="action_job_ready_tree"
     />
 

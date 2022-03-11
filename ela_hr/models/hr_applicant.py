@@ -261,3 +261,24 @@ class HrApplicant(models.Model):
         for record in self:
             record.is_premium = not record.is_premium
 
+    @api.model
+    def _read_group_stage_ids(self, stages, domain, order):
+        job_id = self._context.get('default_job_id')
+
+        is_candidats_portfolio = self._context.get('is_candidats_portfolio')
+        is_job_ready = self._context.get('is_job_ready')
+
+        search_domain = [('job_ids', '=', False)]
+        if job_id:
+            search_domain = ['|', ('job_ids', '=', job_id)] + search_domain
+        if stages:
+            search_domain = ['|', ('id', 'in', stages.ids)] + search_domain
+
+        if is_candidats_portfolio:
+            search_domain = [('is_candidats_portfolio', '=', True)] + search_domain
+        elif is_job_ready:
+            search_domain = [('is_job_ready', '=', True)] + search_domain
+
+        stage_ids = stages._search(search_domain, order=order, access_rights_uid=SUPERUSER_ID)
+        #raise ValidationError("search_domain %s" %(search_domain))**
+        return stages.browse(stage_ids)
