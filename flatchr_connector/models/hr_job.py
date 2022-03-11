@@ -85,39 +85,47 @@ class HrJob(models.Model):
         return vacancy_id
 
     def parse_applicant(self, applicant: dict, vacancy_ids):
-        existing_partners = self.env['res.partner'].search([('flatchr_applicant_id', '=', applicant['applicant'])])
+        company_key = self.env['ir.config_parameter'].sudo().get_param('flatchr_connector.flatchr_company_key')
+        token = self.env['ir.config_parameter'].sudo().get_param('flatchr_connector.flatchr_token')
+        flatchr_candidate_id = applicant['applicant']
+        url = f'https://api.flatchr.io/company/{company_key}/applicant/{flatchr_candidate_id}?fields=candidate,vacancy,candidate.consent'
+        headers = requests.structures.CaseInsensitiveDict()
+        headers['Authorization'] = f'Bearer {token}'
+        headers['Content-Type'] = 'application/json'
+        response = requests.get(url, headers=headers)
+        job_id = False
 
-        content_dict = {
-            'flatchr_applicant_id': applicant['applicant'],
-            'name': f"{applicant['firstname']} {applicant['lastname']}",
-            'email': applicant['email'],
-            'phone': applicant['phone'],
-        }
+        if response.status_code  == 200:
+            job_id = vacancy_ids.search([("flatchr_job_id", "=", response.json()['vacancy_id'])], limit=1)
 
-        if not existing_partners:
-            partner_id = self.env['res.partner'].create(content_dict)
-        else:
-            partner_id = existing_partners[0]
-            partner_id.write(content_dict)
+        if job_id:
+            content_dict = {
+                'flatchr_applicant_id': applicant['applicant'],
+                'name': f"{applicant['firstname']} {applicant['lastname']} (Flatchr)",
+                'email': applicant['email'],
+                'phone': applicant['phone'],
+            }
 
-        # Then we can take care of the hr_applicant
-        existing_applicants = self.env['hr.applicant'].search([('flatchr_applicant_id', '=', applicant['applicant'])])
+            existing_partners = self.env['res.partner'].search([('flatchr_applicant_id', '=', applicant['applicant'])])
+            if not existing_partners:
+                partner_id = self.env['res.partner'].create(content_dict)
+            else:
+                partner_id = existing_partners[0]
+                partner_id.write(content_dict)
 
-        job_ids = vacancy_ids.search([("name", "=", applicant['vacancy'])])
-        if job_ids:
-            job_id = job_ids[0]
-        #else:
-        #    raise ValidationError("Job %s not found !" % applicant['vacancy'])
+            # Then we can take care of the hr_applicant
             if applicant['vacancy']:
                 content_dict = {
-                    'name': f"{applicant['firstname'].upper()} {applicant['lastname'].upper()} (Flatchr)",
-                    'partner_name': f"{applicant['firstname'].upper()} {applicant['lastname'].upper()}",
+                    'name': f"{applicant['firstname'].upper()} {applicant['lastname'].upper()}",
+                    #'partner_name': f"{applicant['firstname'].upper()} {applicant['lastname'].upper()}",
                     'flatchr_applicant_id': applicant['applicant'],
                     'date_source': datetime.now(),
                     'partner_id': partner_id.id,
                     'applicant_source': applicant['source'],
                     'job_id': job_id.id,
                 }
+
+                existing_applicants = self.env['hr.applicant'].search([('flatchr_applicant_id', '=', applicant['applicant'])])
 
                 if not existing_applicants:
                     hr_applicant_id = self.env['hr.applicant'].create(content_dict)
@@ -127,6 +135,8 @@ class HrJob(models.Model):
                 #else:
                 #    hr_applicant_id = existing_applicants[0]
                 #    hr_applicant_id.write(content_dict)
+        #else:
+        #    raise ValidationError("Job %s not found !" % applicant['vacancy'])
 
     def fetch_flatchr_data(self):
         date_start = datetime.now()
@@ -164,13 +174,6 @@ class HrJob(models.Model):
         data = f'{{"start": "{start_from}"}}'
 
         response = requests.post(url, headers=headers, data=data)
-
-        #candidate_key = 'zj8Md6kroklnYZ70'
-        #url = f'https://api.flatchr.io/company/{company_key}/applicant/{candidate_key}?fields=candidate,vacancy,candidate.consent'
-        #headers['Authorization'] = f'Bearer {token}'
-        #headers['Content-Type'] = 'application/json'
-
-        #response = requests.get(url, headers=headers)
         
         j = 0
         for applicant in response.json():
@@ -184,8 +187,8 @@ class HrJob(models.Model):
     def set_recruit(self):
         for record in self:
             applicant_ids = self.env['hr.applicant'].with_context(active_test=False).search([("job_id", "=", record.id)])
-            _logger.info("******* Fin de la synchronisation Flatchr %s" % applicant_ids)
-            applicant_ids.reset_applicant()
+            #_logger.info("******* Fin de la synchronisation Flatchr %s" % applicant_ids)***
+            applicant_ids.set_recruit()
 
         return super(HrJob, self).set_recruit()
 

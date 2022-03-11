@@ -14,3 +14,6 @@ access_hr_applicant_workhour,hr.applicant.workhour.manager,model_hr_applicant_wo
 access_hr_applicant_workhour_available_manager,hr.applicant.workhour.available.manager,model_hr_applicant_workhour_available,hr_recruitment.group_hr_recruitment_manager,1,1,1,1
 access_hr_applicant_workzone_manager,hr.applicant.workzone.manager,model_hr_applicant_workzone,hr_recruitment.group_hr_recruitment_manager,1,1,1,1
 access_hr_applicant_hour_progress_manager,hr.applicant.hour.progress.manager,model_hr_applicant_hour_progress,hr_recruitment.group_hr_recruitment_manager,1,1,1,1
+
+base.access_ir_attachment_group_user,ir_attachment group_user,base.model_ir_attachment,base.group_user,1,1,1,0
+access_ir_attachment_manager,ir.attachment.manager,base.model_ir_attachment,hr_recruitment.group_hr_recruitment_manager,1,1,1,1

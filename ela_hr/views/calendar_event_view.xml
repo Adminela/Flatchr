@@ -1,0 +1,24 @@
+<?xml version='1.0' encoding='utf-8'?>
+<odoo>
+    <record id="ela_hr_view_calendar_event_calendar" model="ir.ui.view">
+        <field name="name">ela.hr.view.calendar.event.calendar</field>
+        <field name="model">calendar.event</field>
+        <field name="inherit_id" ref="calendar.view_calendar_event_calendar"/>
+        <field name="arch" type="xml">
+            <xpath expr="//calendar" position="attributes">
+                <attribute name="quick_add">false</attribute>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="ela_hr_view_calendar_event_form" model="ir.ui.view">
+        <field name="name">ela.hr.view.calendar.event.form</field>
+        <field name="model">calendar.event</field>
+        <field name="inherit_id" ref="calendar.view_calendar_event_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//h2" position="after">
+                <field name="user_id"/>
+            </xpath>
+        </field>
+    </record>
+</odoo>

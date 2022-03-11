@@ -15,3 +15,5 @@ class HrRecruitmentStage(models.Model):
         '- Les anciens messages dans le mur invisible aux commerciaux\n'
         'ceci aprés la période précisée dans le champs "Période"', tracking=True)
     periode = fields.Integer(string='Période', tracking=True)
+    is_candidats_portfolio = fields.Boolean(string='Portefeuil candidat', help='Si cochée, les candidats dans cette tape apparaitront dans le menu "Portefeuil candidat"', tracking=True)
+    is_job_ready = fields.Boolean(string='Prêt à l\'emploi', help='Si cochée, les candidats dans cette tape apparaitront dans le menu "Prêt à l\'emploi"', tracking=True)

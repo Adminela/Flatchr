@@ -8,6 +8,7 @@
             <field name="is_closed" position="after">
                 <field name="is_move_applicant"/>
                 <field name="stage_id" attrs="{'invisible': [('is_move_applicant', '=', False)], 'required': [('is_move_applicant', '=', True)]}"/>
+                <field name="to_paiement" />
             </field>
         </field>
     </record>
