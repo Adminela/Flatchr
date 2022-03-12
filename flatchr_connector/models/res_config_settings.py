@@ -36,8 +36,8 @@ class ResConfigSettings(models.TransientModel):
         flatchr_token = self.env['ir.config_parameter'].sudo().get_param('flatchr_connector.flatchr_token', "")
         last_sync_date = self.env['ir.config_parameter'].sudo().get_param('flatchr_connector.last_sync_date', "")
         sync_period = self.env['ir.config_parameter'].sudo().get_param('flatchr_connector.sync_period', "")
-        cron_id = self.env.ref('flatchr_connector.cron_get_jobs_from_flatchr')
 
+        cron_id = self.env.ref('flatchr_connector.cron_get_jobs_from_flatchr')
         res.update(flatchr_api_key=api_key,
                    flatchr_enterprise_slug=slug,
                    flatchr_company_key=cpny_key,
