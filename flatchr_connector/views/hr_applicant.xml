@@ -21,7 +21,7 @@
                 <notebook>
                     <page name="misc" string="Divers" groups="hr_recruitment.group_hr_recruitment_manager">
                         <group>
-                            <group>
+                            <group name="sync_info" string="Informations synchronisation">
                                 <field name="flatchr_applicant_id" readonly='1'/>
                                 <field name="date_source" readonly="1"/>
                             </group>

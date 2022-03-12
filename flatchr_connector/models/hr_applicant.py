@@ -75,9 +75,12 @@ class HrApplicant(models.Model):
         for row in file_reader:
             #row = row[0].replace('"', "")
             #row = row.split(";")
-            applicant_ids = env['hr.applicant'].search([('email_from', '=', row[1])]).filtered(lambda j: j.job_id.name == row[3])
+
+            applicant_ids = env['hr.applicant'].search([('email_from', '=', row[1])]).filtered(lambda j: j.job_id.reference == row[3])
+
             if applicant_ids:
                 applicant_id = applicant_ids[0]
+
                 if not applicant_id.has_cv():
                     download_url = row[2]
 
@@ -92,6 +95,9 @@ class HrApplicant(models.Model):
                             'type': 'binary',
                             #'folder_id': env.ref('flatchr_connector.cv_folder').id,
                         })
+
+                        if len(row) > 5:
+                            applicant_id.stage_id = env['hr.recruitment.stage'].search([('name', '=', row[4])], limit=1)
 
                     except Exception as e:
                         _logger.error("Impossible de télécharger le CV du candidat: %s, pour la raison suivante : %s" %(applicant_id.name, e))

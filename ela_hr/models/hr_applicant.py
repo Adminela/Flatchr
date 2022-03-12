@@ -3,7 +3,7 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
 
 from datetime import timedelta, date, datetime
-from odoo import fields, api, models, _
+from odoo import fields, api, models, _, SUPERUSER_ID
 from odoo.exceptions import ValidationError
 import logging
 
@@ -17,6 +17,7 @@ class HrApplicant(models.Model):
     # Formation
     formation = fields.Many2one("project.project", string='Formation', tracking=True)
     task_id = fields.Many2one("project.task", string='Tâche', tracking=True)
+    task_stage_id = fields.Many2one(related="task_id.stage_id", string="Étape de formation", readonly=False, tracking=True, store=True)
     certification = fields.Selection([
         ("certification_1", "Certification 1"),
         ("certification_2", "Certification 2"),
@@ -35,6 +36,7 @@ class HrApplicant(models.Model):
     )
     accompagnement = fields.Boolean(string='Accompagnement', tracking=True)
     connaissance = fields.Boolean(string='Connaissance', tracking=True)
+    case_number = fields.Char(string='N° de dossier', tracking=True)
     niveau = fields.Selection([
         ("niveau_1", "Niveau 1"),
         ("niveau_2", "Niveau 2"),
@@ -153,6 +155,17 @@ class HrApplicant(models.Model):
     contract_type_ids = fields.Many2many("hr.applicant.contract.type", string='Type de contrat proposé', ondelete="restrict", tracking=True)
     email_from = fields.Char(tracking=True)
     partner_phone = fields.Char(tracking=True)
+    is_premium = fields.Boolean(string='CV Premium', tracking=True)
+    prix_formation = fields.Float(string='Prix formation', tracking=True)
+    solde_formation = fields.Float(string='Solde', tracking=True)
+    in_formation = fields.Boolean(string='Rentré en formation', tracking=True)
+    payment_state = fields.Selection([
+        ("to_be_sold", "À payer"),
+        ("sold", "Payé"),
+        ],
+        'État du paiement',
+        tracking=True
+    )
 
     @api.model
     def is_global_leave_or_weekend(self, date):
@@ -215,12 +228,19 @@ class HrApplicant(models.Model):
         return super(HrApplicant, self).write(vals)
 
     @staticmethod
-    def reset_applicant(env):
-        all_applicants = env['hr.applicant'].filtered(lambda appl: appl.stage_id.is_reset 
-                                                      and ('date_last_stage_update' < (datetime.now() - timedelta(seconds=appl.stage_id.periode))))
+    def reset_applicant_hr(env):
+        date_expire = datetime.now() - timedelta(seconds=appl.stage_id.periode)
+        while record.env['hr.applicant'].is_global_leave_or_weekend(date_expire):
+            #date_expire = date_expire.replace(hour=0, minute=0, second=2)
+            date_expire += timedelta(days=1)
+        
+        all_applicants = env['hr.applicant'].search([(1, '=', 1)]).filtered(lambda appl: appl.stage_id.is_reset and (appl.date_last_stage_update < date_expire))
+
         for record in all_applicants:
             record._reset_stage()
             record.user_id = False
+            env.cr.commit()
+
             for message_id in record.message_ids:
                 message_id.is_manager = True
 
@@ -236,3 +256,29 @@ class HrApplicant(models.Model):
                 applicant.stage_id = stage_ids[0] if stage_ids else False
             else:
                 applicant.stage_id = False
+
+    def toggle_premium(self):
+        for record in self:
+            record.is_premium = not record.is_premium
+
+    @api.model
+    def _read_group_stage_ids(self, stages, domain, order):
+        job_id = self._context.get('default_job_id')
+
+        is_candidats_portfolio = self._context.get('is_candidats_portfolio')
+        is_job_ready = self._context.get('is_job_ready')
+
+        search_domain = [('job_ids', '=', False)]
+        if job_id:
+            search_domain = ['|', ('job_ids', '=', job_id)] + search_domain
+        if stages:
+            search_domain = ['|', ('id', 'in', stages.ids)] + search_domain
+
+        if is_candidats_portfolio:
+            search_domain = [('is_candidats_portfolio', '=', True)] + search_domain
+        elif is_job_ready:
+            search_domain = [('is_job_ready', '=', True)] + search_domain
+
+        stage_ids = stages._search(search_domain, order=order, access_rights_uid=SUPERUSER_ID)
+        #raise ValidationError("search_domain %s" %(search_domain))**
+        return stages.browse(stage_ids)

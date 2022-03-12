@@ -10,6 +10,16 @@
                     <field name="task_id" widget="statinfo" string="Formation"/>
                 </button>
             </xpath>
+            <xpath expr="//button[@name='action_makeMeeting']" position="after">
+                <button name="toggle_premium" class="oe_stat_button" icon="fa-star" type="object" style="color: gray;" attrs="{'invisible': [('is_premium', '=', True)]}">
+                    <label for="is_premium" style="color: gray;" attrs="{'invisible': [('is_premium', '=', True)]}">CV Premium</label>
+                    <field name="is_premium" invisible="1"/>
+                </button>
+                <button name="toggle_premium" class="oe_stat_button" icon="fa-star" type="object" style="color: green;" attrs="{'invisible': [('is_premium', '=', False)]}">
+                    <label for="is_premium" style="color: green;" attrs="{'invisible': [('is_premium', '=', False)]}">CV Premium</label>
+                    <field name="is_premium" invisible="1"/>
+                </button>
+            </xpath>
             <xpath expr="//field[@name='source_id']" position="replace">
                 <field name="skill_ids" widget="many2many_tags"/>
             </xpath>
@@ -51,8 +61,11 @@
                         <field name="dispositif"/>
                         <field name="accompagnement"/>
                         <field name="connaissance"/>
+                        <field name="case_number"/>
                     </group>
                     <group>
+                        <field name="prix_formation"/>
+                        <field name="solde_formation"/>
                         <field name="niveau"/>
                         <field name="nombre_dheures"/>
                         <field name="date_entree_call"/>
@@ -84,6 +97,7 @@
                         <group>
                             <field name="login"/>
                             <field name="mot_de_passe"/>
+                            <field name="in_formation" widget="boolean_toggle"/>
                             <field name="date_entree"/>
                             <field name="workhour_available_ids" widget="many2many_tags" options="{'no_create_edit': True, 'no_quick_create': True}"/>
                         </group>
@@ -106,6 +120,11 @@
                     </group>
                 </page>
             </xpath>
+            <xpath expr="//group[@name='sync_info']" position="after">
+                <group name="payment_state" string="Paiement">
+                    <field name="payment_state"/>
+                </group>
+            </xpath>
         </field>                
     </record>
 
@@ -127,4 +146,105 @@
             </field>
         </field>
     </record>
+
+    <record id="ela_hr_crm_case_tree_view_job" model="ir.ui.view">
+        <field name="name">ela.hr.crm.case.tree.view.job</field>
+        <field name="model">hr.applicant</field>
+        <field name="inherit_id" ref="hr_recruitment.crm_case_tree_view_job"/>
+        <field name="arch" type="xml">
+            <field name="user_id" position="after">
+                <field name="task_stage_id"/>
+                <field name="solde_formation"/>
+                <field name="prix_formation"/>
+            </field>
+        </field>
+    </record>
+
+    <record id="ela_hr_hr_applicant_view_search_bis" model="ir.ui.view">
+        <field name="name">ela.hr.hr.applicant.view.search.bis</field>
+        <field name="model">hr.applicant</field>
+        <field name="inherit_id" ref="hr_recruitment.hr_applicant_view_search_bis"/>
+        <field name="arch" type="xml">
+            <field name="partner_name" position="after">
+                <field name="case_number"/>
+            </field>
+
+            <filter name="responsible" position="after">
+                <filter string="État du paiement" name="payment_state" domain="[]" context="{'group_by': 'payment_state'}"/>
+            </filter>
+
+            <filter name="inactive" position="after">
+                <filter string="À payer" name="inactive" domain="[('payment_state', '=', 'to_be_sold')]"/>
+                <filter string="Payé" name="inactive" domain="[('payment_state', '=', 'sold')]"/>
+            </filter>
+        </field>
+    </record>
+
+
+    <record id="ela_hr_hr_applicant_view_search_bis" model="ir.ui.view">
+        <field name="name">ela.hr.hr.applicant.view.search.bis</field>
+        <field name="model">hr.applicant</field>
+        <field name="inherit_id" ref="hr_recruitment.hr_applicant_view_search_bis"/>
+        <field name="arch" type="xml">
+            <field name="partner_name" position="after">
+                <field name="case_number"/>
+            </field>
+
+            <filter name="responsible" position="after">
+                <filter string="État du paiement" name="payment_state" domain="[]" context="{'group_by': 'payment_state'}"/>
+            </filter>
+
+            <filter name="inactive" position="after">
+                <filter string="À payer" name="inactive" domain="[('payment_state', '=', 'to_be_sold')]"/>
+                <filter string="Payé" name="inactive" domain="[('payment_state', '=', 'sold')]"/>
+            </filter>
+        </field>
+    </record>
+
+    <record model="ir.actions.act_window" id="action_candidats_portfolio_tree">
+        <field name="name">Portefeuil candidat</field>
+        <field name="res_model">hr.applicant</field>
+        <field name="view_mode">kanban,tree,form,pivot,graph,calendar,activity</field>
+        <field name="domain">[('stage_id.is_candidats_portfolio', '=', True)]</field>
+        <field name="context">{'is_candidats_portfolio': True}</field>
+        <field name="help" type="html">
+            <p>
+                Pas encore de candidatures.
+
+                Laissez les candidats postuler par email pour gagner du temps.
+                Les pièces jointes, tels les CV, sont indexés automatiquement dans l'application Documents.
+            </p>
+        </field>
+    </record>
+
+    <menuitem id="menu_candidats_portfolio"
+              name="Portefeuil candidat"
+              parent="hr_recruitment.menu_crm_case_categ0_act_job"
+              sequence="1"
+              action="action_candidats_portfolio_tree"
+    />
+
+    <record model="ir.actions.act_window" id="action_job_ready_tree">
+        <field name="name">Prêt à l'emploi</field>
+        <field name="res_model">hr.applicant</field>
+        <field name="view_mode">kanban,tree,form,pivot,graph,calendar,activity</field>
+        <field name="domain">[('stage_id.is_job_ready', '=', True)]</field>
+        <field name="context">{'is_job_ready': True}</field>
+        <field name="help" type="html">
+            <p>
+                Pas encore de candidatures.
+
+                Laissez les candidats postuler par email pour gagner du temps.
+                Les pièces jointes, tels les CV, sont indexés automatiquement dans l'application Documents.
+            </p>
+        </field>
+    </record>
+
+    <menuitem id="menu_job_ready"
+              name="Prêt à l'emploi"
+              parent="hr_recruitment.menu_crm_case_categ0_act_job"
+              sequence="1"
+              action="action_job_ready_tree"
+    />
+
 </odoo>

@@ -96,15 +96,12 @@ class HrJob(models.Model):
         job_id = False
 
         if response.status_code  == 200:
-            job_ids = vacancy_ids.search([("flatchr_job_id", "=", response.json()['vacancy_id'])])
-
-            if job_ids:
-                job_id = job_ids[0]
+            job_id = vacancy_ids.search([("flatchr_job_id", "=", response.json()['vacancy_id'])], limit=1)
 
         if job_id:
             content_dict = {
                 'flatchr_applicant_id': applicant['applicant'],
-                'name': f"{applicant['firstname']} {applicant['lastname']}",
+                'name': f"{applicant['firstname']} {applicant['lastname']} (Flatchr)",
                 'email': applicant['email'],
                 'phone': applicant['phone'],
             }
@@ -119,8 +116,8 @@ class HrJob(models.Model):
             # Then we can take care of the hr_applicant
             if applicant['vacancy']:
                 content_dict = {
-                    'name': f"{applicant['firstname'].upper()} {applicant['lastname'].upper()} (Flatchr)",
-                    'partner_name': f"{applicant['firstname'].upper()} {applicant['lastname'].upper()}",
+                    'name': f"{applicant['firstname'].upper()} {applicant['lastname'].upper()}",
+                    #'partner_name': f"{applicant['firstname'].upper()} {applicant['lastname'].upper()}",
                     'flatchr_applicant_id': applicant['applicant'],
                     'date_source': datetime.now(),
                     'partner_id': partner_id.id,
@@ -190,8 +187,8 @@ class HrJob(models.Model):
     def set_recruit(self):
         for record in self:
             applicant_ids = self.env['hr.applicant'].with_context(active_test=False).search([("job_id", "=", record.id)])
-            _logger.info("******* Fin de la synchronisation Flatchr %s" % applicant_ids)
-            applicant_ids.reset_applicant()
+            #_logger.info("******* Fin de la synchronisation Flatchr %s" % applicant_ids)***
+            applicant_ids.set_recruit()
 
         return super(HrJob, self).set_recruit()
 
