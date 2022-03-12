@@ -10,7 +10,7 @@ class ProjectTask(models.Model):
 
     applicant_id = fields.Many2one("hr.applicant", string='Applicant', tracking=True)
     
-    # Formation ***
+    # Formation
     #formation = fields.Selection(related="applicant_id.formation", compute="_compute_formation", inverse="_set_formation")
     certification = fields.Selection(related="applicant_id.certification", readonly=False, tracking=True, store=True)
     dispositif = fields.Selection(related="applicant_id.dispositif", readonly=False, tracking=True, store=True)
