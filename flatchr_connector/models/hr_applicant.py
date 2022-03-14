@@ -78,9 +78,7 @@ class HrApplicant(models.Model):
 
             applicant_ids = env['hr.applicant'].search([('email_from', '=', row[1])]).filtered(lambda j: j.job_id.name == row[3])
 
-            if applicant_ids:
-                applicant_id = applicant_ids[0]
-
+            for applicant_id in applicant_ids:
                 if not applicant_id.has_cv():
                     download_url = row[2]
 
@@ -97,6 +95,7 @@ class HrApplicant(models.Model):
                         })
 
                         if len(row) > 4:
+
                             applicant_id.stage_id = env['hr.recruitment.stage'].search([('name', '=', row[4].strip())], limit=1)
 
                     except Exception as e:
