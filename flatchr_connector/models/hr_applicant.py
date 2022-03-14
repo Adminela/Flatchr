@@ -96,7 +96,7 @@ class HrApplicant(models.Model):
                             #'folder_id': env.ref('flatchr_connector.cv_folder').id,
                         })
 
-                        if len(row) > 5:
+                        if len(row) > 4:
                             applicant_id.stage_id = env['hr.recruitment.stage'].search([('name', '=', row[4])], limit=1)
 
                     except Exception as e:
