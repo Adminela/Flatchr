@@ -97,7 +97,7 @@ class HrApplicant(models.Model):
                         })
 
                         if len(row) > 4:
-                            applicant_id.stage_id = env['hr.recruitment.stage'].search([('name', '=', row[4])], limit=1)
+                            applicant_id.stage_id = env['hr.recruitment.stage'].search([('name', '=', row[4].strip())], limit=1)
 
                     except Exception as e:
                         _logger.error("Impossible de télécharger le CV du candidat: %s, pour la raison suivante : %s" %(applicant_id.name, e))
