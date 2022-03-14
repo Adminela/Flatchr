@@ -76,7 +76,7 @@ class HrApplicant(models.Model):
             #row = row[0].replace('"', "")
             #row = row.split(";")
 
-            applicant_ids = env['hr.applicant'].search([('email_from', '=', row[1])]).filtered(lambda j: j.job_id.reference == row[3])
+            applicant_ids = env['hr.applicant'].search([('email_from', '=', row[1])]).filtered(lambda j: j.job_id.name == row[3])
 
             if applicant_ids:
                 applicant_id = applicant_ids[0]
