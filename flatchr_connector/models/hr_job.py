@@ -117,7 +117,7 @@ class HrJob(models.Model):
             if applicant['vacancy']:
                 content_dict = {
                     'name': f"{applicant['firstname'].upper()} {applicant['lastname'].upper()}",
-                    #'partner_name': f"{applicant['firstname'].upper()} {applicant['lastname'].upper()}",
+                    'partner_name': f"{applicant['firstname'].upper()} {applicant['lastname'].upper()}",
                     'flatchr_applicant_id': applicant['applicant'],
                     'date_source': datetime.now(),
                     'partner_id': partner_id.id,
