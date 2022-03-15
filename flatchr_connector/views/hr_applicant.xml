@@ -30,13 +30,13 @@
                 </notebook>
             </xpath>
             <field name="name" position="attributes">
-                <attribute name="readonly">1</attribute>
+                <attribute name="attrs">{'readonly': [('flatchr_applicant_id', '!=', False)]}</attribute>
             </field>
             <field name="partner_name" position="attributes">
-                <attribute name="readonly">1</attribute>
+                <attribute name="attrs">{'readonly': [('flatchr_applicant_id', '!=', False)]}</attribute>
             </field>
             <field name="partner_id" position="attributes">
-                <attribute name="readonly">1</attribute>
+                <attribute name="attrs">{'readonly': [('flatchr_applicant_id', '!=', False)]}</attribute>
             </field>
             <!--<field name="job_id" position="attributes">
                 <attribute name="readonly">1</attribute>
