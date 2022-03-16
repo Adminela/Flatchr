@@ -1,0 +1,116 @@
+<?xml version='1.0' encoding='utf-8'?>
+<odoo>
+    <record id="ela_hr_view_task_form2" model="ir.ui.view">
+        <field name="name">ela.hr.view.task.form2</field>
+        <field name="model">project.task</field>
+        <field name="inherit_id" ref="project.view_task_form2"/>
+        <field name="arch" type="xml">
+
+            <xpath expr="//page[@name='description_page']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+
+            <xpath expr="//page[@name='extra_info']" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+
+            <xpath expr="//field[@name='project_id']" position="replace">
+            </xpath>
+
+            <xpath expr="//field[@name='user_id']" position="replace">
+            </xpath>
+
+            <xpath expr="//form[1]/sheet[1]/group[1]" position="attributes">
+                <attribute name="invisible">1</attribute>
+            </xpath>
+
+            <xpath expr="//div[hasclass('oe_title')]" position="after">
+                <group>
+                    <group>
+                        <field name="applicant_id"/>
+                        <field name="user_id"/>
+                    </group>
+                    <group>
+                        <field name="project_id"/>
+                        <field name="payment_state" groups="hr_recruitment.group_hr_recruitment_manager"/>
+                    </group>
+                </group>
+                <group name="formation" string="Formation">
+                    <group>
+                        <field name="certification"/>
+                        <field name="dispositif"/>
+                        <field name="accompagnement"/>
+                        <field name="connaissance"/>
+                        <field name="case_number"/>
+                    </group>
+                    <group>
+                        <field name="prix_formation"/>
+                        <field name="solde_formation"/>
+                        <field name="niveau"/>
+                        <field name="nombre_dheures"/>
+                        <field name="date_entree_call"/>
+                        <field name="date_inscription"/>
+                    </group>
+                </group>
+                <group name="pedagogie" string="Pédagogie">
+                    <group>
+                        <field name="login"/>
+                        <field name="mot_de_passe"/>
+                        <field name="in_formation" widget="boolean_toggle"/>
+                        <field name="date_entree"/>
+                        <field name="workhour_available_ids" widget="many2many_tags"/>
+                    </group>
+                    <group>
+                        <field name="plateforme"/>
+                        <field name="motivation_appreciation" widget="priority"/>
+                        <field name="date_fin"/>
+                        <field name="test_result"/>
+                    </group>
+                </group>
+                <group string="Tableau de suivi">
+                  <field name="ligne_suivi_ids" nolabel="1">
+                      <tree editable="bottom">
+                          <field name="date"/>
+                          <field name="hours_number"/>
+                          <field name="objective"/>
+                          <field name="progress" widget="progressbar"/>
+                      </tree>
+                  </field>
+                </group>
+            </xpath>
+        </field>                
+    </record>
+
+    <record id="ela_hr_view_task_tree2" model="ir.ui.view">
+        <field name="name">ela.hr.view.task.tree2</field>
+        <field name="model">project.task</field>
+        <field name="inherit_id" ref="project.view_task_tree2"/>
+        <field name="arch" type="xml">
+            <field name="tag_ids" position="after">
+                <field name="solde_formation"/>
+                <field name="prix_formation"/>
+            </field>
+        </field>
+    </record>
+
+    <record id="ela_hr_view_task_search_form" model="ir.ui.view">
+        <field name="name">ela.hr.view.task.search.form</field>
+        <field name="model">project.task</field>
+        <field name="inherit_id" ref="project.view_task_search_form"/>
+        <field name="arch" type="xml">
+            <field name="name" position="after">
+                <field name="case_number"/>
+            </field>
+
+            <filter name="group_create_date" position="after">
+                <filter string="État du paiement" name="payment_state" domain="[]" context="{'group_by': 'payment_state'}"/>
+            </filter>
+
+            <filter name="inactive" position="after">
+                <filter string="À payer" name="inactive" domain="[('payment_state', '=', 'to_be_sold')]"/>
+                <filter string="Payé" name="inactive" domain="[('payment_state', '=', 'sold')]"/>
+            </filter>
+        </field>
+    </record>
+
+</odoo>
