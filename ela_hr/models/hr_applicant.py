@@ -18,33 +18,12 @@ class HrApplicant(models.Model):
     formation = fields.Many2one("project.project", string='Formation', tracking=True)
     task_id = fields.Many2one("project.task", string='Tâche', tracking=True)
     task_stage_id = fields.Many2one(related="task_id.stage_id", string="Étape de formation", readonly=False, tracking=True, store=True)
-    certification = fields.Selection([
-        ("certification_1", "Certification 1"),
-        ("certification_2", "Certification 2"),
-        ("certification_3", "Certification 3"),
-        ],
-        'Certification',
-        tracking=True
-    )
-    dispositif = fields.Selection([
-        ("dispositif_1", "Dispositif 1"),
-        ("dispositif_2", "Dispositif 2"),
-        ("dispositif_3", "Dispositif 3"),
-        ],
-        'Dispositif',
-        tracking=True
-    )
+    certification = fields.Many2one("hr.applicant.certification", string='Certification',tracking=True)
+    dispositif = fields.Many2one("hr.applicant.dispositif", string='Dispositif',tracking=True)
     accompagnement = fields.Boolean(string='Accompagnement', tracking=True)
     connaissance = fields.Boolean(string='Connaissance', tracking=True)
     case_number = fields.Char(string='N° de dossier', tracking=True)
-    niveau = fields.Selection([
-        ("niveau_1", "Niveau 1"),
-        ("niveau_2", "Niveau 2"),
-        ("niveau_3", "Niveau 3"),
-        ],
-        'Niveau',
-        tracking=True
-    )
+    niveau = fields.Many2one("hr.applicant.niveau", string='Niveau',tracking=True)
     nombre_dheures = fields.Integer(string='Nombre d\'heures', tracking=True)
     date_entree_call = fields.Date(string='Date entrée call', tracking=True)
     date_inscription = fields.Date(string='Date d\'inscription', tracking=True)
@@ -53,14 +32,7 @@ class HrApplicant(models.Model):
     mot_de_passe = fields.Char(string='Mot de passe', tracking=True)
     date_entree = fields.Date(string='Date d\'entrée', compute="_compute_date_entree", store=True, tracking=True)
     workhour_available_ids = fields.Many2many("hr.applicant.workhour.available", string='Horaire disponible', ondelete="restrict", tracking=True)
-    plateforme = fields.Selection([
-        ("plateforme_1", "Plateforme 1"),
-        ("plateforme_2", "Plateforme 2"),
-        ("plateforme_3", "Plateforme 3"),
-        ],
-        'Plateforme',
-        tracking=True
-    )
+    plateforme = fields.Many2one("hr.applicant.plateforme", string='Plateforme',tracking=True)
     motivation_appreciation = fields.Selection([
         ("niveau_1", "Niveau 1"),
         ("niveau_2", "Niveau 2"),
@@ -102,14 +74,6 @@ class HrApplicant(models.Model):
     benefit_offered_ids = fields.Many2many("hr.applicant.benefit", 'benefit_offered_applicant_rel', string='Avantages proposés', ondelete="restrict", tracking=True)
     comptage = fields.Integer(string='Comptage', tracking=True)
     date_naissance = fields.Date(string='Date de naissance', tracking=True)
-    dispositif = fields.Selection([
-        ("dispositif_1", "Dispositif 1"),
-        ("dispositif_2", "Dispositif 2"),
-        ("dispositif_3", "Dispositif 3"),
-        ],
-        'Dispositif',
-        tracking=True
-    )
     genre = fields.Selection([
         ("monsieur", "Monsieur"),
         ("madame", "Madame"),
@@ -117,40 +81,15 @@ class HrApplicant(models.Model):
         'Genre',
         tracking=True
     )
-    heure_semaine = fields.Selection([
-        ("35", "35"),
-        ("36", "36"),
-        ("37", "37"),
-        ("38", "38"),
-        ("39", "39"),
-        ("40", "40"),
-        ("41", "41"),
-        ("42", "42"),
-        ],
-        'Heure / semaine',
-        tracking=True
-    )
+    heure_semaine = fields.Many2one("hr.applicant.heure.semaine", string='Heure / semaine',tracking=True)
     workhour_ids = fields.Many2many("hr.applicant.workhour", string='Horaire de travail', ondelete="restrict", tracking=True)
     lieu_naissance = fields.Char(string='Lieu de naissance', tracking=True)
     skill_ids = fields.Many2many("hr.applicant.skill", string='Compétence', ondelete="restrict", tracking=True)
     workzone_ids = fields.Many2many("hr.applicant.workzone", string='Zone de travail', ondelete="restrict", tracking=True)
-    mobilite = fields.Selection([
-        ("mobilite_1", "Mobilité 1"),
-        ("mobilite_2", "Mobilité 2"),
-        ],
-        'Mobilité',
-        tracking=True
-    )
+    mobilite = fields.Many2one("hr.applicant.mobilite", string='Mobilité',tracking=True)
     salaire_minimum = fields.Integer(string='Salaire Minimum', tracking=True)
     salaire_propose = fields.Integer(string='Salaire proposé', tracking=True)
-    situation = fields.Selection([
-        ("celibataire", "Célibataire"),
-        ("marie", "Marié(e)"),
-        ("divorce", "Divorcé(e)"),
-        ],
-        'Situation',
-        tracking=True
-    )
+    situation = fields.Many2one("hr.applicant.situation", string='Situation',tracking=True)
     statut = fields.Char(string='Statut', tracking=True)
     contract_type_ids = fields.Many2many("hr.applicant.contract.type", string='Type de contrat proposé', ondelete="restrict", tracking=True)
     email_from = fields.Char(tracking=True)
