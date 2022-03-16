@@ -1,0 +1,215 @@
+<?xml version='1.0' encoding='utf-8'?>
+<odoo>
+    <!-- Vues Tree -->
+    <record id="view_hr_applicant_certification_tree" model="ir.ui.view">
+        <field name="name">hr.applicant.certification.tree</field>
+        <field name="model">hr.applicant.certification</field>
+        <field name="arch" type="xml">
+            <tree string="Certification" editable="bottom">
+                <field name="name"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_hr_applicant_dispositif_tree" model="ir.ui.view">
+        <field name="name">hr.applicant.dispositif.tree</field>
+        <field name="model">hr.applicant.dispositif</field>
+        <field name="arch" type="xml">
+            <tree string="Dispositif" editable="bottom">
+                <field name="name"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_hr_applicant_niveau_tree" model="ir.ui.view">
+        <field name="name">hr.applicant.niveau.tree</field>
+        <field name="model">hr.applicant.niveau</field>
+        <field name="arch" type="xml">
+            <tree string="Niveau" editable="bottom">
+                <field name="name"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_hr_applicant_plateforme_tree" model="ir.ui.view">
+        <field name="name">hr.applicant.plateforme.tree</field>
+        <field name="model">hr.applicant.plateforme</field>
+        <field name="arch" type="xml">
+            <tree string="Plateforme" editable="bottom">
+                <field name="name"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_hr_applicant_mobilite_tree" model="ir.ui.view">
+        <field name="name">hr.applicant.mobilite.tree</field>
+        <field name="model">hr.applicant.mobilite</field>
+        <field name="arch" type="xml">
+            <tree string="Mobilité" editable="bottom">
+                <field name="name"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_hr_applicant_heure_semaine_tree" model="ir.ui.view">
+        <field name="name">hr.applicant.heure.semaine.tree</field>
+        <field name="model">hr.applicant.heure.semaine</field>
+        <field name="arch" type="xml">
+            <tree string="Heure semaine" editable="bottom">
+                <field name="name"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_hr_applicant_situation_tree" model="ir.ui.view">
+        <field name="name">hr.applicant.situation.tree</field>
+        <field name="model">hr.applicant.situation</field>
+        <field name="arch" type="xml">
+            <tree string="Situation" editable="bottom">
+                <field name="name"/>
+            </tree>
+        </field>
+    </record>
+
+    <!-- Actions -->
+    <record model="ir.actions.act_window" id="action_hr_applicant_certification_tree">
+        <field name="name">Certification</field>
+        <field name="res_model">hr.applicant.certification</field>
+        <field name="view_mode">tree</field>
+        <field name="context">{}</field>
+        <field name="help" type="html">
+            <p>
+            </p>
+        </field>
+    </record>
+
+    <record model="ir.actions.act_window" id="action_hr_applicant_dispositif_tree">
+        <field name="name">Dispositif</field>
+        <field name="res_model">hr.applicant.dispositif</field>
+        <field name="view_mode">tree</field>
+        <field name="context">{}</field>
+        <field name="help" type="html">
+            <p>
+            </p>
+        </field>
+    </record>
+
+    <record model="ir.actions.act_window" id="action_hr_applicant_niveau_tree">
+        <field name="name">Niveau</field>
+        <field name="res_model">hr.applicant.niveau</field>
+        <field name="view_mode">tree</field>
+        <field name="context">{}</field>
+        <field name="help" type="html">
+            <p>
+            </p>
+        </field>
+    </record>
+
+    <record model="ir.actions.act_window" id="action_hr_applicant_plateforme_tree">
+        <field name="name">Plateforme</field>
+        <field name="res_model">hr.applicant.plateforme</field>
+        <field name="view_mode">tree</field>
+        <field name="context">{}</field>
+        <field name="help" type="html">
+            <p>
+            </p>
+        </field>
+    </record>
+
+    <record model="ir.actions.act_window" id="action_hr_applicant_mobilite_tree">
+        <field name="name">Mobilité</field>
+        <field name="res_model">hr.applicant.mobilite</field>
+        <field name="view_mode">tree</field>
+        <field name="context">{}</field>
+        <field name="help" type="html">
+            <p>
+            </p>
+        </field>
+    </record>
+
+    <record model="ir.actions.act_window" id="action_hr_applicant_heure_semaine_tree">
+        <field name="name">Heure semaine</field>
+        <field name="res_model">hr.applicant.heure.semaine</field>
+        <field name="view_mode">tree</field>
+        <field name="context">{}</field>
+        <field name="help" type="html">
+            <p>
+            </p>
+        </field>
+    </record>
+
+    <record model="ir.actions.act_window" id="action_hr_applicant_situation_tree">
+        <field name="name">Situation</field>
+        <field name="res_model">hr.applicant.situation</field>
+        <field name="view_mode">tree</field>
+        <field name="context">{}</field>
+        <field name="help" type="html">
+            <p>
+            </p>
+        </field>
+    </record>
+
+    <!-- Menus -->
+    <menuitem id="menu_config_objects"
+        name="Objets candidats"
+        groups="hr_recruitment.group_hr_recruitment_manager"
+        parent="hr_recruitment.menu_hr_recruitment_configuration"
+        sequence="99"
+    />
+
+    <menuitem id="menu_config_certification"
+        name="Certification"
+        groups="hr_recruitment.group_hr_recruitment_manager"
+        action="action_hr_applicant_certification_tree"
+        parent="menu_config_objects"
+        sequence="0"
+    />
+
+    <menuitem id="menu_config_dispositif"
+        name="Dispositif"
+        groups="hr_recruitment.group_hr_recruitment_manager"
+        action="action_hr_applicant_dispositif_tree"
+        parent="menu_config_tags"
+        sequence="1"
+    />
+
+    <menuitem id="menu_config_niveau"
+        name="Niveau"
+        groups="hr_recruitment.group_hr_recruitment_manager"
+        action="action_hr_applicant_niveau_tree"
+        parent="menu_config_objects"
+        sequence="2"
+    />
+
+    <menuitem id="menu_config_plateforme"
+        name="Plateforme"
+        groups="hr_recruitment.group_hr_recruitment_manager"
+        action="action_hr_applicant_plateforme_tree"
+        parent="menu_config_objects"
+        sequence="3"
+    />
+
+    <menuitem id="menu_config_mobilite"
+        name="Mobilité"
+        groups="hr_recruitment.group_hr_recruitment_manager"
+        action="action_hr_applicant_mobilite_tree"
+        parent="menu_config_objects"
+        sequence="4"
+    />
+
+    <menuitem id="menu_config_heure_semaine"
+        name="Heure semaine"
+        groups="hr_recruitment.group_hr_recruitment_manager"
+        action="action_hr_applicant_heure_semaine_tree"
+        parent="menu_config_objects"
+        sequence="5"
+    />
+
+    <menuitem id="menu_config_situation"
+        name="Situation"
+        groups="hr_recruitment.group_hr_recruitment_manager"
+        action="action_hr_applicant_situation_tree"
+        parent="menu_config_objects"
+        sequence="6"
+    />
+</odoo>

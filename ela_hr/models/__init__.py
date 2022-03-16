@@ -15,4 +15,4 @@ from . import project_task
 from . import hr_recruitment_stage
 from . import project_task_type
 from . import res_users
-
+from . import hr_applicant_object
