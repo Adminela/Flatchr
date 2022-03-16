@@ -134,7 +134,7 @@
         name="Étiquettes candidats"
         groups="hr_recruitment.group_hr_recruitment_manager"
         parent="hr_recruitment.menu_hr_recruitment_configuration"
-        sequence="9"
+        sequence="99"
     />
 
     <menuitem id="menu_config_skill"
