@@ -1,24 +1,15 @@
+# Copyright 2017 ACSONE SA/NV
+# License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl).
+
 {
-    "name": "Flatchr Connector",
+    "name": "Web Domain Field",
     "summary": """
-        This module provides a connector to the Flatchr API.
-        It regularly fetches new job offers and candidates from Flatchr in
-        order to ingest them in your Odoo database.
-        """,
-    "category": "",
+        Use computed field as domain""",
     "version": "14.0.1.0.0",
-    "author": "Odoo PS",
-    "website": "http://www.odoo.com",
-    "license": "OEEL-1",
-    "depends": [
-        'hr_recruitment',
-    ],
-    "data": [
-        "data/ir_cron.xml",
-        "views/hr_applicant.xml",
-        "views/hr_job.xml",
-        "views/res_config_settings.xml",
-        "wizard/csv_dl_wizard.xml",
-        "security/ir.model.access.csv"
-    ],
+    "license": "AGPL-3",
+    "author": "ACSONE SA/NV,Odoo Community Association (OCA)",
+    "website": "https://github.com/OCA/web",
+    "depends": ["web"],
+    "data": ["views/web_domain_field.xml"],
+    "installable": True,
 }
