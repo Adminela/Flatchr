@@ -5,6 +5,7 @@
 from . import mail_message
 from . import hr_applicant_benefit
 from . import hr_applicant_contract_type
+from . import hr_applicant_experience
 from . import hr_applicant_skill
 from . import hr_applicant_workhour
 from . import hr_applicant_workhour_available

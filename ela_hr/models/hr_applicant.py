@@ -6,6 +6,7 @@ from datetime import timedelta, date, datetime
 from odoo import fields, api, models, _, SUPERUSER_ID
 from odoo.exceptions import ValidationError
 import logging
+import json
 
 _logger = logging.getLogger(__name__)
 
@@ -48,6 +49,7 @@ class HrApplicant(models.Model):
     test_result = fields.Char(string='Résultat test', tracking=True)
     ligne_suivi_ids = fields.One2many('hr.applicant.hour.progress', inverse_name='applicant_id', string='Tabeau de suivi', tracking=True)
     #Autres
+    priority = fields.Selection(string='Priority')
     appreciation = fields.Selection([
         ("niveau_1", "Niveau 1"),
         ("niveau_2", "Niveau 2"),
@@ -70,6 +72,7 @@ class HrApplicant(models.Model):
         'Appréciation RH',
         tracking=True
     )
+    nomenclature_cv = fields.Char(string='Nomenclature CV', tracking=True)
     benefit_wished_ids = fields.Many2many("hr.applicant.benefit", 'benefit_wished_applicant_rel', string='Avantages souhaités', ondelete="restrict", tracking=True)
     benefit_offered_ids = fields.Many2many("hr.applicant.benefit", 'benefit_offered_applicant_rel', string='Avantages proposés', ondelete="restrict", tracking=True)
     comptage = fields.Integer(string='Comptage', tracking=True)
@@ -86,11 +89,15 @@ class HrApplicant(models.Model):
     lieu_naissance = fields.Char(string='Lieu de naissance', tracking=True)
     skill_ids = fields.Many2many("hr.applicant.skill", string='Compétence', ondelete="restrict", tracking=True)
     workzone_ids = fields.Many2many("hr.applicant.workzone", string='Zone de travail', ondelete="restrict", tracking=True)
+    code_postal = fields.Char(string='Code postal', tracking=True)
     mobilite = fields.Many2one("hr.applicant.mobilite", string='Mobilité',tracking=True)
-    salaire_minimum = fields.Integer(string='Salaire Minimum', tracking=True)
-    salaire_propose = fields.Integer(string='Salaire proposé', tracking=True)
+    salaire_minimum_min = fields.Integer(string='Salaire Minimum de', tracking=True)
+    salaire_minimum_max = fields.Integer(string='à', tracking=True)
+    salaire_propose_min = fields.Integer(string='Salaire proposé de', tracking=True)
+    salaire_propose_max = fields.Integer(string='à', tracking=True)
     situation = fields.Many2one("hr.applicant.situation", string='Situation',tracking=True)
     statut = fields.Char(string='Statut', tracking=True)
+    experience_ids = fields.Many2many("hr.applicant.experience", string='Expériences', ondelete="restrict", tracking=True)
     contract_type_ids = fields.Many2many("hr.applicant.contract.type", string='Type de contrat proposé', ondelete="restrict", tracking=True)
     email_from = fields.Char(tracking=True)
     partner_phone = fields.Char(tracking=True)
@@ -105,6 +112,21 @@ class HrApplicant(models.Model):
         'État du paiement',
         tracking=True
     )
+    stage_domain = fields.Char(string='Stage domain', compute='_compute_stage_domain')
+
+    _sql_constraints = [
+        ('uniq_nomenclature_cv', 'unique(nomenclature_cv)', "'ATTENTION' Cette nomenclature CV existe déjà !")
+    ]
+
+    @api.depends("name")
+    def _compute_stage_domain(self):
+        for record in self:
+            if record._context.get('is_job_ready', False):
+                record.stage_domain = json.dumps([('is_job_ready', '=', True)])
+            elif record._context.get('is_candidats_portfolio', False):
+                record.stage_domain = json.dumps([('is_candidats_portfolio', '=', True)])
+            else:
+                record.stage_domain = json.dumps([(1, '=', 1)])
 
     @api.model
     def is_global_leave_or_weekend(self, date):
@@ -131,21 +153,12 @@ class HrApplicant(models.Model):
     @api.onchange("stage_id")
     def _onchange_stage_id(self):
         for record in self:
-            res = {}
             if record.stage_id.is_create_project_task:
                 if record.formation:
-                    if not record.task_id:
-                        record.task_id = self.env["project.task"].create({
-                            'name' : record.partner_name,
-                            'applicant_id' : record._origin.id,
-                            'project_id' : record.formation.id,
-                            'user_id' : record.user_id.id,
-                        })
-                    else:
-                        res['warning'] = {
-                        'title': _('Warning'), 
-                        'message': _('Une formation est déjà assigné à ce candidat, aucun autre formation n\'a été crée !')}
-                        return res
+                    if record.task_id:
+                        raise ValidationError(_('Une formation est déjà assigné à ce candidat, aucun autre formation n\'a été crée !'))
+                else:
+                    raise ValidationError(_('Veuillez remplir la formation avant de déposer dans cette étape !'))
 
     def action_show_task(self):
         return {
@@ -157,31 +170,39 @@ class HrApplicant(models.Model):
         }
 
     def write(self,vals):
-        for record in self:
-            if 'stage_id' in vals:
-                stage_id = record.env['hr.recruitment.stage'].browse(vals['stage_id'])
-                if stage_id.is_create_project_task:
-                    if not record.formation:
-                        raise ValidationError("Veuillez remplir la formation avant de déposer dans cette étape !")
-        
-        return super(HrApplicant, self).write(vals)
+        res = super(HrApplicant, self).write(vals)
+        if 'stage_id' in vals:
+            if self.stage_id.is_create_project_task:
+                if self.formation:
+                    if not self.task_id:
+                        self.task_id = self.env["project.task"].create({
+                            'name' : self.partner_name,
+                            'applicant_id' : self._origin.id,
+                            'project_id' : self.formation.id,
+                            'user_id' : self.user_id.id,
+                        })
+
+        return res
 
     @staticmethod
     def reset_applicant_hr(env):
-        date_expire = datetime.now() - timedelta(seconds=appl.stage_id.periode)
-        while record.env['hr.applicant'].is_global_leave_or_weekend(date_expire):
-            #date_expire = date_expire.replace(hour=0, minute=0, second=2)
-            date_expire += timedelta(days=1)
-        
-        all_applicants = env['hr.applicant'].search([(1, '=', 1)]).filtered(lambda appl: appl.stage_id.is_reset and (appl.date_last_stage_update < date_expire))
+        reset_stage_ids = env['hr.recruitment.stage'].search([('is_reset', '=', True)])
+        all_applicants = env['hr.applicant']
+        for stage_id in reset_stage_ids:
+            date_expire = datetime.now() - timedelta(seconds=stage_id.periode)
+            while env['hr.applicant'].is_global_leave_or_weekend(date_expire):
+                date_expire += timedelta(days=1)
 
-        for record in all_applicants:
-            record._reset_stage()
-            record.user_id = False
-            env.cr.commit()
+            all_applicants = env['hr.applicant'].search([('stage_id', '=', stage_id.id),('date_last_stage_update', '<', date_expire)])
+            #.filtered(lambda appl: appl.stage_id.is_reset and (appl.date_last_stage_update < date_expire))S
 
-            for message_id in record.message_ids:
-                message_id.is_manager = True
+            for record in all_applicants:
+                record._reset_stage()
+                record.user_id = False
+                env.cr.commit()
+
+                for message_id in record.message_ids:
+                    message_id.is_manager = True
 
     def _reset_stage(self):
         for applicant in self:

@@ -5,6 +5,10 @@
         <field name="model">hr.applicant</field>
         <field name="inherit_id" ref="hr_recruitment.hr_applicant_view_form"/>
         <field name="arch" type="xml">
+            <field name="stage_id" position="replace">
+                <field name="stage_domain" invisible="1"/>
+                <field name="stage_id" widget="statusbar" options="{'clickable': '1', 'fold_field': 'fold'}" attrs="{'invisible': [('active', '=', False),('emp_id', '=', False)]}" domain="stage_domain"/>
+            </field>
             <xpath expr="//button[@name='action_applications_email']" position="after">
                 <button name="action_show_task" class="oe_stat_button" icon="fa-calendar" type="object" help="Formation associée" attrs="{'invisible': [('task_id', '=', False)]}">
                     <field name="task_id" widget="statinfo" string="Formation"/>
@@ -35,7 +39,7 @@
                 <field name="genre" widget="radio" options="{'horizontal': true}" />
             </field>
             <field name="categ_ids" position="before">
-                <field name="situation"/>
+                <field name="situation" options="{'no_create_edit': True, 'no_quick_create': True}"/>
                 <field name="appreciation" widget="priority"/>
             </field>
             <xpath expr="//field[@name='survey_id']" position="before">
@@ -57,8 +61,8 @@
                 <group name="formation" string="Formation">
                     <group>
                         <field name="formation" options="{'no_create_edit': True, 'no_quick_create': True}"/>
-                        <field name="certification"/>
-                        <field name="dispositif"/>
+                        <field name="certification" options="{'no_create_edit': True, 'no_quick_create': True}"/>
+                        <field name="dispositif" options="{'no_create_edit': True, 'no_quick_create': True}"/>
                         <field name="accompagnement"/>
                         <field name="connaissance"/>
                         <field name="case_number"/>
@@ -66,7 +70,7 @@
                     <group>
                         <field name="prix_formation"/>
                         <field name="solde_formation"/>
-                        <field name="niveau"/>
+                        <field name="niveau" options="{'no_create_edit': True, 'no_quick_create': True}"/>
                         <field name="nombre_dheures"/>
                         <field name="date_entree_call"/>
                         <field name="date_inscription"/>
@@ -78,15 +82,28 @@
                     <group>
                         <group>
                             <field name="workzone_ids" widget="many2many_tags" options="{'no_create_edit': True, 'no_quick_create': True}"/>
+                            <field name="code_postal"/>
                             <field name="workhour_ids" widget="many2many_tags" options="{'no_create_edit': True, 'no_quick_create': True}"/>
-                            <field name="mobilite"/>
-                            <field name="heure_semaine"/>
+                            <field name="mobilite" options="{'no_create_edit': True, 'no_quick_create': True}"/>
+                            <field name="heure_semaine" options="{'no_create_edit': True, 'no_quick_create': True}"/>
                             <field name="appreciation_hr" widget="priority"/>
+                            <field name="nomenclature_cv"/>
                         </group>
                         <group>
+                            <field name="experience_ids" widget="many2many_tags" options="{'no_create_edit': True, 'no_quick_create': True}"/>
                             <field name="contract_type_ids" widget="many2many_tags" options="{'no_create_edit': True, 'no_quick_create': True}"/>
-                            <field name="salaire_minimum"/>
-                            <field name="salaire_propose"/>
+                            <label for="salaire_minimum_min"/>
+                            <div class="o_row">
+                                <field name="salaire_minimum_min"/>
+                                <span> à </span>
+                                <field name="salaire_minimum_max"/>
+                            </div>
+                            <label for="salaire_propose_min"/>
+                            <div class="o_row">
+                                <field name="salaire_propose_min"/>
+                                <span> à </span>
+                                <field name="salaire_propose_max"/>
+                            </div>
                             <field name="benefit_wished_ids" widget="many2many_tags" options="{'no_create_edit': True, 'no_quick_create': True}"/>
                             <field name="benefit_offered_ids" widget="many2many_tags" options="{'no_create_edit': True, 'no_quick_create': True}"/>
                         </group>
@@ -102,14 +119,14 @@
                             <field name="workhour_available_ids" widget="many2many_tags" options="{'no_create_edit': True, 'no_quick_create': True}"/>
                         </group>
                         <group>
-                            <field name="plateforme"/>
+                            <field name="plateforme" options="{'no_create_edit': True, 'no_quick_create': True}"/>
                             <field name="motivation_appreciation" widget="priority"/>
                             <field name="date_fin"/>
                             <field name="test_result"/>
                         </group>
                     </group>
                     <group string="Tableau de suivi">
-                        <field name="ligne_suivi_ids" nolabel="1">
+                        <field name="ligne_suivi_ids" nolabel="1" context="{'default_objective':nombre_dheures}">
                             <tree editable="bottom">
                                 <field name="date"/>
                                 <field name="hours_number"/>
@@ -144,6 +161,9 @@
             <field name="legend_done" position="after">
                 <field name="task_id" invisible="1"/>
             </field>
+            <field name="legend_done" position="after">
+                <field name="task_id" invisible="1"/>
+            </field>
         </field>
     </record>
 
@@ -154,8 +174,12 @@
         <field name="arch" type="xml">
             <field name="user_id" position="after">
                 <field name="task_stage_id"/>
-                <field name="solde_formation"/>
-                <field name="prix_formation"/>
+                <field name="solde_formation" sum="Total solde"/>
+                <field name="prix_formation" sum="Total prix"/>
+            </field>
+            <field name="partner_mobile" position="replace">
+                <field name="partner_phone"/>
+                <field name="date_inscription"/>
             </field>
         </field>
     </record>
@@ -165,8 +189,12 @@
         <field name="model">hr.applicant</field>
         <field name="inherit_id" ref="hr_recruitment.hr_applicant_view_search_bis"/>
         <field name="arch" type="xml">
+            <field name="partner_name" position="replace">
+                <field string="Applicant" name="partner_name" filter_domain="['|', '|','|','|', ('name', 'ilike', self), ('partner_name', 'ilike', self), ('email_from', 'ilike', self),('case_number', 'ilike', self),('nomenclature_cv', 'ilike', self)]"/>
+            </field>
             <field name="partner_name" position="after">
                 <field name="case_number"/>
+                <field name="nomenclature_cv"/>
             </field>
 
             <filter name="responsible" position="after">

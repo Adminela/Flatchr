@@ -11,11 +11,21 @@
         </field>
     </record>
 
+    <record id="view_hr_applicant_experience_tree" model="ir.ui.view">
+        <field name="name">hr.applicant.experience.tree</field>
+        <field name="model">hr.applicant.experience</field>
+        <field name="arch" type="xml">
+            <tree string="Expérience" editable="bottom">
+                <field name="name"/>
+            </tree>
+        </field>
+    </record>
+
     <record id="view_hr_applicant_contract_type_tree" model="ir.ui.view">
         <field name="name">hr.applicant.contract.type.tree</field>
         <field name="model">hr.applicant.contract.type</field>
         <field name="arch" type="xml">
-            <tree string="Compétence" editable="bottom">
+            <tree string="type de contrat" editable="bottom">
                 <field name="name"/>
             </tree>
         </field>
@@ -25,7 +35,7 @@
         <field name="name">hr.applicant.workzone.tree</field>
         <field name="model">hr.applicant.workzone</field>
         <field name="arch" type="xml">
-            <tree string="Compétence" editable="bottom">
+            <tree string="Zone de travail" editable="bottom">
                 <field name="name"/>
             </tree>
         </field>
@@ -66,6 +76,17 @@
     <record model="ir.actions.act_window" id="action_hr_applicant_skill_tree">
         <field name="name">Compétence</field>
         <field name="res_model">hr.applicant.skill</field>
+        <field name="view_mode">tree</field>
+        <field name="context">{}</field>
+        <field name="help" type="html">
+            <p>
+            </p>
+        </field>
+    </record>
+
+    <record model="ir.actions.act_window" id="action_hr_applicant_experience_tree">
+        <field name="name">Expérience</field>
+        <field name="res_model">hr.applicant.experience</field>
         <field name="view_mode">tree</field>
         <field name="context">{}</field>
         <field name="help" type="html">
@@ -145,12 +166,20 @@
         sequence="0"
     />
 
+    <menuitem id="menu_config_experience"
+        name="Type de contrat"
+        groups="hr_recruitment.group_hr_recruitment_manager"
+        action="action_hr_applicant_experience_tree"
+        parent="menu_config_tags"
+        sequence="1"
+    />
+
     <menuitem id="menu_config_contract_type"
         name="Type de contrat"
         groups="hr_recruitment.group_hr_recruitment_manager"
         action="action_hr_applicant_contract_type_tree"
         parent="menu_config_tags"
-        sequence="1"
+        sequence="2"
     />
 
     <menuitem id="menu_config_workzone"
@@ -158,7 +187,7 @@
         groups="hr_recruitment.group_hr_recruitment_manager"
         action="action_hr_applicant_workzone_tree"
         parent="menu_config_tags"
-        sequence="2"
+        sequence="3"
     />
     
     <menuitem id="menu_config_workhour"
@@ -166,7 +195,7 @@
         groups="hr_recruitment.group_hr_recruitment_manager"
         action="action_hr_applicant_workhour_tree"
         parent="menu_config_tags"
-        sequence="3"
+        sequence="4"
     />
 
     <menuitem id="menu_config_benefit"
@@ -174,7 +203,7 @@
         groups="hr_recruitment.group_hr_recruitment_manager"
         action="action_hr_applicant_benefit_tree"
         parent="menu_config_tags"
-        sequence="4"
+        sequence="5"
     />
 
     <menuitem id="menu_config_workhour_available"
@@ -182,6 +211,6 @@
         groups="hr_recruitment.group_hr_recruitment_manager"
         action="action_hr_applicant_workhour_available_tree"
         parent="menu_config_tags"
-        sequence="5"
+        sequence="6"
     />
 </odoo>

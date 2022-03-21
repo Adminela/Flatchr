@@ -1,0 +1,18 @@
+<?xml version='1.0' encoding='utf-8'?>
+<odoo>
+    <record id="hr_recruitment.action_hr_job" model="ir.actions.act_window">
+        <field name="context">{'search_default_in_recruitment': 1}</field>
+        <field name="view_mode">kanban,tree,form</field>
+    </record>
+
+    <record id="ela_hr_view_hr_job_tree" model="ir.ui.view">
+        <field name="name">ela.hr.view.hr.job.tree</field>
+        <field name="model">hr.job</field>
+        <field name="inherit_id" ref="hr.view_hr_job_tree"/>
+        <field name="arch" type="xml">
+            <field name="name" position="after">
+                <field name="create_date"/>
+            </field>
+        </field>
+    </record>
+</odoo>
