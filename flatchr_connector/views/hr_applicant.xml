@@ -71,5 +71,19 @@
                 <field name="job_state"/>
             </field>
         </field>
-    </record>    
+    </record>
+
+    <record id="flatchr_connector_hr_kanban_view_applicant" model="ir.ui.view">
+        <field name="name">flatchr.connector.hr.kanban.view.applicant</field>
+        <field name="model">hr.applicant</field>
+        <field name="inherit_id" ref="hr_recruitment.hr_kanban_view_applicant"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[hasclass('float-left')]" position="replace">
+                <div>
+                    <field name="date_source"/>
+                </div>
+            </xpath>
+        </field>
+    </record>
+
 </odoo>

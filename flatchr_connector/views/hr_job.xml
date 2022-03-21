@@ -47,9 +47,11 @@
         <field name="model">hr.job</field>
         <field name="inherit_id" ref="hr_recruitment.view_hr_job_kanban"/>
         <field name="arch" type="xml">
-            <field name="user_id" position="before">
-                <field name="reference"/> - 
-            </field>
+            <xpath expr="//div[hasclass('o_primary')]" position="after">
+              <div class="col-12">
+                  <field name="reference"/>
+              </div>
+            </xpath>
         </field>
     </record>
 

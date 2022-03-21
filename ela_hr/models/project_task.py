@@ -9,6 +9,9 @@ class ProjectTask(models.Model):
     _inherit = "project.task"
 
     applicant_id = fields.Many2one("hr.applicant", string='Applicant', tracking=True)
+    email_from = fields.Char(related="applicant_id.email_from", readonly=False, tracking=True, store=True)
+    partner_phone = fields.Char(related="applicant_id.partner_phone", readonly=False, tracking=True, store=True)
+    date_naissance = fields.Date(related="applicant_id.date_naissance", readonly=False, tracking=True, store=True)
     
     # Formation
     #formation = fields.Selection(related="applicant_id.formation", compute="_compute_formation", inverse="_set_formation")
@@ -35,13 +38,45 @@ class ProjectTask(models.Model):
     solde_formation = fields.Float(related="applicant_id.solde_formation", readonly=False, tracking=True, store=True)
     in_formation = fields.Boolean(related="applicant_id.in_formation", readonly=False, tracking=True, store=True)
     payment_state = fields.Selection(related="applicant_id.payment_state", readonly=False, tracking=True, store=True)
+    meeting_count = fields.Integer(compute='_compute_meeting_count', help='Meeting Count')
 
     @api.onchange("stage_id", "in_formation")
     def _onchange_stage_id(self):
         for record in self:
-            if record.stage_id.is_move_applicant:
+            if record.stage_id.stage_id:
                 record.applicant_id.stage_id = record.stage_id.stage_id
 
             if record.stage_id.to_paiement and record.in_formation:
                 if not record.payment_state:
                     record.payment_state = 'to_be_sold'
+
+    def _compute_meeting_count(self):
+        if self.applicant_id.ids:
+            meeting_data = self.env['calendar.event'].sudo().read_group(
+                [('applicant_id', 'in', self.applicant_id.ids)],
+                ['applicant_id'],
+                ['applicant_id']
+            )
+            mapped_data = {m['applicant_id'][0]: m['applicant_id_count'] for m in meeting_data}
+        else:
+            mapped_data = dict()
+        for task in self:
+            task.meeting_count = mapped_data.get(task.id, 0)
+
+    def action_makeMeeting(self):
+        """ This opens Meeting's calendar view to schedule meeting on current applicant
+            @return: Dictionary value for created Meeting view
+        """
+        self.ensure_one()
+        partners = self.partner_id | self.user_id.partner_id
+
+        category = self.env.ref('hr_recruitment.categ_meet_interview')
+        res = self.env['ir.actions.act_window']._for_xml_id('calendar.action_calendar_event')
+        res['context'] = {
+            'default_applicant_id': self.applicant_id.id,
+            'default_partner_ids': partners.ids,
+            'default_user_id': self.env.uid,
+            'default_name': self.name,
+            'default_categ_ids': category and [category.id] or False,
+        }
+        return res

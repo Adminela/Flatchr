@@ -8,6 +8,6 @@ from odoo import fields, api, models, _
 class ProjectTaskType(models.Model):
     _inherit = "project.task.type"
 
-    is_move_applicant = fields.Boolean(string='Déplacer le candidat', help='Si cochée, le candidat sera déplacé dans l\'étape précisée dans le champs "Étape de déplacement"', tracking=True)
+    #is_move_applicant = fields.Boolean(string='Déplacer le candidat', help='Si cochée, le candidat sera déplacé dans l\'étape précisée dans le champs "Étape de déplacement"', tracking=True)
     stage_id = fields.Many2one("hr.recruitment.stage", string='Étape de déplacement', ondelete='restrict', tracking=True)
     to_paiement = fields.Boolean(string='Mettre à payer', help='Si cochée, le candidat sera mentionné "À payer" s\'il est tagué "Rentré en formation"', tracking=True)
