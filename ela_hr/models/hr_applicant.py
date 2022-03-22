@@ -156,6 +156,7 @@ class HrApplicant(models.Model):
             if record.stage_id.is_create_project_task:
                 if record.formation:
                     if record.task_id:
+                        res = {}
                         res['warning'] = {
                             'title': _('Warning'), 
                             'message': _('Une formation est déjà assigné à ce candidat, aucun autre formation n\'a été crée !')}
