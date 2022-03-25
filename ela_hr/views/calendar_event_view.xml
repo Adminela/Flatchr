@@ -8,6 +8,10 @@
             <xpath expr="//calendar" position="attributes">
                 <attribute name="quick_add">false</attribute>
             </xpath>
+            
+            <field name="attendee_status" position="after">
+                <field name="applicant_id"/>
+            </field>
         </field>
     </record>
 
@@ -19,17 +23,6 @@
             <xpath expr="//h2" position="after">
                 <field name="user_id"/>
             </xpath>
-        </field>
-    </record>
-
-    <record id="ela_hr_view_calendar_event_form" model="ir.ui.view">
-        <field name="name">ela.hr.view.calendar.event.form</field>
-        <field name="model">calendar.event</field>
-        <field name="inherit_id" ref="calendar.view_calendar_event_form"/>
-        <field name="arch" type="xml">
-            <field name="attendee_status" position="after">
-                <field name="applicant_id"/>
-            </field>
         </field>
     </record>
 </odoo>
