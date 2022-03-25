@@ -53,11 +53,11 @@ class ProjectTask(models.Model):
     def _compute_meeting_count(self):
         if self.applicant_id.ids:
             meeting_data = self.env['calendar.event'].sudo().read_group(
-                [('applicant_id', 'in', self.applicant_id.ids)],
-                ['applicant_id'],
-                ['applicant_id']
+                [('task_id', 'in', self.ids)],
+                ['task_id'],
+                ['task_id']
             )
-            mapped_data = {m['applicant_id'][0]: m['applicant_id_count'] for m in meeting_data}
+            mapped_data = {m['task_id'][0]: m['task_id_count'] for m in meeting_data}
         else:
             mapped_data = dict()
         for task in self:
@@ -73,7 +73,7 @@ class ProjectTask(models.Model):
         category = self.env.ref('hr_recruitment.categ_meet_interview')
         res = self.env['ir.actions.act_window']._for_xml_id('calendar.action_calendar_event')
         res['context'] = {
-            'default_applicant_id': self.applicant_id.id,
+            'default_task_id': self.id,
             'default_partner_ids': partners.ids,
             'default_user_id': self.env.uid,
             'default_name': self.name,
