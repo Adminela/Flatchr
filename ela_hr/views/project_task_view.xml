@@ -7,7 +7,7 @@
         <field name="arch" type="xml">
             <button name="action_subtask" position="after">
                 <button name="action_makeMeeting" class="oe_stat_button" icon="fa-calendar" type="object" help="Schedule interview with this applicant">
-                    <field name="meeting_count" widget="statinfo" string="Meetings"/>
+                    <field name="meeting_count" widget="statinfo" string="Rendez-vous"/>
                 </button>
             </button>
 

@@ -190,32 +190,11 @@
         <field name="inherit_id" ref="hr_recruitment.hr_applicant_view_search_bis"/>
         <field name="arch" type="xml">
             <field name="partner_name" position="replace">
-                <field string="Applicant" name="partner_name" filter_domain="['|', '|','|','|', ('name', 'ilike', self), ('partner_name', 'ilike', self), ('email_from', 'ilike', self),('case_number', 'ilike', self),('nomenclature_cv', 'ilike', self)]"/>
+                <field string="Applicant" name="partner_name" filter_domain="['|', '|', '|', '|', ('name', 'ilike', self), ('partner_name', 'ilike', self), ('email_from', 'ilike', self),('case_number', 'ilike', self),('nomenclature_cv', 'ilike', self)]"/>
             </field>
             <field name="partner_name" position="after">
                 <field name="case_number"/>
                 <field name="nomenclature_cv"/>
-            </field>
-
-            <filter name="responsible" position="after">
-                <filter string="État du paiement" name="payment_state" domain="[]" context="{'group_by': 'payment_state'}"/>
-            </filter>
-
-            <filter name="inactive" position="after">
-                <filter string="À payer" name="inactive" domain="[('payment_state', '=', 'to_be_sold')]"/>
-                <filter string="Payé" name="inactive" domain="[('payment_state', '=', 'sold')]"/>
-            </filter>
-        </field>
-    </record>
-
-
-    <record id="ela_hr_hr_applicant_view_search_bis" model="ir.ui.view">
-        <field name="name">ela.hr.hr.applicant.view.search.bis</field>
-        <field name="model">hr.applicant</field>
-        <field name="inherit_id" ref="hr_recruitment.hr_applicant_view_search_bis"/>
-        <field name="arch" type="xml">
-            <field name="partner_name" position="after">
-                <field name="case_number"/>
             </field>
 
             <filter name="responsible" position="after">
