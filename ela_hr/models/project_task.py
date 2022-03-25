@@ -3,37 +3,80 @@
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
 
 from odoo import fields, api, models, _
-
+from odoo.exceptions import ValidationError
 
 class ProjectTask(models.Model):
     _inherit = "project.task"
 
-    applicant_id = fields.Many2one("hr.applicant", string='Applicant')
+    applicant_id = fields.Many2one("hr.applicant", string='Applicant', tracking=True)
+    email_from = fields.Char(related="applicant_id.email_from", readonly=False, tracking=True, store=True)
+    partner_phone = fields.Char(related="applicant_id.partner_phone", readonly=False, tracking=True, store=True)
+    date_naissance = fields.Date(related="applicant_id.date_naissance", readonly=False, tracking=True, store=True)
     
     # Formation
     #formation = fields.Selection(related="applicant_id.formation", compute="_compute_formation", inverse="_set_formation")
-    certification = fields.Selection(related="applicant_id.certification", string='Certification', readonly=False)
-    dispositif = fields.Selection(related="applicant_id.dispositif", string='Dispositif', readonly=False)
-    accompagnement = fields.Boolean(related="applicant_id.accompagnement", string='Accompagnement', readonly=False)
-    connaissance = fields.Boolean(related="applicant_id.connaissance", string='Connaissance', readonly=False)
-    niveau = fields.Selection(related="applicant_id.niveau", string='Niveau', readonly=False)
-    nombre_dheures = fields.Integer(related="applicant_id.nombre_dheures", string='Nombre d\'heures', readonly=False)
-    date_entree_call = fields.Date(related="applicant_id.date_entree_call", string='Date entrée call', readonly=False)
-    date_inscription = fields.Date(related="applicant_id.date_inscription", string='Date d\'inscription', readonly=False)
+    certification = fields.Many2one(related="applicant_id.certification", readonly=False, tracking=True, store=True)
+    dispositif = fields.Many2one(related="applicant_id.dispositif", readonly=False, tracking=True, store=True)
+    accompagnement = fields.Boolean(related="applicant_id.accompagnement", readonly=False, tracking=True, store=True)
+    connaissance = fields.Boolean(related="applicant_id.connaissance", readonly=False, tracking=True, store=True)
+    case_number = fields.Char(related="applicant_id.case_number", readonly=False, tracking=True, store=True)
+    niveau = fields.Many2one(related="applicant_id.niveau", readonly=False, tracking=True, store=True)
+    nombre_dheures = fields.Integer(related="applicant_id.nombre_dheures", readonly=False, tracking=True, store=True)
+    date_entree_call = fields.Date(related="applicant_id.date_entree_call", readonly=False, tracking=True, store=True)
+    date_inscription = fields.Date(related="applicant_id.date_inscription", readonly=False, tracking=True, store=True)
     # Pédagogique
-    login = fields.Char(related="applicant_id.login", string='Login', readonly=False)
-    mot_de_passe = fields.Char(related="applicant_id.mot_de_passe", string='Mot de passe', readonly=False)
-    date_entree = fields.Date(related="applicant_id.date_entree", string='Date d\'entrée', readonly=False)
-    workhour_available_ids = fields.Many2many(related="applicant_id.workhour_available_ids", string='Horaire disponible', readonly=False)
-    plateforme = fields.Selection(related="applicant_id.plateforme", string='Plateforme', readonly=False)
-    motivation_appreciation = fields.Selection(related="applicant_id.motivation_appreciation", string='Motivation / Appréciation', readonly=False)
-    date_fin = fields.Date(related="applicant_id.date_fin", string='Date de fin', readonly=False)
-    test_result = fields.Char(related="applicant_id.test_result", string='Résultat test', readonly=False)
-    ligne_suivi_ids = fields.One2many(related="applicant_id.ligne_suivi_ids", string='Tabeau de suivi', readonly=False)
+    login = fields.Char(related="applicant_id.login", readonly=False, tracking=True, store=True)
+    mot_de_passe = fields.Char(related="applicant_id.mot_de_passe", readonly=False, tracking=True, store=True)
+    date_entree = fields.Date(related="applicant_id.date_entree", readonly=False, tracking=True, store=True)
+    workhour_available_ids = fields.Many2many(related="applicant_id.workhour_available_ids", readonly=False, tracking=True)
+    plateforme = fields.Many2one(related="applicant_id.plateforme", readonly=False, tracking=True, store=True)
+    motivation_appreciation = fields.Selection(related="applicant_id.motivation_appreciation", readonly=False, tracking=True, store=True)
+    date_fin = fields.Date(related="applicant_id.date_fin", readonly=False, tracking=True, store=True)
+    test_result = fields.Char(related="applicant_id.test_result", readonly=False, tracking=True, store=True)
+    ligne_suivi_ids = fields.One2many(related="applicant_id.ligne_suivi_ids", readonly=False, tracking=True)
+    prix_formation = fields.Float(related="applicant_id.prix_formation", readonly=False, tracking=True, store=True)
+    solde_formation = fields.Float(related="applicant_id.solde_formation", readonly=False, tracking=True, store=True)
+    in_formation = fields.Boolean(related="applicant_id.in_formation", readonly=False, tracking=True, store=True)
+    payment_state = fields.Selection(related="applicant_id.payment_state", readonly=False, tracking=True, store=True)
+    meeting_count = fields.Integer(compute='_compute_meeting_count', help='Meeting Count')
 
-    @api.onchange("stage_id")
+    @api.onchange("stage_id", "in_formation")
     def _onchange_stage_id(self):
         for record in self:
-            if record.stage_id.is_move_applicant_hr:
-                record.applicant_id.stage_id = 8
-                
+            if record.stage_id.stage_id:
+                record.applicant_id.stage_id = record.stage_id.stage_id
+
+            if record.stage_id.to_paiement and record.in_formation:
+                if not record.payment_state:
+                    record.payment_state = 'to_be_sold'
+
+    def _compute_meeting_count(self):
+        if self.applicant_id.ids:
+            meeting_data = self.env['calendar.event'].sudo().read_group(
+                [('task_id', 'in', self.ids)],
+                ['task_id'],
+                ['task_id']
+            )
+            mapped_data = {m['task_id'][0]: m['task_id_count'] for m in meeting_data}
+        else:
+            mapped_data = dict()
+        for task in self:
+            task.meeting_count = mapped_data.get(task.id, 0)
+
+    def action_makeMeeting(self):
+        """ This opens Meeting's calendar view to schedule meeting on current applicant
+            @return: Dictionary value for created Meeting view
+        """
+        self.ensure_one()
+        partners = self.partner_id | self.user_id.partner_id
+
+        category = self.env.ref('hr_recruitment.categ_meet_interview')
+        res = self.env['ir.actions.act_window']._for_xml_id('calendar.action_calendar_event')
+        res['context'] = {
+            'default_task_id': self.id,
+            'default_partner_ids': partners.ids,
+            'default_user_id': self.env.uid,
+            'default_name': self.name,
+            'default_categ_ids': category and [category.id] or False,
+        }
+        return res

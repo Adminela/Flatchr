@@ -5,6 +5,11 @@
         <field name="model">project.task</field>
         <field name="inherit_id" ref="project.view_task_form2"/>
         <field name="arch" type="xml">
+            <button name="action_subtask" position="after">
+                <button name="action_makeMeeting" class="oe_stat_button" icon="fa-calendar" type="object" help="Schedule interview with this applicant">
+                    <field name="meeting_count" widget="statinfo" string="Rendez-vous"/>
+                </button>
+            </button>
 
             <xpath expr="//page[@name='description_page']" position="attributes">
                 <attribute name="invisible">1</attribute>
@@ -28,10 +33,14 @@
                 <group>
                     <group>
                         <field name="applicant_id"/>
-                        <field name="user_id"/>
+                        <field name="email_from"/>
+                        <field name="partner_phone"/>
+                        <field name="date_naissance"/>
                     </group>
                     <group>
+                        <field name="user_id"/>
                         <field name="project_id"/>
+                        <field name="payment_state" groups="hr_recruitment.group_hr_recruitment_manager"/>
                     </group>
                 </group>
                 <group name="formation" string="Formation">
@@ -40,8 +49,11 @@
                         <field name="dispositif"/>
                         <field name="accompagnement"/>
                         <field name="connaissance"/>
+                        <field name="case_number"/>
                     </group>
                     <group>
+                        <field name="prix_formation"/>
+                        <field name="solde_formation"/>
                         <field name="niveau"/>
                         <field name="nombre_dheures"/>
                         <field name="date_entree_call"/>
@@ -52,6 +64,7 @@
                     <group>
                         <field name="login"/>
                         <field name="mot_de_passe"/>
+                        <field name="in_formation" widget="boolean_toggle"/>
                         <field name="date_entree"/>
                         <field name="workhour_available_ids" widget="many2many_tags"/>
                     </group>
@@ -76,19 +89,47 @@
         </field>                
     </record>
 
-    
-    <!--<record id="hr_kanban_view_applicant" model="ir.ui.view">
-        <field name="name">hr.kanban.view.flatchr.applicant</field>
-        <field name="model">hr.job</field>
-        <field name="inherit_id" ref="hr_recruitment.hr_kanban_view_applicant"/>
+    <record id="ela_hr_view_task_tree2" model="ir.ui.view">
+        <field name="name">ela.hr.view.task.tree2</field>
+        <field name="model">project.task</field>
+        <field name="inherit_id" ref="project.view_task_tree2"/>
         <field name="arch" type="xml">
-            <field name="job_id" position="attributes">
-                <attribute name="widget">badge</attribute>
-            </field>
-            <field name="user_id" position="after">
-                <field name="date_last_stage_update" display="full" widget="date"/>
-                <field name="date_open" display="full" widget="date" attrs="{}" invisible="1"/>
+            <field name="tag_ids" position="after">
+                <field name="solde_formation" sum="Total solde"/>
+                <field name="prix_formation" sum="Total prix"/>
             </field>
         </field>
-    </record>-->
+    </record>
+
+    <record id="ela_hr_view_task_kanban" model="ir.ui.view">
+        <field name="name">ela.hr.view.task.kanban</field>
+        <field name="model">project.task</field>
+        <field name="inherit_id" ref="project.view_task_kanban"/>
+        <field name="arch" type="xml">
+            <field name="kanban_state" position="before">
+                <field name="in_formation" readonly="1" widget="boolean_toggle"/>
+            </field>
+        </field>
+    </record>
+
+    <record id="ela_hr_view_task_search_form" model="ir.ui.view">
+        <field name="name">ela.hr.view.task.search.form</field>
+        <field name="model">project.task</field>
+        <field name="inherit_id" ref="project.view_task_search_form"/>
+        <field name="arch" type="xml">
+            <field name="name" position="after">
+                <field name="case_number"/>
+            </field>
+
+            <filter name="group_create_date" position="after">
+                <filter string="État du paiement" name="payment_state" domain="[]" context="{'group_by': 'payment_state'}"/>
+            </filter>
+
+            <filter name="inactive" position="after">
+                <filter string="À payer" name="inactive" domain="[('payment_state', '=', 'to_be_sold')]"/>
+                <filter string="Payé" name="inactive" domain="[('payment_state', '=', 'sold')]"/>
+            </filter>
+        </field>
+    </record>
+
 </odoo>
