@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='utf-8'?>
 <odoo>
-    <data>
+    <data noupdate="1">
         <record id="cron_get_jobs_from_flatchr" model="ir.cron">
             <field name="name">[ELA] Get jobs from Flatchr</field>
             <field name="interval_number">12</field>
