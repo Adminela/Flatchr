@@ -156,7 +156,11 @@ class HrApplicant(models.Model):
             if record.stage_id.is_create_project_task:
                 if record.formation:
                     if record.task_id:
-                        raise ValidationError(_('Une formation est déjà assigné à ce candidat, aucun autre formation n\'a été crée !'))
+                        res = {}
+                        res['warning'] = {
+                            'title': _('Warning'), 
+                            'message': _('Une formation est déjà assigné à ce candidat, aucun autre formation n\'a été crée !')}
+                        return res
                 else:
                     raise ValidationError(_('Veuillez remplir la formation avant de déposer dans cette étape !'))
 
