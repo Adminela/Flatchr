@@ -10,7 +10,8 @@
             </xpath>
             
             <field name="attendee_status" position="after">
-                <field name="applicant_id"/>
+                <field name="applicant_id" attrs="{'invisible': [('applicant_id', '=', False)]}"/>
+                <field name="task_id" attrs="{'invisible': [('task_id', '=', False)]}"/>
             </field>
         </field>
     </record>

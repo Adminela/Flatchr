@@ -7,6 +7,7 @@ from datetime import timedelta
 from odoo import fields, models
 from odoo.exceptions import UserError, ValidationError
 import requests
+from requests.exceptions import HTTPError
 import logging
 
 _logger = logging.getLogger(__name__)
@@ -148,15 +149,19 @@ class HrJob(models.Model):
         company_key = self.env['ir.config_parameter'].sudo().get_param('flatchr_connector.flatchr_company_key')
         last_sync_date = self.env['ir.config_parameter'].sudo().get_param('flatchr_connector.last_sync_date')
         sync_period = self.env['ir.config_parameter'].sudo().get_param('flatchr_connector.sync_period')
-
         # Retrieve and parse jobs
         headers = requests.structures.CaseInsensitiveDict()
         headers['Authorization'] = f'Bearer {token}'
         headers['Content-Type'] = 'application/json'
 
         vacancy_ids = self.env['hr.job']  # Those silly goobers don't know how to reference records properly using ids, so I have to identify them DIY-style using a title.
+        try:
+            response = requests.get(f'https://careers.flatchr.io/company/{slug}.json', headers={'Accept': '*/*', 'Authorization': f'Bearer {token}'})
+            response.raise_for_status()
 
-        response = requests.get(f'https://careers.flatchr.io/company/{slug}.json', headers={'Accept': '*/*', 'Authorization': f'Bearer {token}'})
+        except HTTPError as http_err:
+            raise ValidationError('HTTP error occurred: %s' %http_err)
+
         i = 0
         for vacancy in response.json()['items']:
             if vacancy['vacancy']:

@@ -187,22 +187,19 @@ class HrApplicant(models.Model):
     @staticmethod
     def reset_applicant_hr(env):
         reset_stage_ids = env['hr.recruitment.stage'].search([('is_reset', '=', True)])
-        all_applicants = env['hr.applicant']
-        for stage_id in reset_stage_ids:
-            date_expire = datetime.now() - timedelta(seconds=stage_id.periode)
-            while env['hr.applicant'].is_global_leave_or_weekend(date_expire):
-                date_expire += timedelta(days=1)
 
-            all_applicants = env['hr.applicant'].search([('stage_id', '=', stage_id.id),('date_last_stage_update', '<', date_expire)])
-            #.filtered(lambda appl: appl.stage_id.is_reset and (appl.date_last_stage_update < date_expire))S
+        date_expire = datetime.today().replace(hour=0, minute=0, second=0, microsecond=0) - timedelta(days=2)
+        while env['hr.applicant'].is_global_leave_or_weekend(date_expire):
+            date_expire += timedelta(days=1)
+        
+        all_applicants = env['hr.applicant'].search([('stage_id', 'in', reset_stage_ids.ids),('date_last_stage_update', '<', date_expire)])
+        for record in all_applicants:
+            record._reset_stage()
+            record.user_id = False
+            env.cr.commit()
 
-            for record in all_applicants:
-                record._reset_stage()
-                record.user_id = False
-                env.cr.commit()
-
-                for message_id in record.message_ids:
-                    message_id.is_manager = True
+            for message_id in record.message_ids:
+                message_id.is_manager = True
 
     def _reset_stage(self):
         for applicant in self:
