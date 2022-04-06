@@ -1,5 +1,5 @@
 <odoo>
-    <template id="assets_backend" name="assets_backend_new" inherit_id="web.assets_backend">
+    <template id="assets_backend_new" name="assets_backend_new" inherit_id="web.assets_backend_legacy_lazy">
         <xpath expr="." position="inside">
             <script type="text/javascript" src="/ela_hr/static/src/js/change_calendar.js"></script>
         </xpath>

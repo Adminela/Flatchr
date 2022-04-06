@@ -17,8 +17,7 @@
                     <field name="job_count" widget="statinfo" string="Jobs"/>
                 </button>
             </xpath>
-            <xpath expr="//sheet" position="inside">
-                <notebook>
+            <xpath expr="//page" position="after">
                     <page name="misc" string="Divers" groups="hr_recruitment.group_hr_recruitment_manager">
                         <group>
                             <group name="sync_info" string="Informations synchronisation">
@@ -27,7 +26,6 @@
                             </group>
                         </group>
                     </page>
-                </notebook>
             </xpath>
             <field name="name" position="attributes">
                 <attribute name="attrs">{'readonly': [('flatchr_applicant_id', '!=', False)]}</attribute>
