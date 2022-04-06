@@ -1,5 +1,5 @@
 # Copyright 2022 ELITE Advanced technologies.
-# Copyright 2022 ELITE - Salim ROUMILI 
+# Copyright 2022 ELITE - Salim ROUMILI
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
 
 {
@@ -10,7 +10,7 @@
     'category': 'Human Resources/Employees',
     'sequence': 199,
     "summary": "Extend employee information",
-    "version": "14.0.0.0.0",
+    "version": "15.0.0.0.0",
     "author": "ELITE Advanced technologies",
     "depends": ["base", "web", "calendar", "hr", "hr_recruitment", "hr_recruitment_survey", "project"],
     "data": [
