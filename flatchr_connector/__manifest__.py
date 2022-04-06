@@ -6,8 +6,8 @@
         order to ingest them in your Odoo database.
         """,
     "category": "",
-    "version": "14.0.1.0.0",
-    "author": "Odoo PS",
+    "version": "15.0.1.0.0",
+    "author": "ELITE Solutions",
     "website": "http://www.odoo.com",
     "license": "OEEL-1",
     "depends": [
