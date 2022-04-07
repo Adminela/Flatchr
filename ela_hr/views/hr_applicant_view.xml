@@ -156,10 +156,7 @@
             </field>
             <field name="user_id" position="after">
                 <field name="date_last_stage_update" display="full" widget="date"/>
-                <field name="date_open" display="full" widget="date" attrs="{}" invisible="1"/>
-            </field>
-            <field name="legend_done" position="after">
-                <field name="task_id" invisible="1"/>
+                <field name="date_open" display="full" widget="date" invisible="1"/>
             </field>
             <field name="legend_done" position="after">
                 <field name="task_id" invisible="1"/>

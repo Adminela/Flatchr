@@ -5,11 +5,11 @@
         <field name="model">project.task</field>
         <field name="inherit_id" ref="project.view_task_form2"/>
         <field name="arch" type="xml">
-            <button name="action_subtask" position="after">
+            <div name="button_box" position="inside">
                 <button name="action_makeMeeting" class="oe_stat_button" icon="fa-calendar" type="object" help="Schedule interview with this applicant">
                     <field name="meeting_count" widget="statinfo" string="Rendez-vous"/>
                 </button>
-            </button>
+            </div>
 
             <xpath expr="//page[@name='description_page']" position="attributes">
                 <attribute name="invisible">1</attribute>
@@ -22,7 +22,7 @@
             <xpath expr="//field[@name='project_id']" position="replace">
             </xpath>
 
-            <xpath expr="//field[@name='user_id']" position="replace">
+            <xpath expr="//field[@name='user_ids']" position="replace">
             </xpath>
 
             <xpath expr="//form[1]/sheet[1]/group[1]" position="attributes">
@@ -38,7 +38,7 @@
                         <field name="date_naissance"/>
                     </group>
                     <group>
-                        <field name="user_id"/>
+                        <field name="user_ids" class="o_task_user_field" options="{'no_open': True}" widget="many2many_avatar_user" domain="[('share', '=', False), ('active', '=', True)]"/>
                         <field name="project_id"/>
                         <field name="payment_state" groups="hr_recruitment.group_hr_recruitment_manager"/>
                     </group>

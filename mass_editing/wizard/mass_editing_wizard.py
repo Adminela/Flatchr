@@ -19,7 +19,7 @@ class MassEditingWizard(models.TransientModel):
     message = fields.Text(readonly=True)
 
     @api.model
-    def default_get(self, fields):
+    def default_get(self, fields, active_ids=None):
         res = super().default_get(fields)
         server_action_id = self.env.context.get("server_action_id")
         server_action = self.env["ir.actions.server"].sudo().browse(server_action_id)
@@ -33,20 +33,24 @@ class MassEditingWizard(models.TransientModel):
         operation_description_danger = False
         if len(active_ids) == len(original_active_ids):
             operation_description_info = _(
-                "The treatment will be processed on the %d selected record(s)."
-            ) % (len(active_ids))
+                "The treatment will be processed on the %(amount)d selected record(s)."
+            ) % {
+                "amount": len(active_ids),
+            }
         elif len(original_active_ids):
             operation_description_warning = _(
-                "You have selected %d record(s) that can not be processed.\n"
-                "Only %d record(s) will be processed."
-            ) % (
-                len(original_active_ids) - len(active_ids),
-                len(active_ids),
-            )
+                "You have selected %(origin_amount)d record(s) that can not be processed.\n"
+                "Only %(amount)d record(s) will be processed."
+            ) % {
+                "origin_amount": len(original_active_ids) - len(active_ids),
+                "amount": len(active_ids),
+            }
         else:
             operation_description_danger = _(
-                "None of the %d record(s) you have selected can be processed."
-            ) % (len(active_ids))
+                "None of the %(amount)d record(s) you have selected can be processed."
+            ) % {
+                "amount": len(active_ids),
+            }
         # Set values
         res.update(
             {
@@ -69,11 +73,6 @@ class MassEditingWizard(models.TransientModel):
                 ("set", _("Set")),
                 ("remove_m2m", _("Remove")),
                 ("add", _("Add")),
-            ]
-        elif field.ttype == "one2many":
-            selection = [
-                ("set_o2m", _("Set")),
-                ("remove_o2m", _("Remove")),
             ]
         else:
             selection = [("set", _("Set")), ("remove", _("Remove"))]
@@ -161,7 +160,7 @@ class MassEditingWizard(models.TransientModel):
         active_ids = self.env.context.get("active_ids", [])
         if server_action and active_ids:
             TargetModel = self.env[server_action.model_id.model]
-            IrModelFields = self.env["ir.model.fields"]
+            IrModelFields = self.env["ir.model.fields"].sudo()
             IrTranslation = self.env["ir.translation"]
 
             values = {}
@@ -171,11 +170,9 @@ class MassEditingWizard(models.TransientModel):
                     if val == "set":
                         values.update({split_key: vals.get(split_key, False)})
 
-                    elif val == "set_o2m":
-                        values.update({split_key: vals.get(split_key, [(6, 0, [])])})
-
                     elif val == "remove":
                         values.update({split_key: False})
+
                         # If field to remove is translatable,
                         # its translations have to be removed
                         model_field = IrModelFields.search(
@@ -192,7 +189,7 @@ class MassEditingWizard(models.TransientModel):
                                     (
                                         "name",
                                         "=",
-                                        u"{},{}".format(
+                                        "{},{}".format(
                                             server_action.model_id.model, split_key
                                         ),
                                     ),
@@ -209,9 +206,6 @@ class MassEditingWizard(models.TransientModel):
                             values.update({split_key: m2m_list})
                         else:
                             values.update({split_key: [(5, 0, [])]})
-
-                    elif val == "remove_o2m":
-                        values.update({split_key: [(6, 0, [])]})
 
                     elif val == "add":
                         m2m_list = []

@@ -196,14 +196,17 @@ class HrApplicant(models.Model):
         while env['hr.applicant'].is_global_leave_or_weekend(date_expire):
             date_expire += timedelta(days=1)
         
-        all_applicants = env['hr.applicant'].search([('stage_id', 'in', reset_stage_ids.ids),('date_last_stage_update', '<', date_expire)])
-        for record in all_applicants:
-            record._reset_stage()
-            record.user_id = False
-            env.cr.commit()
+        applicant_ids = env['hr.applicant'].search([('stage_id', 'in', reset_stage_ids.ids),('date_last_stage_update', '<', date_expire)])
+        for applicant_id in applicant_ids:
+            activity_ids = applicant_id.activity_ids.filtered(lambda act: act.date_deadline >= datetime.date(datetime.now()))
+            
+            if not activity_ids:
+                applicant_id._reset_stage()
+                applicant_id.user_id = False
+                env.cr.commit()
 
-            for message_id in record.message_ids:
-                message_id.is_manager = True
+                for message_id in applicant_id.message_ids:
+                    message_id.is_manager = True
 
     def _reset_stage(self):
         for applicant in self:
