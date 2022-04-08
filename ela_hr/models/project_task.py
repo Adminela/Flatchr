@@ -33,7 +33,7 @@ class ProjectTask(models.Model):
     motivation_appreciation = fields.Selection(related="applicant_id.motivation_appreciation", readonly=False, tracking=True, store=True)
     date_fin = fields.Date(related="applicant_id.date_fin", readonly=False, tracking=True, store=True)
     test_result = fields.Char(related="applicant_id.test_result", readonly=False, tracking=True, store=True)
-    ligne_suivi_ids = fields.One2many(related="applicant_id.ligne_suivi_ids", readonly=False, tracking=True)
+    ligne_suivi_ids = fields.One2many(related="applicant_id.ligne_suivi_ids", readonly=False)
     prix_formation = fields.Float(related="applicant_id.prix_formation", readonly=False, tracking=True, store=True)
     solde_formation = fields.Float(related="applicant_id.solde_formation", readonly=False, tracking=True, store=True)
     in_formation = fields.Boolean(related="applicant_id.in_formation", readonly=False, tracking=True, store=True)

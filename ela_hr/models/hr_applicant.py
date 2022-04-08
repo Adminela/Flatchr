@@ -47,7 +47,7 @@ class HrApplicant(models.Model):
     )
     date_fin = fields.Date(string='Date de fin', tracking=True)
     test_result = fields.Char(string='Résultat test', tracking=True)
-    ligne_suivi_ids = fields.One2many('hr.applicant.hour.progress', inverse_name='applicant_id', string='Tabeau de suivi', tracking=True)
+    ligne_suivi_ids = fields.One2many('hr.applicant.hour.progress', inverse_name='applicant_id', string='Tabeau de suivi')
     #Autres
     priority = fields.Selection(string='Priority')
     appreciation = fields.Selection([
