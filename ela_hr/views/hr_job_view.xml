@@ -1,7 +1,19 @@
 <?xml version='1.0' encoding='utf-8'?>
 <odoo>
+    <record id="ela_hr_view_job_filter" model="ir.ui.view">
+        <field name="name">ela.hr.view.job.filter</field>
+        <field name="model">hr.job</field>
+        <field name="inherit_id" ref="hr.view_job_filter"/>
+        <field name="arch" type="xml">
+            <filter name="in_recruitment" position="after">
+                <filter name="active_ela" string="Active ELA" domain="[('active_ela', '=', True)]"/>
+                <filter name="inctive_ela" string="Inactive ELA" domain="[('active_ela', '=', False)]"/>
+            </filter>
+        </field>
+    </record>
+
     <record id="hr_recruitment.action_hr_job" model="ir.actions.act_window">
-        <field name="context">{'search_default_in_recruitment': 1}</field>
+        <field name="context">{'search_default_active_ela': 1}</field>
         <field name="view_mode">kanban,tree,form</field>
     </record>
 
@@ -15,4 +27,17 @@
             </field>
         </field>
     </record>
+
+    <record id="ela_hr_view_hr_job_kanban" model="ir.ui.view">
+        <field name="name">ela.hr.view.hr.job.kanban</field>
+        <field name="model">hr.job</field>
+        <field name="inherit_id" ref="hr_recruitment.view_hr_job_kanban"/>
+        <field name="arch" type="xml">
+            <xpath expr="//div[hasclass('o_kanban_card_manage_section')]/div[2]" position="after">
+                <div role="menuitem"><a t-if="record.active_ela.raw_value == true" name="set_inactive" type="object">Archiver ELA</a></div>
+                <div role="menuitem"><a t-if="record.active_ela.raw_value == false" name="set_active" type="object">Desarchiver ELA</a></div>
+            </xpath>
+        </field>
+    </record>
+
 </odoo>
