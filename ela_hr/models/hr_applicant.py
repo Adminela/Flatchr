@@ -184,7 +184,7 @@ class HrApplicant(models.Model):
                             'name' : self.partner_name,
                             'applicant_id' : self._origin.id,
                             'project_id' : self.formation.id,
-                            'user_id' : self.user_id.id,
+                            'user_ids' : [self.user_id.id],
                         })
 
         return res
