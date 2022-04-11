@@ -38,7 +38,9 @@ class ProjectTask(models.Model):
     solde_formation = fields.Float(related="applicant_id.solde_formation", readonly=False, tracking=True, store=True)
     in_formation = fields.Boolean(related="applicant_id.in_formation", readonly=False, tracking=True, store=True)
     payment_state = fields.Selection(related="applicant_id.payment_state", readonly=False, tracking=True, store=True)
+
     meeting_count = fields.Integer(compute='_compute_meeting_count', help='Meeting Count')
+    active_ela = fields.Boolean(related="applicant_id.active_ela", readonly=False, tracking=True)
 
     @api.onchange("stage_id", "in_formation")
     def _onchange_stage_id(self):
@@ -49,6 +51,9 @@ class ProjectTask(models.Model):
             if record.stage_id.to_paiement and record.in_formation:
                 if not record.payment_state:
                     record.payment_state = 'to_be_sold'
+
+            if record.stage_id.cancel and record.applicant_id:
+                record.applicant_id.active_ela = False
 
     def _compute_meeting_count(self):
         if self.applicant_id.ids:
@@ -68,14 +73,14 @@ class ProjectTask(models.Model):
             @return: Dictionary value for created Meeting view
         """
         self.ensure_one()
-        partners = self.partner_id | self.user_id.partner_id
+        partners = self.partner_id | self.user_ids.partner_id
 
         category = self.env.ref('hr_recruitment.categ_meet_interview')
         res = self.env['ir.actions.act_window']._for_xml_id('calendar.action_calendar_event')
         res['context'] = {
             'default_task_id': self.id,
             'default_partner_ids': partners.ids,
-            'default_user_id': self.env.uid,
+            #'default_user_ids': self.env.uid,
             'default_name': self.name,
             'default_categ_ids': category and [category.id] or False,
         }

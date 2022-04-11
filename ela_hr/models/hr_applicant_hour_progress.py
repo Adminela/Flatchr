@@ -10,7 +10,7 @@ class HrApplicantHourProgress(models.Model):
     _description = "Hr hour progress"
     _order = "id"
 
-    applicant_id = fields.Many2one("hr.applicant", string='Applicant')
+    applicant_id = fields.Many2one("hr.applicant", string='Applicant', required=True, ondelete='cascade')
     date = fields.Date(string='Date', required=True, default=date.today())
     hours_number = fields.Float(string='Nombre d\'heures')
     objective = fields.Float(string='Objectif')

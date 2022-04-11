@@ -10,6 +10,10 @@
                     <field name="meeting_count" widget="statinfo" string="Rendez-vous"/>
                 </button>
             </div>
+            <div name="button_box" position="after">
+                <field name="active_ela" invisible="1"/>
+                <widget name="web_ribbon" title="annulé" bg_color="bg-danger" attrs="{'invisible': [('active_ela', '=', True)]}"/>
+            </div>
 
             <xpath expr="//page[@name='description_page']" position="attributes">
                 <attribute name="invisible">1</attribute>
@@ -109,6 +113,17 @@
             <field name="kanban_state" position="before">
                 <field name="in_formation" readonly="1" widget="boolean_toggle"/>
             </field>
+            <xpath expr="//div[hasclass('oe_kanban_content')]" position="before">
+                <field name="active_ela" invisible="1"/>
+                <div class="ribbon ribbon-top-right" attrs="{'invisible': [('active_ela', '=', True)]}" style="margin-top: -8px;">
+                    <span class="bg-danger" style="font-size: x-small;
+                        padding: 5px;
+                        z-index: unset;
+                        top: 10px;
+                        left: 20px;
+                        height: unset;">Annulé</span>
+                </div>
+            </xpath>
         </field>
     </record>
 

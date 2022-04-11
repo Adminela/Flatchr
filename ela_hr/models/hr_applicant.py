@@ -113,6 +113,7 @@ class HrApplicant(models.Model):
         tracking=True
     )
     stage_domain = fields.Char(string='Stage domain', compute='_compute_stage_domain')
+    active_ela = fields.Boolean(string='Active ELA', tracking=True, default=True)
 
     _sql_constraints = [
         ('uniq_nomenclature_cv', 'unique(nomenclature_cv)', "'ATTENTION' Cette nomenclature CV existe déjà !")

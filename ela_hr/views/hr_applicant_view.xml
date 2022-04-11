@@ -27,6 +27,10 @@
             <xpath expr="//field[@name='source_id']" position="replace">
                 <field name="skill_ids" widget="many2many_tags"/>
             </xpath>
+            <xpath expr="//widget[@name='web_ribbon']" position="replace">
+                <field name="active_ela" invisible="1"/>
+                <widget name="web_ribbon" title="annulé" bg_color="bg-danger" attrs="{'invisible': [('active_ela', '=', True)]}"/>
+            </xpath>
             <xpath expr="//field[@name='priority']" position="replace">
                 <xpath expr="//field[@name='medium_id']" position="move"/>
             </xpath>
@@ -161,6 +165,12 @@
             <field name="legend_done" position="after">
                 <field name="task_id" invisible="1"/>
             </field>
+            <xpath expr="//div[hasclass('ribbon-top-right')]" position="before">
+                <field name="active_ela" invisible="1"/>
+                <div class="ribbon ribbon-top-right" attrs="{'invisible': [('active_ela', '=', True)]}">
+                    <span class="bg-danger">Annulé</span>
+                </div>
+            </xpath>
         </field>
     </record>
 

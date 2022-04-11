@@ -69,7 +69,7 @@ class HrJob(models.Model):
             'remote': vacancy_dict['remote'],
             'handicap': vacancy_dict['handicap'],
             'partial': vacancy_dict['partial'],
-            'state': 'recruit' if vacancy_dict['status'] == 1 else 'open',
+            #'state': 'recruit' if vacancy_dict['status'] == 1 else 'open',
         }
 
         if not existing_job_id:
@@ -79,9 +79,6 @@ class HrJob(models.Model):
             vacancy_id.write(content_dict)
 
         self.env.cr.execute("UPDATE hr_job SET create_date = '%s' WHERE id = %s" %(vacancy_dict['created_at'], vacancy_id.id))
-
-        if vacancy_id.state not in ['recruit']:
-            vacancy_id.set_recruit()
 
         return vacancy_id
 
@@ -170,8 +167,8 @@ class HrJob(models.Model):
 
         archived_vacancy_ids = self.env['hr.job'].search([('state', 'not in', ['open']),('id', 'not in', vacancy_ids.ids)])
 
-        for vacancy_id in archived_vacancy_ids:
-            vacancy_id.set_open()
+        #for vacancy_id in archived_vacancy_ids:
+        #    vacancy_id.active_ela = False
 
         # Retrieve and parse applicants
         url = f'https://api.flatchr.io/company/{company_key}/search/applicants?fields=candidate,vacancy,candidate.consent'
@@ -189,17 +186,17 @@ class HrJob(models.Model):
         _logger.info("******* Fin de la synchronisation Flatchr %s" % datetime.now())
         _logger.info("******* %s Annonces et %s Candidats synchronisés en %s" % (i, j, datetime.now() - date_start))
 
-    def set_recruit(self):
-        for record in self:
-            applicant_ids = self.env['hr.applicant'].with_context(active_test=False).search([("job_id", "=", record.id)])
-            #_logger.info("******* Fin de la synchronisation Flatchr %s" % applicant_ids)***
-            applicant_ids.set_recruit()
+    #def set_recruit(self):
+    #    for record in self:
+    #        applicant_ids = self.env['hr.applicant'].with_context(active_test=False).search([("job_id", "=", record.id)])
+    #        #_logger.info("******* Fin de la synchronisation Flatchr %s" % applicant_ids)***
+    #        applicant_ids.set_recruit()
 
-        return super(HrJob, self).set_recruit()
+    #    return super(HrJob, self).set_recruit()
 
-    def set_open(self):
-        for record in self:
-            applicant_ids = self.env['hr.applicant'].search([("job_id", "=", record.id)])
-            applicant_ids.write({'refuse_reason_id': 1, 'active': False})
+    #def set_open(self):
+    #    for record in self:
+    #        applicant_ids = self.env['hr.applicant'].search([("job_id", "=", record.id)])
+    #        applicant_ids.write({'refuse_reason_id': 1, 'active': False})
 
-        return super(HrJob, self).set_open()
+    #    return super(HrJob, self).set_open()

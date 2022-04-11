@@ -18,3 +18,4 @@ from . import project_task_type
 from . import res_users
 from . import hr_applicant_object
 from . import calendar
+from . import hr_job

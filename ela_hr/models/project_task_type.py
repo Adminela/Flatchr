@@ -11,3 +11,4 @@ class ProjectTaskType(models.Model):
     #is_move_applicant = fields.Boolean(string='Déplacer le candidat', help='Si cochée, le candidat sera déplacé dans l\'étape précisée dans le champs "Étape de déplacement"', tracking=True)
     stage_id = fields.Many2one("hr.recruitment.stage", string='Étape de déplacement', ondelete='restrict', tracking=True)
     to_paiement = fields.Boolean(string='Mettre à payer', help='Si cochée, le candidat sera mentionné "À payer" s\'il est tagué "Rentré en formation"', tracking=True)
+    cancel = fields.Boolean(string='Archiver candidat', help='Si cochée, le candidat sera archivé et le commercial en charge notifié', tracking=True)
