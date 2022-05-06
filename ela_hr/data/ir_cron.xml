@@ -11,5 +11,15 @@
 model.reset_applicant_hr(model.env)
             ]]></field>
         </record>
+
+        <record id="elite_intervention_replanish_intervention" model="ir.actions.server">
+            <field name="name">Suggérer candidats</field>
+            <field name="model_id" ref="model_hr_applicant"/>
+            <field name="state">code</field>
+            <field name="code"><![CDATA[
+records.suggest_candidats()
+            ]]>
+            </field>
+        </record>
     </data>
 </odoo>

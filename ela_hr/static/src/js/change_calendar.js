@@ -1,4 +1,4 @@
-odoo.define('ela_hr', function (require) {
+odoo.define('ela_hr.caledar_spec', function (require) {
     "use strict";
     
     var CalendarModel = require('web.CalendarModel');

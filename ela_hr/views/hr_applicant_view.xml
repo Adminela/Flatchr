@@ -90,11 +90,11 @@
                             <field name="workhour_ids" widget="many2many_tags" options="{'no_create_edit': True, 'no_quick_create': True}"/>
                             <field name="mobilite" options="{'no_create_edit': True, 'no_quick_create': True}"/>
                             <field name="heure_semaine" options="{'no_create_edit': True, 'no_quick_create': True}"/>
-                            <field name="appreciation_hr" widget="priority"/>
                             <field name="nomenclature_cv"/>
                         </group>
                         <group>
-                            <field name="experience_ids" widget="many2many_tags" options="{'no_create_edit': True, 'no_quick_create': True}"/>
+                            <field name="appreciation_hr" widget="priority"/>
+                            <field name="experience_id" options="{'no_create_edit': True, 'no_quick_create': True}"/>
                             <field name="contract_type_ids" widget="many2many_tags" options="{'no_create_edit': True, 'no_quick_create': True}"/>
                             <label for="salaire_minimum_min"/>
                             <div class="o_row">
@@ -102,22 +102,22 @@
                                 <span> à </span>
                                 <field name="salaire_minimum_max"/>
                             </div>
-                            <label for="salaire_propose_min"/>
+                            <!--<label for="salaire_propose_min"/>
                             <div class="o_row">
                                 <field name="salaire_propose_min"/>
                                 <span> à </span>
                                 <field name="salaire_propose_max"/>
-                            </div>
+                            </div>-->
                             <field name="benefit_wished_ids" widget="many2many_tags" options="{'no_create_edit': True, 'no_quick_create': True}"/>
-                            <field name="benefit_offered_ids" widget="many2many_tags" options="{'no_create_edit': True, 'no_quick_create': True}"/>
+                            <!--<field name="benefit_offered_ids" widget="many2many_tags" options="{'no_create_edit': True, 'no_quick_create': True}"/>-->
                         </group>
                     </group>
                 </page>
                 <page string="Pédagogie">
                     <group>
                         <group>
-                            <field name="login"/>
-                            <field name="mot_de_passe"/>
+                            <field name="login" groups="ela_hr.group_hide_password"/>
+                            <field name="mot_de_passe" groups="ela_hr.group_hide_password"/>
                             <field name="in_formation" widget="boolean_toggle"/>
                             <field name="date_entree"/>
                             <field name="workhour_available_ids" widget="many2many_tags" options="{'no_create_edit': True, 'no_quick_create': True}"/>
@@ -188,6 +188,68 @@
                 <field name="partner_phone"/>
                 <field name="date_inscription"/>
             </field>
+        </field>
+    </record>
+
+    <record id="ela_hr_crm_case_tree_view_job_crm" model="ir.ui.view">
+        <field name="name">ela.hr.crm.case.tree.view.job.crm</field>
+        <field name="model">hr.applicant</field>
+        <field name="arch" type="xml">
+            <tree string="Candidats" default_order="scoring desc">
+                <field name="partner_name" readonly="1"/>
+                <field name="job_id" optional="hide"/>
+                <field name="name" readonly="1" optional="hide"/>
+                <field name="stage_id" optional="hide"/>
+                <field name="priority" widget="priority" optional="hide"/>
+                <field name="partner_mobile" widget="phone" readonly="1" optional="hide"/>
+                <field name="categ_ids" widget="many2many_tags" options="{'color_field': 'color'}" optional="hide"/>
+                <field name="user_id" widget="many2one_avatar_user" optional="hide"/>
+                <field name="create_date" readonly="1" widget="date" optional="hide"/>
+                <field name="partner_phone" widget="phone" readonly="1" optional="hide"/>
+                <field name="email_from" readonly="1" optional="hide"/>
+                <field name="medium_id" optional="hide"/>
+                <field name="source_id" readonly="1" optional="hide"/>
+                <field name="type_id" invisible="1"/>
+                <field name="availability" optional="hide"/>
+                <field name="department_id" invisible="context.get('invisible_department', True)" readonly="1"/>
+                <field name="company_id" groups="base.group_multi_company" readonly="1" optional="hide"/>
+                <!--<field name="task_stage_id" optional="hide"/>-->
+                <field name="partner_phone" optional="hide"/>
+                <field name="date_inscription" optional="hide"/>
+                <field name="workzone_ids" widget="many2many_tags"/>
+                <field name="code_postal"/>
+                <field name="workhour_ids" widget="many2many_tags"/>
+                <field name="mobilite"/>
+                <field name="heure_semaine"/>
+                <field name="appreciation_hr"/>
+                <field name="experience_id"/>
+                <field name="contract_type_ids" widget="many2many_tags"/>
+                <field name="salaire_minimum_min"/>
+                <field name="salaire_minimum_max"/>
+                <field name="benefit_wished_ids" widget="many2many_tags"/>
+                <field name="scoring"/>
+                <field name="show_suggest_button" invisible="1"/>
+                <button name="suggest_candidats" string="suggérer le candidat"  type="object" class="oe_highlight" attrs="{'invisible' : [('show_suggest_button', '=', False)]}"/>
+                <button name="allready_suggest_candidats" string="Suggéré" type="object" readonly="1" attrs="{'invisible' : [('show_suggest_button', '=', True)]}"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="ela_hr_hr_applicant_view_search_ter" model="ir.ui.view">
+        <field name="name">ela.hr.hr.applicant.view.search.ter</field>
+        <field name="model">hr.applicant</field>
+        <field name="arch" type="xml">
+            <search string="Candidats">
+                <field name="workzone_ids"/>
+                <field name="code_postal"/>
+                <field name="workhour_ids"/>
+                <field name="mobilite"/>
+                <field name="heure_semaine"/>
+                <field name="appreciation_hr"/>
+                <field name="experience_id"/>
+                <field name="contract_type_ids"/>
+                <field name="benefit_wished_ids"/>
+            </search>
         </field>
     </record>
 

@@ -52,8 +52,11 @@ class ProjectTask(models.Model):
                 if not record.payment_state:
                     record.payment_state = 'to_be_sold'
 
-            if record.stage_id.cancel and record.applicant_id:
-                record.applicant_id.active_ela = False
+            if record.applicant_id:
+                if record.stage_id.cancel:
+                    record.applicant_id.active_ela = False
+                else:
+                        record.applicant_id.active_ela = True
 
     def _compute_meeting_count(self):
         if self.applicant_id.ids:

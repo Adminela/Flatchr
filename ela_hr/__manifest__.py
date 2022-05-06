@@ -12,7 +12,16 @@
     "summary": "Extend employee information",
     "version": "15.0.0.0.0",
     "author": "ELITE Advanced technologies",
-    "depends": ["base", "web", "calendar", "hr", "hr_recruitment", "hr_recruitment_survey", "project"],
+    "depends": [
+        "base",
+        "web",
+        "calendar",
+        "hr",
+        "hr_recruitment",
+        "hr_recruitment_survey",
+        "project",
+        "crm"
+    ],
     "data": [
         "security/ir.model.access.csv",
         "views/hr_applicant_view.xml",
@@ -24,6 +33,7 @@
         "views/project_task_type_view.xml",
         "views/calendar_event_view.xml",
         "views/web_calendar_templates.xml",
+        "views/crm_lead_view.xml",
         "security/security.xml",
         "data/ir_cron.xml",
     ],

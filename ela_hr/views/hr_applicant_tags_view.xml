@@ -16,6 +16,7 @@
         <field name="model">hr.applicant.experience</field>
         <field name="arch" type="xml">
             <tree string="Expérience" editable="bottom">
+                <field name="sequence" widget="handle"/>
                 <field name="name"/>
             </tree>
         </field>
@@ -167,7 +168,7 @@
     />
 
     <menuitem id="menu_config_experience"
-        name="Type de contrat"
+        name="Expérience"
         groups="hr_recruitment.group_hr_recruitment_manager"
         action="action_hr_applicant_experience_tree"
         parent="menu_config_tags"
