@@ -117,7 +117,6 @@ class HrApplicant(models.Model):
     )
     stage_domain = fields.Char(string='Stage domain', compute='_compute_stage_domain')
     active_ela = fields.Boolean(string='Active ELA', tracking=True, default=True)
-    #scoring_tmp = fields.Float(string='Scoring TMP', compute='_compute_scoring', store=True)
     scoring = fields.Integer(string='Scoring', compute='_compute_scoring', store=True)
     crm_ids = fields.Many2many("crm.lead", 'crm_applicant_rel', string='Jobs proposés', tracking=True)
     show_suggest_button = fields.Boolean(string='Affcher button de suggestion', compute='_compute_show_suggest_button')
@@ -132,15 +131,11 @@ class HrApplicant(models.Model):
             if record._context.get('crm_id', False):
                 if not record._context.get('crm_id') in record.crm_ids.ids:
                     record.show_suggest_button = True
-                    #raise ValidationError("%s" %record.show_suggest_button)
                 else:
                     record.show_suggest_button = False
             else:
                 record.show_suggest_button = False
 
-            #raise ValidationError("%s" %record.show_suggest_button)
-                    
-        
     @api.depends("name")
     def _compute_stage_domain(self):
         for record in self:
