@@ -1,0 +1,87 @@
+<?xml version='1.0' encoding='utf-8'?>
+<odoo>
+    <record id="ela_hr_crm_lead_view_form" model="ir.ui.view">
+        <field name="name">ela.hr.crm.lead.view.form</field>
+        <field name="model">crm.lead</field>
+        <field name="inherit_id" ref="crm.crm_lead_view_form"/>
+        <field name="arch" type="xml">
+            <page name="internal_notes" position="before">
+                <page string="Recrutement">
+                    <group>
+                        <group col="6">
+                            <group colspan="5">
+                                <field name="workzone_ids" widget="many2many_tags" options="{'no_create_edit': True, 'no_quick_create': True}" attrs="{'required': [('workzone_ids_score', '!=', 0)]}"/>
+                                <field name="code_postal" attrs="{'required': [('code_postal_score', '!=', 0)]}"/>
+                                <field name="workhour_ids" widget="many2many_tags" options="{'no_create_edit': True, 'no_quick_create': True}" attrs="{'required': [('workhour_ids_score', '!=', 0)]}"/>
+                                <field name="mobilite" options="{'no_create_edit': True, 'no_quick_create': True}" attrs="{'required': [('mobilite_score', '!=', 0)]}"/>
+                                <field name="heure_semaine" options="{'no_create_edit': True, 'no_quick_create': True}" attrs="{'required': [('heure_semaine_score', '!=', 0)]}"/>
+                            </group>
+                            <group col="1">
+                                <field name="workzone_ids_score" nolabel="1"/>
+                                <field name="code_postal_score" nolabel="1"/>
+                                <field name="workhour_ids_score" nolabel="1"/>
+                                <field name="mobilite_score" nolabel="1"/>
+                                <field name="heure_semaine_score" nolabel="1"/>
+                            </group>
+                        </group>
+                        <group col="6">
+                            <group colspan="5">
+                                <field name="appreciation_hr" widget="priority" attrs="{'required': [('appreciation_hr_score', '!=', 0)]}"/>
+                                <field name="experience_id" options="{'no_create_edit': True, 'no_quick_create': True}" attrs="{'required': [('experience_id_score', '!=', 0)]}"/>
+                                <field name="contract_type_ids" string="Type de contrat" widget="many2many_tags" options="{'no_create_edit': True, 'no_quick_create': True}" attrs="{'required': [('contract_type_ids_score', '!=', 0)]}"/>
+                                <field name="salaire_propose" attrs="{'required': [('salaire_propose_score', '!=', 0)]}"/>
+                                <field name="benefit_offered_ids" widget="many2many_tags" options="{'no_create_edit': True, 'no_quick_create': True}" attrs="{'required': [('benefit_offered_ids_score', '!=', 0)]}"/>
+                            </group>
+                            <group col="1">
+                                <field name="appreciation_hr_score" nolabel="1"/>
+                                <field name="experience_id_score" nolabel="1"/>
+                                <field name="contract_type_ids_score" nolabel="1"/>
+                                <field name="salaire_propose_score" nolabel="1"/>
+                                <field name="benefit_offered_ids_score" nolabel="1"/>
+                            </group>
+                        </group>
+                    </group>
+                </page>
+                <page string="Candidats suggérés">
+                    <group>
+                        <field name="candidat_suggested_ids" mode="tree" nolabel="1">
+                            <tree string="Candidats suggérés" delete="true">
+                                <field name="partner_name"/>
+                                <field name="email_from" widget="email"/>
+                                <field name="partner_phone" widget="phone"/>
+                                <field name="stage_id"/>
+                                <field name="task_stage_id"/>
+                            </tree>
+                        </field>
+                    </group>
+                </page>
+            </page>
+            <div name="button_box" position="inside">
+                <button name="action_candidat_suggested" class="oe_stat_button" icon="fa-users" type="object" help="Suggérer des candidats">
+                    Suggestion
+                </button>
+            </div>
+        </field>                
+    </record>
+
+    <!--<record id="ela_hr_view_task_search_form" model="ir.ui.view">
+        <field name="name">ela.hr.view.task.search.form</field>
+        <field name="model">project.task</field>
+        <field name="inherit_id" ref="project.view_task_search_form"/>
+        <field name="arch" type="xml">
+            <field name="name" position="after">
+                <field name="case_number"/>
+            </field>
+
+            <filter name="group_create_date" position="after">
+                <filter string="État du paiement" name="payment_state" domain="[]" context="{'group_by': 'payment_state'}"/>
+            </filter>
+
+            <filter name="inactive" position="after">
+                <filter string="À payer" name="inactive" domain="[('payment_state', '=', 'to_be_sold')]"/>
+                <filter string="Payé" name="inactive" domain="[('payment_state', '=', 'sold')]"/>
+            </filter>
+        </field>
+    </record>-->
+
+</odoo>

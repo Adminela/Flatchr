@@ -34,6 +34,7 @@
         <field name="inherit_id" ref="hr_recruitment.view_hr_job_kanban"/>
         <field name="arch" type="xml">
             <xpath expr="//div[hasclass('o_kanban_card_manage_section')]/div[2]" position="after">
+                <field name="active_ela" invisible="1"/>
                 <div role="menuitem"><a t-if="record.active_ela.raw_value == true" name="set_inactive" type="object">Archiver ELA</a></div>
                 <div role="menuitem"><a t-if="record.active_ela.raw_value == false" name="set_active" type="object">Desarchiver ELA</a></div>
             </xpath>

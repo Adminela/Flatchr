@@ -47,10 +47,10 @@ class HrApplicantMobilite(models.Model):
 class HrApplicantHeureSemaine(models.Model):
     _name = "hr.applicant.heure.semaine"
     _description = "Hr applicant heure semaine"
-    _order = "name"
+    _order = "sequence, id"
 
     name = fields.Char("Name", required=True)
-
+    sequence = fields.Integer("Séquence", defaut=1)
 
 class HrApplicantSituation(models.Model):
     _name = "hr.applicant.situation"
