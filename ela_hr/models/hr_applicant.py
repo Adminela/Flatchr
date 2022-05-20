@@ -29,8 +29,8 @@ class HrApplicant(models.Model):
     date_entree_call = fields.Date(string='Date entrée call', tracking=True)
     date_inscription = fields.Date(string='Date d\'inscription', tracking=True)
     # Pédagogique
-    login = fields.Char(string='Login', tracking=True)
-    mot_de_passe = fields.Char(string='Mot de passe', tracking=True)
+    login = fields.Char(string='Login', tracking=True, groups="ela_hr.group_hide_password")
+    mot_de_passe = fields.Char(string='Mot de passe', tracking=True, groups="ela_hr.group_hide_password")
     date_entree = fields.Date(string='Date d\'entrée', compute="_compute_date_entree", store=True, tracking=True)
     workhour_available_ids = fields.Many2many("hr.applicant.workhour.available", string='Horaire disponible', ondelete="restrict", tracking=True)
     plateforme = fields.Many2one("hr.applicant.plateforme", string='Plateforme',tracking=True)
@@ -90,23 +90,18 @@ class HrApplicant(models.Model):
         tracking=True
     )
     nomenclature_cv = fields.Char(string='Nomenclature CV', tracking=True)
-    #experience_ids = fields.Many2many("hr.applicant.experience", string='Expériences', ondelete="restrict", tracking=True)
     experience_id = fields.Many2one("hr.applicant.experience", string='Expériences', ondelete="restrict", tracking=True)
     contract_type_ids = fields.Many2many("hr.applicant.contract.type", string='Type de contrat proposé', ondelete="restrict", tracking=True)
     salaire_minimum_min = fields.Float(string='Salaire Minimum de', tracking=True)
     salaire_minimum_max = fields.Float(string='à', tracking=True)
-    #salaire_propose_min = fields.Integer(string='Salaire proposé de', tracking=True)
-    #salaire_propose_max = fields.Integer(string='à', tracking=True)
     benefit_wished_ids = fields.Many2many("hr.applicant.benefit", 'benefit_wished_applicant_rel', string='Avantages souhaités', ondelete="restrict", tracking=True)
-    #benefit_offered_ids = fields.Many2many("hr.applicant.benefit", 'benefit_offered_applicant_rel', string='Avantages proposés', ondelete="restrict", tracking=True)
-
     situation = fields.Many2one("hr.applicant.situation", string='Situation',tracking=True)
     statut = fields.Char(string='Statut', tracking=True)
     email_from = fields.Char(tracking=True)
     partner_phone = fields.Char(tracking=True)
     is_premium = fields.Boolean(string='CV Premium', tracking=True)
-    prix_formation = fields.Float(string='Prix formation', tracking=True)
-    solde_formation = fields.Float(string='Solde', tracking=True)
+    prix_formation = fields.Float(string='Prix formation', tracking=True, groups="ela_hr.group_hide_prices")
+    solde_formation = fields.Float(string='Solde', tracking=True, groups="ela_hr.group_hide_prices")
     in_formation = fields.Boolean(string='Rentré en formation', tracking=True)
     payment_state = fields.Selection([
         ("to_be_sold", "À payer"),
@@ -117,19 +112,37 @@ class HrApplicant(models.Model):
     )
     stage_domain = fields.Char(string='Stage domain', compute='_compute_stage_domain')
     active_ela = fields.Boolean(string='Active ELA', tracking=True, default=True)
+
     scoring = fields.Integer(string='Scoring', compute='_compute_scoring', store=True)
-    crm_ids = fields.Many2many("crm.lead", 'crm_applicant_rel', string='Jobs proposés', tracking=True)
+    scoring_1 = fields.Integer(string='Scoring', compute='_compute_scoring', store=True)
+    scoring_2 = fields.Integer(string='Scoring', compute='_compute_scoring', store=True)
+    scoring_3 = fields.Integer(string='Scoring', compute='_compute_scoring', store=True)
+    scoring_4 = fields.Integer(string='Scoring', compute='_compute_scoring', store=True)
+    scoring_5 = fields.Integer(string='Scoring', compute='_compute_scoring', store=True)
+
+    crm_ids = fields.One2many('hr.applicant.crm', inverse_name='applicant_id', string='Jobs proposés')
+    crm_suggested_nb = fields.Integer(string='# Suggérés', compute="_compute_nbs", store=True)
+    crm_presented_nb = fields.Integer(string='# CVs présentés', compute="_compute_nbs", store=True)
+    crm_sent_nb = fields.Integer(string='# Envoyés en RDV', compute="_compute_nbs", store=True)
+
     show_suggest_button = fields.Boolean(string='Affcher button de suggestion', compute='_compute_show_suggest_button')
 
     _sql_constraints = [
         ('uniq_nomenclature_cv', 'unique(nomenclature_cv)', "'ATTENTION' Cette nomenclature CV existe déjà !")
     ]
 
+    @api.depends("crm_ids", "crm_ids.stage_id")
+    def _compute_nbs(self):
+        for record in self:
+            record.crm_suggested_nb = len(record.crm_ids.filtered(lambda c: c.stage_id.sequence >= 0))
+            record.crm_presented_nb = len(record.crm_ids.filtered(lambda c: c.stage_id.sequence >= 1))
+            record.crm_sent_nb = len(record.crm_ids.filtered(lambda c: c.stage_id.sequence >= 2))
+
     @api.depends("crm_ids")
     def _compute_show_suggest_button(self):
         for record in self:
             if record._context.get('crm_id', False):
-                if not record._context.get('crm_id') in record.crm_ids.ids:
+                if not record._context.get('crm_id') in record.crm_ids.mapped('crm_id').ids:
                     record.show_suggest_button = True
                 else:
                     record.show_suggest_button = False
@@ -145,9 +158,7 @@ class HrApplicant(models.Model):
                 record.stage_domain = json.dumps([('is_candidats_portfolio', '=', True)])
             else:
                 record.stage_domain = json.dumps([(1, '=', 1)])
-    
-    #@api.depends_context('company')
-    #@api.depends('appreciation_hr')
+
     def _compute_scoring(self):
         for record in self:
             scoring = 0
@@ -161,9 +172,10 @@ class HrApplicant(models.Model):
                 if crm_id.code_postal == record.code_postal:
                     scoring += crm_id.code_postal_score
 
-                for workhour_id in record.workhour_ids:
-                    if workhour_id in crm_id.workhour_ids:
-                        scoring += crm_id.workhour_ids_score
+                if crm_id.workhour_ids_score:
+                    for workhour_id in record.workhour_ids:
+                        if workhour_id in crm_id.workhour_ids:
+                            scoring += crm_id.workhour_ids_score
 
                 if crm_id.mobilite == record.mobilite:
                     scoring += crm_id.mobilite_score
@@ -191,7 +203,17 @@ class HrApplicant(models.Model):
                     if offer_id in crm_id.benefit_offered_ids:
                         scoring += crm_id.benefit_offered_ids_score
 
-            record.scoring = scoring
+            if self.env.user:
+                if self.env.user.scoring_column == 'scoring_1':
+                    record.scoring_1 = scoring
+                elif self.env.user.scoring_column == 'scoring_2':
+                    record.scoring_2 = scoring
+                elif self.env.user.scoring_column == 'scoring_3':
+                    record.scoring_3 = scoring
+                elif self.env.user.scoring_column == 'scoring_4':
+                    record.scoring_4 = scoring
+                elif self.env.user.scoring_column == 'scoring_5':
+                    record.scoring_5 = scoring
 
     @api.model
     def is_global_leave_or_weekend(self, date):
@@ -324,6 +346,9 @@ class HrApplicant(models.Model):
     def suggest_candidats(self):
         for record in self:
             if record._context.get('crm_id', False):
-                crm_id = self.env['crm.lead'].browse(record._context.get('crm_id', False))
-                
-                record.crm_ids = [(4, crm_id.id)]
+                hr_applicant_crm = record.env['hr.applicant.crm'].create({
+                    'applicant_id' : record.id,
+                    'crm_id' : record._context.get('crm_id', False),
+                })
+
+                hr_applicant_crm._reset_stage()

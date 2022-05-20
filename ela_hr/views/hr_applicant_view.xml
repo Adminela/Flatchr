@@ -102,22 +102,15 @@
                                 <span> à </span>
                                 <field name="salaire_minimum_max"/>
                             </div>
-                            <!--<label for="salaire_propose_min"/>
-                            <div class="o_row">
-                                <field name="salaire_propose_min"/>
-                                <span> à </span>
-                                <field name="salaire_propose_max"/>
-                            </div>-->
                             <field name="benefit_wished_ids" widget="many2many_tags" options="{'no_create_edit': True, 'no_quick_create': True}"/>
-                            <!--<field name="benefit_offered_ids" widget="many2many_tags" options="{'no_create_edit': True, 'no_quick_create': True}"/>-->
                         </group>
                     </group>
                 </page>
                 <page string="Pédagogie">
                     <group>
                         <group>
-                            <field name="login" groups="ela_hr.group_hide_password"/>
-                            <field name="mot_de_passe" groups="ela_hr.group_hide_password"/>
+                            <field name="login"/>
+                            <field name="mot_de_passe"/>
                             <field name="in_formation" widget="boolean_toggle"/>
                             <field name="date_entree"/>
                             <field name="workhour_available_ids" widget="many2many_tags" options="{'no_create_edit': True, 'no_quick_create': True}"/>
@@ -136,6 +129,19 @@
                                 <field name="hours_number"/>
                                 <field name="objective"/>
                                 <field name="progress" widget="progressbar"/>
+                            </tree>
+                        </field>
+                    </group>
+                </page>
+                <page string="Opportunités">
+                    <group>
+                        <field name="crm_ids" mode="tree" nolabel="1">
+                            <tree string="Opportunités" editable="bottom" create="false">
+                                <field name="crm_id" readonly="1"/>
+                                <field name="stage_id"/>
+                                <field name="last_stage_date"/>
+                                <field name="response"/>
+                                <field name="response_date"/>
                             </tree>
                         </field>
                     </group>
@@ -165,6 +171,41 @@
             <field name="legend_done" position="after">
                 <field name="task_id" invisible="1"/>
             </field>
+
+            <xpath expr="//div[hasclass('o_kanban_record_headings')]" position="replace">
+              <div class="o_kanban_record_headings">
+                <b class="o_kanban_record_title mt8" t-if="record.partner_name.raw_value">
+                <field name="partner_name"/>
+                <span class="text_blue">
+                  <field class="text_blue" name="crm_sent_nb"/>
+                </span>
+                <span class="text_green">
+                  <field class="text_green" name="crm_presented_nb"/> | 
+                </span>
+                <span class="text_red">
+                  <field class="text_red" name="crm_suggested_nb"/> | 
+                </span>
+                <br/>
+                </b><t t-else="1">
+                    <i class="o_kanban_record_title">
+                        <field name="name"/>
+                        <span class="text_blue">
+                          <field class="text_blue" name="crm_sent_nb"/>
+                        </span>
+                        <span class="text_green">
+                          <field class="text_green" name="crm_presented_nb"/> | 
+                        </span>
+                        <span class="text_red">
+                          <field class="text_red" name="crm_suggested_nb"/> | 
+                        </span>
+                    </i><br/>
+                </t>
+                <div class="o_kanban_record_subtitle" invisible="context.get('search_default_job_id', False)">
+                    <field name="job_id"/>
+                </div>
+              </div>
+            </xpath>
+
             <xpath expr="//div[hasclass('ribbon-top-right')]" position="before">
                 <field name="active_ela" invisible="1"/>
                 <div class="ribbon ribbon-top-right" attrs="{'invisible': [('active_ela', '=', True)]}">
@@ -183,6 +224,9 @@
                 <field name="task_stage_id"/>
                 <field name="solde_formation" sum="Total solde"/>
                 <field name="prix_formation" sum="Total prix"/>
+                <field name="crm_suggested_nb" sum="Total solde"/>
+                <field name="crm_presented_nb" sum="Total solde"/>
+                <field name="crm_sent_nb" sum="Total solde"/>
             </field>
             <field name="partner_mobile" position="replace">
                 <field name="partner_phone"/>
@@ -213,8 +257,6 @@
                 <field name="availability" optional="hide"/>
                 <field name="department_id" invisible="context.get('invisible_department', True)" readonly="1"/>
                 <field name="company_id" groups="base.group_multi_company" readonly="1" optional="hide"/>
-                <!--<field name="task_stage_id" optional="hide"/>-->
-                <field name="partner_phone" optional="hide"/>
                 <field name="date_inscription" optional="hide"/>
                 <field name="workzone_ids" widget="many2many_tags"/>
                 <field name="code_postal"/>
@@ -227,7 +269,12 @@
                 <field name="salaire_minimum_min"/>
                 <field name="salaire_minimum_max"/>
                 <field name="benefit_wished_ids" widget="many2many_tags"/>
-                <field name="scoring"/>
+                <!--<field name="scoring"/>-->
+                <field name="scoring_1" invisible="context.get('show_scoring_1', False) == False"/>
+                <field name="scoring_2" invisible="context.get('show_scoring_2', False) == False"/>
+                <field name="scoring_3" invisible="context.get('show_scoring_3', False) == False"/>
+                <field name="scoring_4" invisible="context.get('show_scoring_4', False) == False"/>
+                <field name="scoring_5" invisible="context.get('show_scoring_5', False) == False"/>
                 <field name="show_suggest_button" invisible="1"/>
                 <button name="suggest_candidats" string="suggérer le candidat"  type="object" class="oe_highlight" attrs="{'invisible' : [('show_suggest_button', '=', False)]}"/>
                 <button name="allready_suggest_candidats" string="Suggéré" type="object" readonly="1" attrs="{'invisible' : [('show_suggest_button', '=', True)]}"/>

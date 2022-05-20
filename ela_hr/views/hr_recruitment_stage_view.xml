@@ -10,11 +10,6 @@
                     <group>
                         <field name="is_create_project_task"/>
                         <field name="is_reset"/>
-                        <!--<label for="periode"/>
-                        <div class="o_row" name="periode">
-                            <field name="periode" attrs="{'invisible': [('is_reset', '=', False)]}"/>
-                            <span>Heures</span>
-                        </div>-->
                     </group>
                     <group>
                         <field name="is_candidats_portfolio"/>
