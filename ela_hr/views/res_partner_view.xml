@@ -1,0 +1,28 @@
+<?xml version='1.0' encoding='utf-8'?>
+<odoo>
+
+    <record id="ela_hr_view_partner_form" model="ir.ui.view">
+        <field name="name">ela.hr.base.view.partner.form</field>
+        <field name="model">res.partner</field>
+        <field name="inherit_id" ref="base.view_partner_form"/>
+        <field name="priority" eval="10"/>
+        <field name="arch" type="xml">
+            <page name="contact_addresses" position="after">
+                <page name="opportunity_applicant_ids" string="Candidatures">
+                    <group>
+                        <field name="opportunity_applicant_ids" mode="tree" nolabel="1">
+                            <tree string="Opportunités" editable="bottom" create="false">
+                              <field name="crm_id" readonly="1"/>
+                              <field name="applicant_id" readonly="1"/>
+                              <field name="stage_id"/>
+                              <field name="last_stage_date"/>
+                              <field name="response"/>
+                              <field name="response_date"/>
+                            </tree>
+                        </field>
+                    </group>
+                </page>
+            </page>
+        </field>
+    </record>
+</odoo>

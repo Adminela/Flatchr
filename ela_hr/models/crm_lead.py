@@ -33,30 +33,29 @@ class CrmLead(models.Model):
         'Appréciation RH', default="niveau_1"
     )
     appreciation_hr_score = fields.Integer(string='Appréciation RH score')
-    #experience_ids = fields.Many2many("hr.applicant.experience", string='Expériences', ondelete="restrict")
     experience_id = fields.Many2one("hr.applicant.experience", string='Expériences', ondelete="restrict")
     experience_id_score = fields.Integer(string='Expériences score')
     contract_type_ids = fields.Many2many("hr.applicant.contract.type", string='Types de contrats proposé', ondelete="restrict")
     contract_type_ids_score = fields.Integer(string='Types de contrats proposé score')
-    #salaire_minimum_min = fields.Integer(string='Salaire Minimum de')
-    #salaire_minimum_min_score = fields.Integer(string='Salaire Minimum de score')
-    #salaire_minimum_max = fields.Integer(string='à')
-    #salaire_minimum_max_score = fields.Integer(string='à score')
     salaire_propose = fields.Float(string='Salaire proposé')
     salaire_propose_score = fields.Integer(string='Salaire proposé score')
-    #salaire_propose_max = fields.Integer(string='à')
-    #salaire_propose_max_score = fields.Integer(string='à score')
-    #benefit_wished_ids = fields.Many2many("hr.applicant.benefit", 'benefit_wished_crm_rel', string='Avantages souhaités', ondelete="restrict")
-    #benefit_wished_ids_score = fields.Integer(string='Avantages souhaités score')
     benefit_offered_ids = fields.Many2many("hr.applicant.benefit", 'benefit_offered_crm_rel', string='Avantages proposés', ondelete="restrict")
     benefit_offered_ids_score = fields.Integer(string='Avantages proposés score')
 
-    candidat_suggested_ids = fields.Many2many("hr.applicant", 'crm_applicant_rel', string='Candidats proposés', tracking=True)
-    #candidat_linked_ids = fields.One2many("hr.applicant", string='Candidats associés', tracking=True)
+    candidat_crm_suggested_ids = fields.One2many('hr.applicant.crm', inverse_name='crm_id', string='Candidats proposés')
+    candidat_suggested_nb = fields.Integer(string='# Suggérés', compute="_compute_nbs", store=True)
+    candidat_presented_nb = fields.Integer(string='# CVs présentés', compute="_compute_nbs", store=True)
+    candidat_sent_nb = fields.Integer(string='# Envoyés en RDV', compute="_compute_nbs", store=True)
 
+    @api.depends("candidat_crm_suggested_ids", "candidat_crm_suggested_ids.stage_id")
+    def _compute_nbs(self):
+        for record in self:
+            record.candidat_suggested_nb = len(record.candidat_crm_suggested_ids.filtered(lambda c: c.stage_id.sequence >= 0))
+            record.candidat_presented_nb = len(record.candidat_crm_suggested_ids.filtered(lambda c: c.stage_id.sequence >= 1))
+            record.candidat_sent_nb = len(record.candidat_crm_suggested_ids.filtered(lambda c: c.stage_id.sequence >= 2))
+            
     def action_candidat_suggested(self):
         search_view = self.env.ref('ela_hr.ela_hr_hr_applicant_view_search_ter')
-
 
         context = {}
         search_domain = []
@@ -155,6 +154,21 @@ class CrmLead(models.Model):
             context.update({'search_default_none_filter' : 1})
 
         context.update({'crm_id' : self.id})
+
+        if self.env.user:
+            if self.env.user.scoring_column == 'scoring_1':
+                context.update({'show_scoring_1' : True})
+            elif self.env.user.scoring_column == 'scoring_2':
+                context.update({'show_scoring_2' : True})
+            elif self.env.user.scoring_column == 'scoring_3':
+                context.update({'show_scoring_3' : True})
+            elif self.env.user.scoring_column == 'scoring_4':
+                context.update({'show_scoring_4' : True})
+            elif self.env.user.scoring_column == 'scoring_5':
+                context.update({'show_scoring_5' : True})
+            else:
+                raise ValidationError("Veuillez contacter votre administrateur pour choisir une colonne de scorring pour votre Utilisateur")
+
         search_view_arch += """
                 <group expand="0" string="Group By">
                     <filter string="Code postal" name="code_postal" domain="[]" context="{'group_by': 'code_postal'}"/>
@@ -169,6 +183,7 @@ class CrmLead(models.Model):
 
         if search_domain:
             self.env['hr.applicant'].search(search_domain).with_context(crm_id=self.id)._compute_scoring()
+            #self.env['hr.applicant'].search([(1, '=', 1)]).with_context(crm_id=self.id)._compute_scoring()
 
         return {
             'name': _('Suggérer candidats'),

@@ -16,7 +16,9 @@ access_hr_applicant_mobilite_user,hr.applicant.mobilite.user,model_hr_applicant_
 access_hr_applicant_heure_semaine_user,hr.applicant.heure.semaine.user,model_hr_applicant_heure_semaine,hr_recruitment.group_hr_recruitment_user,1,0,0,0
 access_hr_applicant_situation_user,hr.applicant.situation.user,model_hr_applicant_situation,hr_recruitment.group_hr_recruitment_user,1,0,0,0
 
-base.access_ir_attachment_group_user,ir_attachment group_user,base.model_ir_attachment,base.group_user,1,1,1,0
+access_hr_applicant_crm_stage_user,hr.applicant.crm.stage.user,model_hr_applicant_crm_stage,hr_recruitment.group_hr_recruitment_user,1,0,0,0
+access_hr_applicant_crm_user,hr.applicant.crm.user,model_hr_applicant_crm,hr_recruitment.group_hr_recruitment_user,1,0,0,0
+access_ir_attachment_group_user,ir_attachment group_user,base.model_ir_attachment,base.group_user,1,1,1,0
 
 access_hr_applicant_benefit_manager,hr.applicant.benefit.manager,model_hr_applicant_benefit,hr_recruitment.group_hr_recruitment_manager,1,1,1,1
 access_hr_applicant_contract_type_manager,hr.contract.type.manager,model_hr_applicant_contract_type,hr_recruitment.group_hr_recruitment_manager,1,1,1,1
@@ -35,4 +37,6 @@ access_hr_applicant_mobilite_manager,hr.applicant.mobilite.manager,model_hr_appl
 access_hr_applicant_heure_semaine_manager,hr.applicant.heure.semaine.manager,model_hr_applicant_heure_semaine,hr_recruitment.group_hr_recruitment_manager,1,1,1,1
 access_hr_applicant_situation_manager,hr.applicant.situation.manager,model_hr_applicant_situation,hr_recruitment.group_hr_recruitment_manager,1,1,1,1
 
+access_hr_applicant_crm_stage_manager,hr.applicant.crm.stage.manager,model_hr_applicant_crm_stage,hr_recruitment.group_hr_recruitment_manager,1,1,1,1
+access_hr_applicant_crm_manager,hr.applicant.crm.manager,model_hr_applicant_crm,hr_recruitment.group_hr_recruitment_manager,1,1,1,1
 access_ir_attachment_manager,ir.attachment.manager,base.model_ir_attachment,hr_recruitment.group_hr_recruitment_manager,1,1,1,1

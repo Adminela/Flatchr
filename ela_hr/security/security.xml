@@ -47,4 +47,9 @@
         <field name="name">Afficher Utilisateur / Mot de passe pédagogique</field>
         <field name="category_id" ref="base.module_category_usability"/>
     </record>
+
+    <record id="group_hide_prices" model="res.groups">
+        <field name="name">Afficher Solde / Prix formation</field>
+        <field name="category_id" ref="base.module_category_usability"/>
+    </record>
 </odoo>

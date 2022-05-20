@@ -14,7 +14,6 @@ class ProjectTask(models.Model):
     date_naissance = fields.Date(related="applicant_id.date_naissance", readonly=False, tracking=True, store=True)
     
     # Formation
-    #formation = fields.Selection(related="applicant_id.formation", compute="_compute_formation", inverse="_set_formation")
     certification = fields.Many2one(related="applicant_id.certification", readonly=False, tracking=True, store=True)
     dispositif = fields.Many2one(related="applicant_id.dispositif", readonly=False, tracking=True, store=True)
     accompagnement = fields.Boolean(related="applicant_id.accompagnement", readonly=False, tracking=True, store=True)
@@ -25,8 +24,8 @@ class ProjectTask(models.Model):
     date_entree_call = fields.Date(related="applicant_id.date_entree_call", readonly=False, tracking=True, store=True)
     date_inscription = fields.Date(related="applicant_id.date_inscription", readonly=False, tracking=True, store=True)
     # Pédagogique
-    login = fields.Char(related="applicant_id.login", readonly=False, tracking=True, store=True)
-    mot_de_passe = fields.Char(related="applicant_id.mot_de_passe", readonly=False, tracking=True, store=True)
+    login = fields.Char(related="applicant_id.login", readonly=False, tracking=True, store=True, groups="ela_hr.group_hide_password")
+    mot_de_passe = fields.Char(related="applicant_id.mot_de_passe", readonly=False, tracking=True, store=True, groups="ela_hr.group_hide_password")
     date_entree = fields.Date(related="applicant_id.date_entree", readonly=False, tracking=True, store=True)
     workhour_available_ids = fields.Many2many(related="applicant_id.workhour_available_ids", readonly=False, tracking=True)
     plateforme = fields.Many2one(related="applicant_id.plateforme", readonly=False, tracking=True, store=True)
@@ -34,8 +33,8 @@ class ProjectTask(models.Model):
     date_fin = fields.Date(related="applicant_id.date_fin", readonly=False, tracking=True, store=True)
     test_result = fields.Char(related="applicant_id.test_result", readonly=False, tracking=True, store=True)
     ligne_suivi_ids = fields.One2many(related="applicant_id.ligne_suivi_ids", readonly=False)
-    prix_formation = fields.Float(related="applicant_id.prix_formation", readonly=False, tracking=True, store=True)
-    solde_formation = fields.Float(related="applicant_id.solde_formation", readonly=False, tracking=True, store=True)
+    prix_formation = fields.Float(related="applicant_id.prix_formation", readonly=False, tracking=True, store=True, groups="ela_hr.group_hide_prices")
+    solde_formation = fields.Float(related="applicant_id.solde_formation", readonly=False, tracking=True, store=True, groups="ela_hr.group_hide_prices")
     in_formation = fields.Boolean(related="applicant_id.in_formation", readonly=False, tracking=True, store=True)
     payment_state = fields.Selection(related="applicant_id.payment_state", readonly=False, tracking=True, store=True)
 

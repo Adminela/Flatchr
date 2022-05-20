@@ -5,18 +5,19 @@
 from odoo import fields, api, models, _
 
 class ResUsers(models.Model):
-    _name = 'res.users'
     _inherit = 'res.users'
 
-    stage_ids = fields.Many2many(compute='_compute_stage_ids', comodel_name='hr.recruitment.stage')
+    scoring_column = fields.Selection([
+        ("scoring_1", "Scoring 1"),
+        ("scoring_2", "Scoring 2"),
+        ("scoring_3", "Scoring 3"),
+        ("scoring_4", "Scoring 4"),
+        ("scoring_5", "Scoring 5"),
+        ],
+        'Colonne de scoring',
+        tracking=True
+    )
 
-    def _compute_stage_ids(self):
-        #right_ids = self.env['project.task.rights'].search([('username_ids.id','=',self.id)])
-        stage_ids = self.env['hr.recruitment.stage'].search([(1,'=',1)])
-        #stage_ids = []
-        #for right in right_ids:
-        #    for fase in right.project_task_fases:
-        #        stage_ids.append(fase.id)
-        for record in self:
-            record.stage_ids = stage_ids
-            #record.stage_ids = [1,3,4]
+    _sql_constraints = [
+        ('uniq_scoring_column', 'unique(scoring_column)', "'ATTENTION' Cette colonne est déja utilisée pour un autre utilisateur !")
+    ]

@@ -66,8 +66,8 @@
                 </group>
                 <group name="pedagogie" string="Pédagogie">
                     <group>
-                        <field name="login" groups="ela_hr.group_hide_password"/>
-                        <field name="mot_de_passe" groups="ela_hr.group_hide_password"/>
+                        <field name="login"/>
+                        <field name="mot_de_passe"/>
                         <field name="in_formation" widget="boolean_toggle"/>
                         <field name="date_entree"/>
                         <field name="workhour_available_ids" widget="many2many_tags"/>
