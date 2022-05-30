@@ -20,10 +20,12 @@
         "hr_recruitment",
         "hr_recruitment_survey",
         "project",
-        "crm"
+        "crm",
+        "mail"
     ],
     "data": [
         "security/ir.model.access.csv",
+        "wizard/duplicate_user_id_wizard.xml",
         "views/hr_applicant_view.xml",
         "views/hr_job_view.xml",
         "views/project_task_view.xml",
@@ -37,6 +39,7 @@
         "views/hr_applicant_crm_stage_view.xml",
         "views/res_users_view.xml",
         "views/res_partner_view.xml",
+        "views/mail_activity_views.xml",
         "security/security.xml",
         "data/ir_cron.xml",
     ],
@@ -46,6 +49,11 @@
     'assets': {
         'web.assets_backend': [
             'ela_hr/static/src/css/styles.css',
+            'ela_hr/static/src/components/activity/activity.js',
+            
+        ],
+        'web.assets_qweb': [
+            'ela_hr/static/src/components/activity/activity.xml'
         ],
     },
     "license": "AGPL-3",

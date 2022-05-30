@@ -8,6 +8,10 @@ access_hr_applicant_workhour_available_user,hr.applicant.workhour.available.user
 access_hr_applicant_workzone_user,hr.applicant.workzone.user,model_hr_applicant_workzone,hr_recruitment.group_hr_recruitment_user,1,0,0,0
 access_hr_applicant_hour_progress_user,hr.applicant.hour.progress.user,model_hr_applicant_hour_progress,hr_recruitment.group_hr_recruitment_user,1,0,0,0
 
+access_hr_applicant_secteur_user,hr.applicant.secteur.user,model_hr_applicant_secteur,hr_recruitment.group_hr_recruitment_user,1,0,0,0
+access_hr_applicant_filiere_user,hr.applicant.filiere.user,model_hr_applicant_filiere,hr_recruitment.group_hr_recruitment_user,1,0,0,0
+access_hr_applicant_metier_user,hr.applicant.metier.user,model_hr_applicant_metier,hr_recruitment.group_hr_recruitment_user,1,0,0,0
+
 access_hr_applicant_certification_user,hr.applicant.certification.user,model_hr_applicant_certification,hr_recruitment.group_hr_recruitment_user,1,0,0,0
 access_hr_applicant_dispositif_user,hr.applicant.dispositif.user,model_hr_applicant_dispositif,hr_recruitment.group_hr_recruitment_user,1,0,0,0
 access_hr_applicant_niveau_user,hr.applicant.niveau.user,model_hr_applicant_niveau,hr_recruitment.group_hr_recruitment_user,1,0,0,0
@@ -29,6 +33,10 @@ access_hr_applicant_workhour_available_manager,hr.applicant.workhour.available.m
 access_hr_applicant_workzone_manager,hr.applicant.workzone.manager,model_hr_applicant_workzone,hr_recruitment.group_hr_recruitment_manager,1,1,1,1
 access_hr_applicant_hour_progress_responsible,hr.applicant.hour.progress.responsible,model_hr_applicant_hour_progress,ela_hr.group_ela_hr_recruitmentt_responsible,1,1,1,1
 
+access_hr_applicant_secteur_manager,hr.applicant.secteur.manager,model_hr_applicant_secteur,hr_recruitment.group_hr_recruitment_manager,1,1,1,1
+access_hr_applicant_filiere_manager,hr.applicant.filiere.manager,model_hr_applicant_filiere,hr_recruitment.group_hr_recruitment_manager,1,1,1,1
+access_hr_applicant_metier_manager,hr.applicant.metier.manager,model_hr_applicant_metier,hr_recruitment.group_hr_recruitment_manager,1,1,1,1
+
 access_hr_applicant_certification_manager,hr.applicant.certification.manager,model_hr_applicant_certification,hr_recruitment.group_hr_recruitment_manager,1,1,1,1
 access_hr_applicant_dispositif_manager,hr.applicant.dispositif.manager,model_hr_applicant_dispositif,hr_recruitment.group_hr_recruitment_manager,1,1,1,1
 access_hr_applicant_niveau_manager,hr.applicant.niveau.manager,model_hr_applicant_niveau,hr_recruitment.group_hr_recruitment_manager,1,1,1,1
@@ -40,3 +48,5 @@ access_hr_applicant_situation_manager,hr.applicant.situation.manager,model_hr_ap
 access_hr_applicant_crm_stage_manager,hr.applicant.crm.stage.manager,model_hr_applicant_crm_stage,hr_recruitment.group_hr_recruitment_manager,1,1,1,1
 access_hr_applicant_crm_manager,hr.applicant.crm.manager,model_hr_applicant_crm,hr_recruitment.group_hr_recruitment_manager,1,1,1,1
 access_ir_attachment_manager,ir.attachment.manager,base.model_ir_attachment,hr_recruitment.group_hr_recruitment_manager,1,1,1,1
+
+access_hr_applicant_duplicate_wizard_user,hr.applicant.duplicate.wizard.user,model_hr_applicant_duplicate_wizard,hr_recruitment.group_hr_recruitment_user,1,1,1,1

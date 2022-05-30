@@ -42,6 +42,15 @@ class CrmLead(models.Model):
     benefit_offered_ids = fields.Many2many("hr.applicant.benefit", 'benefit_offered_crm_rel', string='Avantages proposés', ondelete="restrict")
     benefit_offered_ids_score = fields.Integer(string='Avantages proposés score')
 
+    secteur_ids = fields.Many2many("hr.activity", string='Secteurs d\'activité', ondelete="restrict", tracking=True)
+    secteur_ids_score = fields.Integer(string='Secteurs d\'activité score')
+    filiere_ids = fields.Many2many("hr.channel", string='Filières', ondelete="restrict", tracking=True)
+    filiere_ids_score = fields.Integer(string='Filières score')
+    metier_ids = fields.Many2many("hr.metier", string='Métiers', ondelete="restrict", tracking=True)
+    metier_ids_score = fields.Integer(string='Métiers score')
+    skill_ids = fields.Many2many("hr.applicant.skill", string='Compétence', ondelete="restrict", tracking=True)
+    skill_ids_score = fields.Integer(string='Métiers score')
+
     candidat_crm_suggested_ids = fields.One2many('hr.applicant.crm', inverse_name='crm_id', string='Candidats proposés')
     candidat_suggested_nb = fields.Integer(string='# Suggérés', compute="_compute_nbs", store=True)
     candidat_presented_nb = fields.Integer(string='# CVs présentés', compute="_compute_nbs", store=True)
@@ -75,6 +84,10 @@ class CrmLead(models.Model):
                 <field name="salaire_minimum_min"/>
                 <field name="salaire_minimum_max"/>
                 <field name="benefit_wished_ids"/>
+                <field name="secteur_ids"/>
+                <field name="filiere_ids"/>
+                <field name="metier_ids"/>
+                <field name="skill_ids"/>
             """
 
         if self.workzone_ids_score:
@@ -146,6 +159,34 @@ class CrmLead(models.Model):
                 <filter string="Avantages proposés contient %s" name="benefit_offered_ids_filter" domain="[('benefit_wished_ids', 'in', %s)]"/>
             """%(self.benefit_offered_ids.mapped("name"), self.benefit_offered_ids.ids)
             context.update({'search_default_benefit_offered_ids_filter' : 1})
+
+        if self.secteur_ids_score:
+            search_domain = expression.OR([search_domain, [('secteur_ids', 'in', self.secteur_ids.ids)]])
+            search_view_arch += """
+                <filter string="Secteurs d'activités contient %s" name="secteur_ids_filter" domain="[('secteur_ids', 'in', %s)]"/>
+            """%(self.secteur_ids.mapped("name"), self.secteur_ids.ids)
+            context.update({'search_default_secteur_ids_filter' : 1})
+
+        if self.filiere_ids_score:
+            search_domain = expression.OR([search_domain, [('filiere_ids', 'in', self.filiere_ids.ids)]])
+            search_view_arch += """
+                <filter string="Filières contient %s" name="filiere_ids_filter" domain="[('filiere_ids', 'in', %s)]"/>
+            """%(self.filiere_ids.mapped("name"), self.filiere_ids.ids)
+            context.update({'search_default_filiere_ids_filter' : 1})
+
+        if self.metier_ids_score:
+            search_domain = expression.OR([search_domain, [('metier_ids', 'in', self.metier_ids.ids)]])
+            search_view_arch += """
+                <filter string="Métiers contient %s" name="metier_ids_filter" domain="[('metier_ids', 'in', %s)]"/>
+            """%(self.metier_ids.mapped("name"), self.metier_ids.ids)
+            context.update({'search_default_metier_ids_filter' : 1})
+
+        if self.skill_ids_score:
+            search_domain = expression.OR([search_domain, [('skill_ids', 'in', self.skill_ids.ids)]])
+            search_view_arch += """
+                <filter string="Compétences contient %s" name="skill_ids_filter" domain="[('skill_ids', 'in', %s)]"/>
+            """%(self.skill_ids.mapped("name"), self.skill_ids.ids)
+            context.update({'search_default_skill_ids_filter' : 1})
 
         if context == {}:
             search_view_arch += """

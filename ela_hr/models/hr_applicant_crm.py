@@ -21,7 +21,7 @@ class HrApplicantCrm(models.Model):
         ],
         'Réponse employeur',
     )
-    response_date = fields.Date(String="Date de résponse", compute="_compute_response_date", readonly=True, store=True)
+    response_date = fields.Date(string="Date de résponse", compute="_compute_response_date", readonly=True, store=True)
 
     @api.depends("stage_id")
     def _compute_last_stage_date(self):
@@ -51,5 +51,5 @@ class HrApplicantCrmStage(models.Model):
     _description = "Hr applicant crm stage"
     _order = "sequence, id"
 
-    sequence = fields.Integer("Séquence", defaut=1)
+    sequence = fields.Integer("Séquence", default=1)
     name = fields.Char("Nom", required=True)

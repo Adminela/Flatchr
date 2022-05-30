@@ -10,6 +10,29 @@
                     <group>
                         <group col="6">
                             <group colspan="5">
+                                <field name="secteur_ids" widget="many2many_tags" options="{'no_create_edit': True, 'no_quick_create': True}" attrs="{'required': [('secteur_ids_score', '!=', 0)]}"/>
+                                <field name="filiere_ids" widget="many2many_tags" options="{'no_create_edit': True, 'no_quick_create': True}" attrs="{'required': [('filiere_ids_score', '!=', 0)]}"/>
+                            </group>
+                            <group col="1">
+                                <field name="secteur_ids_score" nolabel="1"/>
+                                <field name="filiere_ids_score" nolabel="1"/>
+                            </group>
+                        </group>
+                        <group col="6">
+                            <group colspan="5">
+                                <field name="metier_ids" widget="many2many_tags" options="{'no_create_edit': True, 'no_quick_create': True}" attrs="{'required': [('metier_ids_score', '!=', 0)]}"/>
+                                <field name="skill_ids" widget="many2many_tags" options="{'no_create_edit': True, 'no_quick_create': True}" attrs="{'required': [('metier_ids_score', '!=', 0)]}"/>
+                            </group>
+                            <group col="1">
+                                <field name="metier_ids_score" nolabel="1"/>
+                                <field name="skill_ids_score" nolabel="1"/>
+                            </group>
+                        </group>
+                    </group>
+                    
+                    <group>
+                        <group col="6">
+                            <group colspan="5">
                                 <field name="workzone_ids" widget="many2many_tags" options="{'no_create_edit': True, 'no_quick_create': True}" attrs="{'required': [('workzone_ids_score', '!=', 0)]}"/>
                                 <field name="code_postal" attrs="{'required': [('code_postal_score', '!=', 0)]}"/>
                                 <field name="workhour_ids" widget="many2many_tags" options="{'no_create_edit': True, 'no_quick_create': True}" attrs="{'required': [('workhour_ids_score', '!=', 0)]}"/>
@@ -44,6 +67,11 @@
                 </page>
                 <page string="Candidats suggérés">
                     <group>
+                        <group>
+                            <field name="candidat_suggested_nb"/>
+                        </group>
+                    </group>
+                    <group>
                         <field name="candidat_crm_suggested_ids" domain="[('stage_id', '=', 'Suggéré')]" mode="tree" nolabel="1">
                             <tree string="Candidats suggérés" editable="bottom" create="false">
                                 <field name="applicant_id" readonly="1"/>
@@ -57,8 +85,16 @@
                 </page>
                 <page string="Candidats présentés">
                     <group>
+                        <group>
+                            <field name="candidat_presented_nb"/>
+                        </group>
+                        <group>
+                            <field name="candidat_sent_nb"/>
+                        </group>
+                    </group>
+                    <group>
                         <field name="candidat_crm_suggested_ids" domain="[('stage_id', '!=', 'Suggéré')]" mode="tree" nolabel="1">
-                            <tree string="Candidats suggérés" editable="bottom" create="false">
+                            <tree string="Candidats présentés" editable="bottom" create="false">
                                 <field name="applicant_id" readonly="1"/>
                                 <field name="stage_id" options="{'no_create_edit': True, 'no_quick_create': True}"/>
                                 <field name="last_stage_date"/>
@@ -83,9 +119,9 @@
         <field name="inherit_id" ref="crm.crm_case_tree_view_oppor"/>
         <field name="arch" type="xml">
             <field name="stage_id" position="after">
-                <field name="candidat_suggested_nb" optional="hide"/>
-                <field name="candidat_presented_nb" optional="hide"/>
-                <field name="candidat_sent_nb" optional="hide"/>
+                <field name="candidat_suggested_nb" optional="hide" sum="Total suggérés"/>
+                <field name="candidat_presented_nb" optional="hide" sum="Total présentés"/>
+                <field name="candidat_sent_nb" optional="hide" sum="Total CV envoyés"/>
             </field>
         </field>                
     </record>

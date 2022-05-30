@@ -23,7 +23,7 @@
         </field>
     </record>
 
-    <menuitem id="menu_config_skill"
+    <menuitem id="menu_config_crm_stage"
         name="Étapes candidatures"
         groups="hr_recruitment.group_hr_recruitment_manager"
         action="ela_hr_hr_applicant_crm_stage_view"

@@ -184,4 +184,5 @@
         parent="menu_config_tags"
         sequence="5"
     />
+
 </odoo>
