@@ -72,6 +72,46 @@
         </field>
     </record>
 
+    <record id="view_hr_applicant_secteur_tree" model="ir.ui.view">
+        <field name="name">hr.applicant.secteur.tree</field>
+        <field name="model">hr.activity</field>
+        <field name="arch" type="xml">
+            <tree string="Situation" editable="bottom">
+                <field name="name"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_hr_applicant_filiere_tree" model="ir.ui.view">
+        <field name="name">hr.applicant.filiere.tree</field>
+        <field name="model">hr.channel</field>
+        <field name="arch" type="xml">
+            <tree string="Situation" editable="bottom">
+                <field name="name"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_hr_applicant_metier_tree" model="ir.ui.view">
+        <field name="name">hr.applicant.metier.tree</field>
+        <field name="model">hr.metier</field>
+        <field name="arch" type="xml">
+            <tree string="Situation" editable="bottom">
+                <field name="name"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_hr_applicant_skill_tree" model="ir.ui.view">
+        <field name="name">hr.applicant.skill.tree</field>
+        <field name="model">hr.applicant.skill</field>
+        <field name="arch" type="xml">
+            <tree string="Compétence" editable="bottom">
+                <field name="name"/>
+            </tree>
+        </field>
+    </record>
+
     <!-- Actions -->
     <record model="ir.actions.act_window" id="action_hr_applicant_certification_tree">
         <field name="name">Certification</field>
@@ -150,6 +190,50 @@
         </field>
     </record>
 
+    <record model="ir.actions.act_window" id="action_hr_applicant_secteur_activite_tree">
+        <field name="name">Secteurs d'activité</field>
+        <field name="res_model">hr.activity</field>
+        <field name="view_mode">tree</field>
+        <field name="context">{}</field>
+        <field name="help" type="html">
+            <p>
+            </p>
+        </field>
+    </record>
+
+    <record model="ir.actions.act_window" id="action_hr_applicant_filiere_tree">
+        <field name="name">Filières</field>
+        <field name="res_model">hr.channel</field>
+        <field name="view_mode">tree</field>
+        <field name="context">{}</field>
+        <field name="help" type="html">
+            <p>
+            </p>
+        </field>
+    </record>
+
+    <record model="ir.actions.act_window" id="action_hr_applicant_metier_tree">
+        <field name="name">Métiers</field>
+        <field name="res_model">hr.metier</field>
+        <field name="view_mode">tree</field>
+        <field name="context">{}</field>
+        <field name="help" type="html">
+            <p>
+            </p>
+        </field>
+    </record>
+
+    <record model="ir.actions.act_window" id="action_hr_applicant_skill_tree">
+        <field name="name">Compétence</field>
+        <field name="res_model">hr.applicant.skill</field>
+        <field name="view_mode">tree</field>
+        <field name="context">{}</field>
+        <field name="help" type="html">
+            <p>
+            </p>
+        </field>
+    </record>
+
     <!-- Menus -->
     <menuitem id="menu_config_objects"
         name="Objets candidats"
@@ -170,7 +254,7 @@
         name="Dispositif"
         groups="hr_recruitment.group_hr_recruitment_manager"
         action="action_hr_applicant_dispositif_tree"
-        parent="menu_config_tags"
+        parent="menu_config_objects"
         sequence="1"
     />
 
@@ -213,4 +297,37 @@
         parent="menu_config_objects"
         sequence="6"
     />
+
+    <menuitem id="menu_config_secteur_activite"
+        name="Secteurs d'activité"
+        groups="hr_recruitment.group_hr_recruitment_manager"
+        action="action_hr_applicant_secteur_activite_tree"
+        parent="menu_config_objects"
+        sequence="7"
+    />
+
+    <menuitem id="menu_config_filiere"
+        name="Filières"
+        groups="hr_recruitment.group_hr_recruitment_manager"
+        action="action_hr_applicant_filiere_tree"
+        parent="menu_config_objects"
+        sequence="8"
+    />
+
+    <menuitem id="menu_config_metier"
+        name="Métiers"
+        groups="hr_recruitment.group_hr_recruitment_manager"
+        action="action_hr_applicant_metier_tree"
+        parent="menu_config_objects"
+        sequence="9"
+    />
+
+    <menuitem id="menu_config_skill"
+        name="Expériences"
+        groups="hr_recruitment.group_hr_recruitment_manager"
+        action="action_hr_applicant_skill_tree"
+        parent="menu_config_objects"
+        sequence="10"
+    />
+
 </odoo>

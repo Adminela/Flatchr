@@ -103,6 +103,7 @@ class HrApplicant(models.Model):
     prix_formation = fields.Float(string='Prix formation', tracking=True, groups="ela_hr.group_hide_prices")
     solde_formation = fields.Float(string='Solde', tracking=True, groups="ela_hr.group_hide_prices")
     in_formation = fields.Boolean(string='Rentré en formation', tracking=True)
+
     payment_state = fields.Selection([
         ("to_be_sold", "À payer"),
         ("sold", "Payé"),
@@ -110,8 +111,15 @@ class HrApplicant(models.Model):
         'État du paiement',
         tracking=True
     )
+    to_be_sold_date = fields.Date(string='Date à payer', compute='_compute_to_be_sold_date', store=True, tracking=True)
+    sold_date = fields.Date(string='Date de paiement', compute='_compute_to_be_sold_date', store=True, tracking=True)
+
     stage_domain = fields.Char(string='Stage domain', compute='_compute_stage_domain')
     active_ela = fields.Boolean(string='Active ELA', tracking=True, default=True)
+
+    #secteur_ids = fields.Many2many("hr.applicant.secteur", string='Secteur d\'activité', ondelete="restrict", tracking=True)
+    #filiere_ids = fields.Many2many("hr.applicant.filiere", string='Filière', ondelete="restrict", tracking=True)
+    #metier_ids = fields.Many2many("hr.applicant.metier", string='Métier', ondelete="restrict", tracking=True)
 
     scoring = fields.Integer(string='Scoring', compute='_compute_scoring', store=True)
     scoring_1 = fields.Integer(string='Scoring', compute='_compute_scoring', store=True)
@@ -121,9 +129,9 @@ class HrApplicant(models.Model):
     scoring_5 = fields.Integer(string='Scoring', compute='_compute_scoring', store=True)
 
     crm_ids = fields.One2many('hr.applicant.crm', inverse_name='applicant_id', string='Jobs proposés')
-    crm_suggested_nb = fields.Integer(string='# Suggérés', compute="_compute_nbs", store=True)
-    crm_presented_nb = fields.Integer(string='# CVs présentés', compute="_compute_nbs", store=True)
-    crm_sent_nb = fields.Integer(string='# Envoyés en RDV', compute="_compute_nbs", store=True)
+    crm_suggested_nb = fields.Integer(string='# Suggestion', compute="_compute_nbs", store=True)
+    crm_presented_nb = fields.Integer(string='# Présentations CVs', compute="_compute_nbs", store=True)
+    crm_sent_nb = fields.Integer(string='# Envois en RDV', compute="_compute_nbs", store=True)
 
     show_suggest_button = fields.Boolean(string='Affcher button de suggestion', compute='_compute_show_suggest_button')
 
@@ -137,6 +145,19 @@ class HrApplicant(models.Model):
             record.crm_suggested_nb = len(record.crm_ids.filtered(lambda c: c.stage_id.sequence >= 0))
             record.crm_presented_nb = len(record.crm_ids.filtered(lambda c: c.stage_id.sequence >= 1))
             record.crm_sent_nb = len(record.crm_ids.filtered(lambda c: c.stage_id.sequence >= 2))
+
+    @api.depends("payment_state")
+    def _compute_to_be_sold_date(self):
+        for record in self:
+            if record.payment_state == 'to_be_sold':
+                record.to_be_sold_date = date.today()
+                record.sold_date = False
+            elif record.payment_state == 'sold':
+                record.to_be_sold_date = record.to_be_sold_date
+                record.sold_date = date.today()
+            else:
+                record.to_be_sold_date = False
+                record.sold_date = False
 
     @api.depends("crm_ids")
     def _compute_show_suggest_button(self):

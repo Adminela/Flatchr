@@ -25,15 +25,21 @@
                 </button>
             </xpath>
             <xpath expr="//field[@name='source_id']" position="replace">
+                <field name="secteur_ids" widget="many2many_tags"/>
+                <field name="filiere_ids" widget="many2many_tags"/>
+                <field name="metier_ids" widget="many2many_tags"/>
                 <field name="skill_ids" widget="many2many_tags"/>
             </xpath>
             <xpath expr="//widget[@name='web_ribbon']" position="replace">
                 <field name="active_ela" invisible="1"/>
                 <widget name="web_ribbon" title="annulé" bg_color="bg-danger" attrs="{'invisible': [('active_ela', '=', True)]}"/>
             </xpath>
-            <xpath expr="//field[@name='priority']" position="replace">
-                <xpath expr="//field[@name='medium_id']" position="move"/>
+            <xpath expr="//field[@name='priority']" position="replace"/>
+            <xpath expr="//field[@name='medium_id']" position="replace"/>
+            <xpath expr="//field[@name='type_id']" position="after">
+                <xpath expr="//field[@name='applicant_source']" position="move"/>
             </xpath>
+            
             <xpath expr="//field[@name='partner_phone']" position="after">
                 <field name="date_naissance"/>
                 <field name="lieu_naissance"/>
@@ -135,6 +141,15 @@
                 </page>
                 <page string="Opportunités">
                     <group>
+                        <group>
+                            <field name="crm_suggested_nb"/>
+                            <field name="crm_presented_nb"/>
+                        </group>
+                        <group>
+                            <field name="crm_sent_nb"/>
+                        </group>
+                    </group>
+                    <group>
                         <field name="crm_ids" mode="tree" nolabel="1">
                             <tree string="Opportunités" editable="bottom" create="false">
                                 <field name="crm_id" readonly="1"/>
@@ -150,6 +165,8 @@
             <xpath expr="//group[@name='sync_info']" position="after">
                 <group name="payment_state" string="Paiement">
                     <field name="payment_state"/>
+                    <field name="to_be_sold_date"/>
+                    <field name="sold_date"/>
                 </group>
             </xpath>
         </field>                
@@ -220,13 +237,18 @@
         <field name="model">hr.applicant</field>
         <field name="inherit_id" ref="hr_recruitment.crm_case_tree_view_job"/>
         <field name="arch" type="xml">
+            <xpath expr="//tree" position="inside">
+                <header>
+                    <button name="%(hr_applicant_duplicate_wizard_action)d" string="Assignation recruteur" class="oe_edit_only" type="action"/>
+                </header>
+            </xpath>
             <field name="user_id" position="after">
                 <field name="task_stage_id"/>
                 <field name="solde_formation" sum="Total solde"/>
                 <field name="prix_formation" sum="Total prix"/>
-                <field name="crm_suggested_nb" sum="Total solde"/>
-                <field name="crm_presented_nb" sum="Total solde"/>
-                <field name="crm_sent_nb" sum="Total solde"/>
+                <field name="crm_suggested_nb" optional="hide" sum="Total suggestions"/>
+                <field name="crm_presented_nb" optional="hide" sum="Total présentations"/>
+                <field name="crm_sent_nb" optional="hide" sum="Total envois CV"/>
             </field>
             <field name="partner_mobile" position="replace">
                 <field name="partner_phone"/>
@@ -239,7 +261,7 @@
         <field name="name">ela.hr.crm.case.tree.view.job.crm</field>
         <field name="model">hr.applicant</field>
         <field name="arch" type="xml">
-            <tree string="Candidats" default_order="scoring desc">
+            <tree string="Candidats" default_order="scoring_1 desc, scoring_2 desc, scoring_3 desc, scoring_4 desc, scoring_5 desc">
                 <field name="partner_name" readonly="1"/>
                 <field name="job_id" optional="hide"/>
                 <field name="name" readonly="1" optional="hide"/>
@@ -269,6 +291,10 @@
                 <field name="salaire_minimum_min"/>
                 <field name="salaire_minimum_max"/>
                 <field name="benefit_wished_ids" widget="many2many_tags"/>
+                <field name="secteur_ids" widget="many2many_tags" optional="hide"/>
+                <field name="filiere_ids" widget="many2many_tags" optional="hide"/>
+                <field name="metier_ids" widget="many2many_tags" optional="hide"/>
+                <field name="skill_ids" widget="many2many_tags" optional="hide"/>
                 <!--<field name="scoring"/>-->
                 <field name="scoring_1" invisible="context.get('show_scoring_1', False) == False"/>
                 <field name="scoring_2" invisible="context.get('show_scoring_2', False) == False"/>

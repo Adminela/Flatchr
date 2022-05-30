@@ -5,10 +5,9 @@
 from odoo import fields, models
 
 
-class HrApplicantExperience(models.Model):
-    _name = "hr.applicant.experience"
-    _description = "Hr applicant experience"
-    _order = "sequence, id"
+class HrApplicantBenefitWished(models.Model):
+    _name = "hr.applicant.benefit.wished"
+    _description = "Hr applicant benefit wished"
+    _order = "id"
 
     name = fields.Char("Name", required=True)
-    sequence = fields.Integer("Séquence", default=1)

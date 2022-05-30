@@ -1,0 +1,58 @@
+<?xml version='1.0' encoding='utf-8'?>
+<odoo>
+    <record model="ir.actions.act_window" id="hr_applicant_duplicate_wizard_action">
+        <field name="name">Assistance assignation des candidats</field>
+        <field name="res_model">hr.applicant.duplicate.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+    <record model='ir.ui.view' id='hr_applicant_duplicate_wizard_form'>
+        <field name='name'>'hr.applicant.duplicate.wizard.form</field>
+        <field name='model'>hr.applicant.duplicate.wizard</field>
+        <field name='arch' type='xml'>
+            <form string='Assistance assignation des candidats' create="false" edit="false">
+                <header>
+                    <button name='start_process_cb' string='Démarrer' type='object'  class='oe_highlight' attrs="{'invisible': [('state', '!=', 'start')]}"/>
+                    <button name='assign_applicant' string='Ajouter recruteur' class='oe_highlight' type='object' attrs="{'invisible': [('state', '!=', 'pending')]}"/>
+                    <button name='next_cb' string='Passer ces candidats' type='object'  class='oe_link' attrs="{'invisible': [('state', 'in', ('start', 'finished'))]}"/>
+                    <button name="close_cb" string="Annuler" type="object" class="oe_link oe_inline" attrs="{'invisible': [('state', '=', 'finished')]}"/>
+                    <button name="close_cb" string="Terminer" type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'finished')]}"/>
+                </header>
+                <sheet>
+                    <group>
+                        <div attrs="{'invisible': [('state', '!=', 'start')]}">
+                            Veuillez démarrer l'assistance d'assignation des candidats
+                        </div>
+                        <div attrs="{'invisible': [('state', '!=', 'finished')]}">
+                            Les assignations de votre selection sont terminés avec succés
+                        </div>
+                        <group>
+                            <field name="user_id" options="{'no_create_edit': True, 'no_quick_create': True}" attrs="{'invisible': [('state', '!=', 'pending')]}"/>
+                        </group>
+                        <group>
+                            <div attrs="{'invisible': [('state', '!=', 'pending')]}" style="text-align: right;">
+                                <field name="current_page" nolabel="1" readonly="1"/> / <field name="pages" nolabel="1" readonly="1"/>
+                            </div>
+                            <field name="state" invisible="1"/>
+                        </group>
+                    </group>
+                    <group>
+                        <field name="applicant_ids" colspan="2" nolabel="1" attrs="{'invisible': [('state', 'in', ('start', 'finished'))]}">
+                            <tree string="Candidats" create="false" edit="false" delete="false">
+                                <field name="id"/>
+                                <field name="create_date"/>
+                                <field name="name"/>
+                                <field name="email_from"/>
+                                <field name="user_id"/>
+                                <field name="stage_id" optional="Show"/>
+                                <field name="job_id" optional="Show"/>
+                            </tree>
+                        </field>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+</odoo>

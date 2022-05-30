@@ -50,11 +50,36 @@ class HrApplicantHeureSemaine(models.Model):
     _order = "sequence, id"
 
     name = fields.Char("Name", required=True)
-    sequence = fields.Integer("Séquence", defaut=1)
+    sequence = fields.Integer("Séquence", default=1)
+
 
 class HrApplicantSituation(models.Model):
     _name = "hr.applicant.situation"
     _description = "Hr applicant situation"
+    _order = "name"
+
+    name = fields.Char("Name", required=True)
+
+
+class HrApplicantSecteur(models.Model):
+    _name = "hr.applicant.secteur"
+    _description = "Hr applicant secteur"
+    _order = "name"
+
+    name = fields.Char("Name", required=True)
+
+
+class HrApplicantFiliere(models.Model):
+    _name = "hr.applicant.filiere"
+    _description = "Hr applicant filiere"
+    _order = "name"
+
+    name = fields.Char("Name", required=True)
+
+
+class HrApplicantMetier(models.Model):
+    _name = "hr.applicant.metier"
+    _description = "Hr applicant metier"
     _order = "name"
 
     name = fields.Char("Name", required=True)
