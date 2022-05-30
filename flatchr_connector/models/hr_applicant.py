@@ -21,7 +21,9 @@ class HrApplicant(models.Model):
     job_state = fields.Selection(string="Job state", related="job_id.state", store=True)
     job_count = fields.Integer(compute='_compute_job_count', string="# Jobs")
     date_source = fields.Datetime(string='Date de synchronisation', help="Date à laquelle le candidat a été enregistré dans Odoo via l'API", tracking=True)
-    #cv_link = fields.Char(string="CV link")
+    secteur_ids = fields.Many2many("hr.activity", string='Secteur d\'activité', ondelete="restrict", tracking=True)
+    filiere_ids = fields.Many2many("hr.channel", string='Filière', ondelete="restrict", tracking=True)
+    metier_ids = fields.Many2many("hr.metier", string='Métier', ondelete="restrict", tracking=True)
 
     @api.depends('application_count')
     def _compute_job_count(self):

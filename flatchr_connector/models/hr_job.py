@@ -121,6 +121,10 @@ class HrJob(models.Model):
                     'partner_id': partner_id.id,
                     'applicant_source': applicant['source'],
                     'job_id': job_id.id,
+
+                    'secteur_ids': [(4, job_id.activity_id.id)],
+                    'filiere_ids': [(4, job_id.channel_id.id)],
+                    'metier_ids': [(4, job_id.metier_id.id)],
                 }
 
                 existing_applicants = self.env['hr.applicant'].search([('flatchr_applicant_id', '=', applicant['applicant'])])
