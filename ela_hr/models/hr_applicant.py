@@ -12,7 +12,8 @@ _logger = logging.getLogger(__name__)
 
 
 class HrApplicant(models.Model):
-    _inherit = "hr.applicant"
+    _name = 'hr.applicant'
+    _inherit = ['hr.applicant','mail.thread.phone']
 
     # Import champs Studio
     # Formation
@@ -128,16 +129,29 @@ class HrApplicant(models.Model):
     scoring_4 = fields.Integer(string='Scoring', compute='_compute_scoring', store=True)
     scoring_5 = fields.Integer(string='Scoring', compute='_compute_scoring', store=True)
 
-    crm_ids = fields.One2many('hr.applicant.crm', inverse_name='applicant_id', string='Jobs proposés')
+    #crm_suggested_ids = fields.One2many('hr.applicant.crm', inverse_name='applicant_id', string='Jobs proposés')s
+    crm_ids = fields.One2many('hr.applicant.crm', inverse_name='applicant_id', string='CVs présentés')
     crm_suggested_nb = fields.Integer(string='# Suggestion', compute="_compute_nbs", store=True)
     crm_presented_nb = fields.Integer(string='# Présentations CVs', compute="_compute_nbs", store=True)
     crm_sent_nb = fields.Integer(string='# Envois en RDV', compute="_compute_nbs", store=True)
+    
+    nb_nrp = fields.Integer(string='Nombre de NRP', compute='_compute_nb_nrp', store=True)
+    nb_nrp_rappel = fields.Integer(string='Nombre de NRP rappel', compute='_compute_nb_nrp', store=True)
 
     show_suggest_button = fields.Boolean(string='Affcher button de suggestion', compute='_compute_show_suggest_button')
+    activities_count = fields.Integer(compute='_compute_activities_count')
 
     _sql_constraints = [
         ('uniq_nomenclature_cv', 'unique(nomenclature_cv)', "'ATTENTION' Cette nomenclature CV existe déjà !")
     ]
+
+    @api.depends("activity_ids", "activity_ids.nrp")
+    def _compute_nb_nrp(self):
+        for record in self:
+            if record.with_context(active_test=False).activity_ids:
+                record.nb_nrp = 0 #len(record.with_context(active_test=False).activity_ids.filtered(lambda act: 'Appeler' in act.activity_type_id.name))
+                record.nb_nrp_rappel = 0 #len(record.with_context(active_test=False).activity_ids.filtered(lambda act: 'Rappeler' in act.activity_type_id.name))
+                #raise ValidationError(record.with_context(active_test=False).activity_ids.filtered(lambda act: 'Appeler' in act.activity_type_id.name))
 
     @api.depends("crm_ids", "crm_ids.stage_id")
     def _compute_nbs(self):
@@ -224,6 +238,31 @@ class HrApplicant(models.Model):
                     if offer_id in crm_id.benefit_offered_ids:
                         scoring += crm_id.benefit_offered_ids_score
 
+                for secteur_id in record.secteur_ids:
+                    if secteur_id in crm_id.secteur_ids:
+                        scoring += crm_id.secteur_ids_score
+                        break
+
+                for filiere_id in record.filiere_ids:
+                    if filiere_id in crm_id.filiere_ids:
+                        scoring += crm_id.filiere_ids_score
+                        break
+
+                for metier_id in record.metier_ids:
+                    if metier_id in crm_id.metier_ids:
+                        scoring += crm_id.metier_ids_score
+                        break
+
+                for skill_id in record.skill_ids:
+                    if skill_id in crm_id.skill_ids:
+                        scoring += crm_id.skill_ids_score
+                        break
+
+                for categ_id in record.categ_ids:
+                    if categ_id in crm_id.categ_ids:
+                        scoring += crm_id.categ_ids_score
+                        break
+
             if self.env.user:
                 if self.env.user.scoring_column == 'scoring_1':
                     record.scoring_1 = scoring
@@ -252,7 +291,13 @@ class HrApplicant(models.Model):
     def _compute_date_entree(self):
         for record in self:
             if record.date_inscription:
-                record.date_entree = record.date_inscription + timedelta(days=15)
+                count = 1
+                record.date_entree = record.date_inscription
+                while count <= 11:
+                    record.date_entree += timedelta(days=1)
+                    if not record.env['hr.applicant'].is_global_leave_or_weekend(record.date_entree):
+                        count += 1
+                
                 while record.env['hr.applicant'].is_global_leave_or_weekend(record.date_entree):
                     record.date_entree += timedelta(days=1)
             else:
@@ -281,6 +326,24 @@ class HrApplicant(models.Model):
             'res_model': 'project.task',
             'view_mode': 'form',
             'res_id': self.task_id.id
+        }
+
+    def _compute_activities_count(self):
+        for record in self:
+            record.activities_count = len(record.with_context({'active_test' : False}).activity_ids)
+
+    def action_show_activities(self):
+        return {
+            'type': 'ir.actions.act_window',
+            'res_model': 'mail.activity',
+            'name': _('Activités'),
+            'view_mode': 'tree',
+            'domain': [('res_id', '=', self.id), ('res_model', '=', 'hr.applicant')],
+            'context': {
+                'default_res_id': self.id,
+                'default_res_model': 'hr.applicant',
+                'active_test': False,
+            },
         }
 
     def write(self,vals):
@@ -373,3 +436,12 @@ class HrApplicant(models.Model):
                 })
 
                 hr_applicant_crm._reset_stage()
+
+    @api.onchange('partner_phone', 'company_id')
+    def _onchange_phone_validation(self):
+        if self.partner_phone:
+            self.partner_phone = self.phone_get_sanitized_number(number_fname='partner_phone', force_format='INTERNATIONAL') or self.partner_phone
+
+    def _phone_get_number_fields(self):
+        """ Use mobile or phone fields to compute sanitized phone number """
+        return ['partner_phone']

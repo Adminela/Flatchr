@@ -8,7 +8,9 @@ from odoo.exceptions import ValidationError
 class ProjectTask(models.Model):
     _inherit = "project.task"
 
+    
     applicant_id = fields.Many2one("hr.applicant", string='Applicant', tracking=True)
+    genre = fields.Selection(related="applicant_id.genre", readonly=False, tracking=True, store=True)
     email_from = fields.Char(related="applicant_id.email_from", readonly=False, tracking=True, store=True)
     partner_phone = fields.Char(related="applicant_id.partner_phone", readonly=False, tracking=True, store=True)
     date_naissance = fields.Date(related="applicant_id.date_naissance", readonly=False, tracking=True, store=True)

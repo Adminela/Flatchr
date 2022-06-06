@@ -36,6 +36,7 @@
             <xpath expr="//div[hasclass('oe_title')]" position="after">
                 <group>
                     <group>
+                        <field name="genre" widget="radio" options="{'horizontal': true}"/>
                         <field name="applicant_id"/>
                         <field name="email_from"/>
                         <field name="partner_phone"/>

@@ -48,10 +48,13 @@ class CrmLead(models.Model):
     filiere_ids_score = fields.Integer(string='Filières score')
     metier_ids = fields.Many2many("hr.metier", string='Métiers', ondelete="restrict", tracking=True)
     metier_ids_score = fields.Integer(string='Métiers score')
-    skill_ids = fields.Many2many("hr.applicant.skill", string='Compétence', ondelete="restrict", tracking=True)
+    skill_ids = fields.Many2many("hr.applicant.skill", string='Compétences', ondelete="restrict", tracking=True)
     skill_ids_score = fields.Integer(string='Métiers score')
+    categ_ids = fields.Many2many("hr.applicant.category", string='Etiquettes', ondelete="restrict", tracking=True)
+    categ_ids_score = fields.Integer(string='Etiquettes score')
 
-    candidat_crm_suggested_ids = fields.One2many('hr.applicant.crm', inverse_name='crm_id', string='Candidats proposés')
+    candidat_crm_suggested_ids = fields.One2many('hr.applicant.crm', inverse_name='crm_id', domain=[('stage_id.sequence', '=', 0)], string='Candidats proposés')
+    candidat_crm_presented_ids = fields.One2many('hr.applicant.crm', inverse_name='crm_id', domain=[('stage_id.sequence', '!=', 0)], string='Candidats présentés')
     candidat_suggested_nb = fields.Integer(string='# Suggérés', compute="_compute_nbs", store=True)
     candidat_presented_nb = fields.Integer(string='# CVs présentés', compute="_compute_nbs", store=True)
     candidat_sent_nb = fields.Integer(string='# Envoyés en RDV', compute="_compute_nbs", store=True)
@@ -60,8 +63,8 @@ class CrmLead(models.Model):
     def _compute_nbs(self):
         for record in self:
             record.candidat_suggested_nb = len(record.candidat_crm_suggested_ids.filtered(lambda c: c.stage_id.sequence >= 0))
-            record.candidat_presented_nb = len(record.candidat_crm_suggested_ids.filtered(lambda c: c.stage_id.sequence >= 1))
-            record.candidat_sent_nb = len(record.candidat_crm_suggested_ids.filtered(lambda c: c.stage_id.sequence >= 2))
+            record.candidat_presented_nb = len(record.candidat_crm_presented_ids.filtered(lambda c: c.stage_id.sequence >= 1))
+            record.candidat_sent_nb = len(record.candidat_crm_presented_ids.filtered(lambda c: c.stage_id.sequence >= 2))
             
     def action_candidat_suggested(self):
         search_view = self.env.ref('ela_hr.ela_hr_hr_applicant_view_search_ter')
@@ -88,6 +91,7 @@ class CrmLead(models.Model):
                 <field name="filiere_ids"/>
                 <field name="metier_ids"/>
                 <field name="skill_ids"/>
+                <field name="categ_ids"/>
             """
 
         if self.workzone_ids_score:
@@ -187,6 +191,13 @@ class CrmLead(models.Model):
                 <filter string="Compétences contient %s" name="skill_ids_filter" domain="[('skill_ids', 'in', %s)]"/>
             """%(self.skill_ids.mapped("name"), self.skill_ids.ids)
             context.update({'search_default_skill_ids_filter' : 1})
+
+        if self.categ_ids_score:
+            search_domain = expression.OR([search_domain, [('categ_ids', 'in', self.categ_ids.ids)]])
+            search_view_arch += """
+                <filter string="Compétences contient %s" name="categ_ids_filter" domain="[('categ_ids', 'in', %s)]"/>
+            """%(self.categ_ids.mapped("name"), self.categ_ids.ids)
+            context.update({'search_default_categ_ids_filter' : 1})
 
         if context == {}:
             search_view_arch += """

@@ -1,0 +1,33 @@
+<?xml version='1.0' encoding='utf-8'?>
+<odoo>
+
+    <record id="ela_hr_mail_activity_type_view_form" model="ir.ui.view">
+        <field name="name">ela.hr.mail.activity.type.view.form</field>
+        <field name="model">mail.activity.type</field>
+        <field name="inherit_id" ref="mail.mail_activity_type_view_form"/>
+        <field name="arch" type="xml">
+            <group name="activity_planning" position="inside">
+                <field name="nrp"/>
+            </group>
+                
+            <xpath expr="//sheet/group" position="after">
+                <group attrs="{'invisible': [('nrp', '=', False)]}">
+                    <group>
+                    </group>
+                    <group name="nrp_activity_planning" string="Activité NRP suivante">
+                        <field name="nrp_triggered_next_type_id" options="{'no_open': True}" context="{'default_res_model': res_model}" attrs="{'required': [('nrp', '=', True)]}"/>
+                        <field name="nrp_mail_template_ids" widget="many2many_tags" domain="[('model_id.model', '=', res_model)]" attrs="{'invisible': [('res_model', '=', False)]}" context="{'default_model': res_model}"/>
+                        <label for="nrp_delay_count"/>
+                        <div>
+                            <div class="o_row">
+                                <field class="col-1 pl-0 pr-0" name="nrp_delay_count"/>
+                                <field class="col-3 pl-1 pr-1" name="nrp_delay_unit"/>
+                                <field name="delay_from"/>
+                            </div>
+                        </div>
+                    </group>
+                </group>
+            </xpath>
+        </field>
+    </record>
+</odoo>
