@@ -118,10 +118,6 @@ class HrApplicant(models.Model):
     stage_domain = fields.Char(string='Stage domain', compute='_compute_stage_domain')
     active_ela = fields.Boolean(string='Active ELA', tracking=True, default=True)
 
-    #secteur_ids = fields.Many2many("hr.applicant.secteur", string='Secteur d\'activité', ondelete="restrict", tracking=True)
-    #filiere_ids = fields.Many2many("hr.applicant.filiere", string='Filière', ondelete="restrict", tracking=True)
-    #metier_ids = fields.Many2many("hr.applicant.metier", string='Métier', ondelete="restrict", tracking=True)
-
     scoring = fields.Integer(string='Scoring', compute='_compute_scoring', store=True)
     scoring_1 = fields.Integer(string='Scoring', compute='_compute_scoring', store=True)
     scoring_2 = fields.Integer(string='Scoring', compute='_compute_scoring', store=True)
@@ -129,7 +125,6 @@ class HrApplicant(models.Model):
     scoring_4 = fields.Integer(string='Scoring', compute='_compute_scoring', store=True)
     scoring_5 = fields.Integer(string='Scoring', compute='_compute_scoring', store=True)
 
-    #crm_suggested_ids = fields.One2many('hr.applicant.crm', inverse_name='applicant_id', string='Jobs proposés')s
     crm_ids = fields.One2many('hr.applicant.crm', inverse_name='applicant_id', string='CVs présentés')
     crm_suggested_nb = fields.Integer(string='# Suggestion', compute="_compute_nbs", store=True)
     crm_presented_nb = fields.Integer(string='# Présentations CVs', compute="_compute_nbs", store=True)
@@ -151,7 +146,6 @@ class HrApplicant(models.Model):
             if record.with_context(active_test=False).activity_ids:
                 record.nb_nrp = 0 #len(record.with_context(active_test=False).activity_ids.filtered(lambda act: 'Appeler' in act.activity_type_id.name))
                 record.nb_nrp_rappel = 0 #len(record.with_context(active_test=False).activity_ids.filtered(lambda act: 'Rappeler' in act.activity_type_id.name))
-                #raise ValidationError(record.with_context(active_test=False).activity_ids.filtered(lambda act: 'Appeler' in act.activity_type_id.name))
 
     @api.depends("crm_ids", "crm_ids.stage_id")
     def _compute_nbs(self):

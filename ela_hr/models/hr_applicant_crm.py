@@ -17,7 +17,6 @@ class HrApplicantCrm(models.Model):
                 'mail.activity.mixin']
     _description = "Hr applicant crm"
     _order = "id"
-    _rec_name = "applicant_id"
     _primary_email = 'email_from'
     _mailing_enabled = True
     
