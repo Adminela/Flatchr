@@ -15,6 +15,9 @@
                 </button>
             </xpath>
             <xpath expr="//button[@name='action_makeMeeting']" position="after">
+                <button name="action_show_activities" class="oe_stat_button" icon="fa-list" type="object" help="Activités" attrs="{'invisible': [('activity_ids', '=', False)]}">
+                    <field name="activities_count" widget="statinfo" string="Activités"/>
+                </button>
                 <button name="toggle_premium" class="oe_stat_button" icon="fa-star" type="object" style="color: gray;" attrs="{'invisible': [('is_premium', '=', True)]}">
                     <label for="is_premium" style="color: gray;" attrs="{'invisible': [('is_premium', '=', True)]}">CV Premium</label>
                     <field name="is_premium" invisible="1"/>
@@ -169,7 +172,26 @@
                     <field name="sold_date"/>
                 </group>
             </xpath>
-        </field>                
+            <page name="misc" position="inside">
+                <group name="nrp" string="NRP">
+                    <field name="nb_nrp"/>
+                    <field name="nb_nrp_rappel"/>
+                </group>
+            </page>
+            <page name="misc" position="after">
+                <page name="activities" string="Activités">
+                    <field name="activity_ids" readonly="1" context="{'active_test': False}" nolabel="1">
+                        <tree>
+                            <field name="res_name"/>
+                            <field name="activity_type_id"/>
+                            <field name="summary"/>
+                            <field name="date_deadline"/>
+                            <field name="nrp"/>
+                        </tree>
+                    </field>
+                </page>
+            </page>
+        </field>
     </record>
 
     
@@ -249,6 +271,9 @@
                 <field name="crm_suggested_nb" optional="hide" sum="Total suggestions"/>
                 <field name="crm_presented_nb" optional="hide" sum="Total présentations"/>
                 <field name="crm_sent_nb" optional="hide" sum="Total envois CV"/>
+                <field name="payment_state" optional="hide"/>
+                <field name="to_be_sold_date" optional="hide"/>
+                <field name="sold_date" optional="hide"/>
             </field>
             <field name="partner_mobile" position="replace">
                 <field name="partner_phone"/>
@@ -302,8 +327,8 @@
                 <field name="scoring_4" invisible="context.get('show_scoring_4', False) == False"/>
                 <field name="scoring_5" invisible="context.get('show_scoring_5', False) == False"/>
                 <field name="show_suggest_button" invisible="1"/>
-                <button name="suggest_candidats" string="suggérer le candidat"  type="object" class="oe_highlight" attrs="{'invisible' : [('show_suggest_button', '=', False)]}"/>
-                <button name="allready_suggest_candidats" string="Suggéré" type="object" readonly="1" attrs="{'invisible' : [('show_suggest_button', '=', True)]}"/>
+                <button name="suggest_candidats" string="Suggérer le candidat"  type="object" class="oe_highlight full_width" attrs="{'invisible' : [('show_suggest_button', '=', False)]}"/>
+                <button name="allready_suggest_candidats" string="Candidat suggéré" type="object" readonly="1" class="full_width" attrs="{'invisible' : [('show_suggest_button', '=', True)]}"/>
             </tree>
         </field>
     </record>

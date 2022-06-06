@@ -15,3 +15,11 @@
     float:right;
     padding-right: 3px;
 }
+
+.full_width {
+    width: 100%;
+}
+
+.half_width {
+    width: 50%;
+}

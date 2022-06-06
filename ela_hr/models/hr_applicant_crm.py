@@ -6,14 +6,25 @@ from odoo import fields, api, models, _
 from odoo.exceptions import ValidationError
 from datetime import date
 
+SUGGESTED_STAGE_NAME='Suggeré'
+PRESENTED_STAGE_NAME='CV Présenté'
+SEND_RDV_STAGE_NAME='Envoyé en RDV'
+
+
 class HrApplicantCrm(models.Model):
     _name = "hr.applicant.crm"
+    _inherit = ['mail.thread.cc',
+                'mail.activity.mixin']
     _description = "Hr applicant crm"
     _order = "id"
-
+    _primary_email = 'email_from'
+    _mailing_enabled = True
+    
     applicant_id = fields.Many2one("hr.applicant", required=True, string='Candidat')
+    email_from = fields.Char(related="crm_id.email_from", string="Email", store=True)
     crm_id = fields.Many2one("crm.lead", required=True, string='Opportunité')
     stage_id = fields.Many2one("hr.applicant.crm.stage", string="Étape")
+    stage_sequence = fields.Integer(related="stage_id.sequence", string="Stage sequence", store=True)
     last_stage_date = fields.Date(string="Date de la dernière étape", compute="_compute_last_stage_date", readonly=True, store=True)
     response = fields.Selection([
         ("ok", "Accepté"),
@@ -44,6 +55,22 @@ class HrApplicantCrm(models.Model):
             stage_ids = self.env['hr.applicant.crm.stage'].search([(1, '=', 1),], order='sequence asc', limit=1).ids
             
             record.stage_id = stage_ids[0] if stage_ids else False
+
+    def present_cv(self):
+        for record in self:
+            record.stage_id = self.env['hr.applicant.crm.stage'].search([('name', '=', PRESENTED_STAGE_NAME)], limit=1)
+
+    def send_rdv(self):
+        for record in self:
+            record.stage_id = self.env['hr.applicant.crm.stage'].search([('name', '=', SEND_RDV_STAGE_NAME)], limit=1)
+
+    def accept(self):
+        for record in self:
+            record.response = 'ok'
+
+    def refuse(self):
+        for record in self:
+            record.response = 'ko'
 
 
 class HrApplicantCrmStage(models.Model):

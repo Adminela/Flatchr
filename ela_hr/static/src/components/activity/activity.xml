@@ -1,20 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <templates id="template" xml:space="preserve">
 
-    <t t-inherit="mail.Activity" t-inherit-mode="extension">
-        <xpath expr="//button[hasclass('o_Activity_markDoneButton')]" position="after">
-                <button class="o_Activity_toolButton o_Activity_markDoneButton btn btn-link" context="{'NRP': True}" t-on-click="_onClickNRP">
-                    <i class="fa fa-phone"/> NRP
-                </button>
-        </xpath>
-    </t>
-
     <t t-inherit="mail.ActivityMarkDonePopover" t-inherit-mode="extension">
-        <xpath expr="//textarea[hasclass('o_ActivityMarkDonePopover_feedback')]" position="after">
-                <label><i class="fa fa-phone"/>  Non répondu <input t-att-id="'_id'" type="checkbox" label="test" name="selection" t-ref="nrpInput"/></label>
-        </xpath>
         <xpath expr="//button[hasclass('o_ActivityMarkDonePopover_doneScheduleNextButton')]" position="after">
-                <button type="button" class="o_ActivityMarkDonePopover_doneButton btn btn-sm btn-primary" name="action_done_NRP" t-on-click="_onClickDone">
+                <button type="button" class="o_ActivityMarkDonePopover_doneButton btn btn-sm btn-primary" t-on-click="_onClickNRP">
                  NRP
                 </button>
         </xpath>

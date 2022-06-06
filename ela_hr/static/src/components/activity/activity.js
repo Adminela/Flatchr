@@ -1,19 +1,17 @@
-/** @odoo-module */
-  
-import { Activity } from '@mail/components/activity/activity';
-import { patch } from 'web.utils';
-import Dialog from 'web.Dialog';
-import core from 'web.core';
-const _t = core._t;
+/** @odoo-module **/
 
-patch(Activity.prototype, 'ela_hr/static/src/components/activity/activity.js', {
+import { registerMessagingComponent } from '@mail/utils/messaging_component';
 
-    async _onClickNRP() {
-        await this.activity.markAsDone({
-            feedback: this._feedbackTextareaRef.el.value,
-            /*: this.$('#nrp_check').prop('checked'),*/
-        });
-        this.trigger('reload', { keepChanges: true });
-    }
+const { Component } = owl;
+const { useRef } = owl.hooks;
+export class ActivityMarkDonePopover extends Component {
+    //--------------------------------------------------------------------------
+    // Handlers
+    //--------------------------------------------------------------------------
+    /**
+     * @private
+     */
+    _onClickDone() { alert('a');}
+}
 
-});
+registerMessagingComponent(ActivityMarkDonePopover);

@@ -21,7 +21,8 @@
         "hr_recruitment_survey",
         "project",
         "crm",
-        "mail"
+        "mail",
+        "phone_validation",
     ],
     "data": [
         "security/ir.model.access.csv",
@@ -40,6 +41,7 @@
         "views/res_users_view.xml",
         "views/res_partner_view.xml",
         "views/mail_activity_views.xml",
+        "views/mail_activity_type_views.xml",
         "security/security.xml",
         "data/ir_cron.xml",
     ],
@@ -50,7 +52,12 @@
         'web.assets_backend': [
             'ela_hr/static/src/css/styles.css',
             'ela_hr/static/src/components/activity/activity.js',
-            
+        ],
+        'mail.assets_discuss_public': [
+            #'ela_hr/static/src/components/activity/activity.js',
+        ],
+        'web.assets_common': [
+            #'ela_hr/static/src/components/activity/activity.js',
         ],
         'web.assets_qweb': [
             'ela_hr/static/src/components/activity/activity.xml'
