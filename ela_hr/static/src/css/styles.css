@@ -16,10 +16,28 @@
     padding-right: 3px;
 }
 
+.button_width {
+    max-width: 100px;
+}
+
 .full_width {
     width: 100%;
 }
 
 .half_width {
     width: 50%;
+}
+
+.third_width {
+    width: 32.8%;
+}
+
+.button_refuse {
+    background-color: #bf4444;
+    border-color: #bf4444;
+}
+
+.button_refuse:hover {
+    background-color: #bf2424;
+    border-color: #bf2424;
 }

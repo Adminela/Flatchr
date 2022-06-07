@@ -37,6 +37,7 @@
         "views/calendar_event_view.xml",
         "views/web_calendar_templates.xml",
         "views/crm_lead_view.xml",
+        "views/hr_applicant_crm_view.xml",
         "views/hr_applicant_crm_stage_view.xml",
         "views/res_users_view.xml",
         "views/res_partner_view.xml",

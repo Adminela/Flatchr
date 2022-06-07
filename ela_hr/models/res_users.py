@@ -15,7 +15,6 @@ class ResUsers(models.Model):
         ("scoring_5", "Scoring 5"),
         ],
         'Colonne de scoring',
-        tracking=True
     )
 
     _sql_constraints = [

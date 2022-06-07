@@ -178,19 +178,6 @@
                     <field name="nb_nrp_rappel"/>
                 </group>
             </page>
-            <page name="misc" position="after">
-                <page name="activities" string="Activités">
-                    <field name="activity_ids" readonly="1" context="{'active_test': False}" nolabel="1">
-                        <tree>
-                            <field name="res_name"/>
-                            <field name="activity_type_id"/>
-                            <field name="summary"/>
-                            <field name="date_deadline"/>
-                            <field name="nrp"/>
-                        </tree>
-                    </field>
-                </page>
-            </page>
         </field>
     </record>
 
@@ -321,11 +308,11 @@
                 <field name="metier_ids" widget="many2many_tags" optional="hide"/>
                 <field name="skill_ids" widget="many2many_tags" optional="hide"/>
                 <!--<field name="scoring"/>-->
-                <field name="scoring_1" invisible="context.get('show_scoring_1', False) == False"/>
-                <field name="scoring_2" invisible="context.get('show_scoring_2', False) == False"/>
-                <field name="scoring_3" invisible="context.get('show_scoring_3', False) == False"/>
-                <field name="scoring_4" invisible="context.get('show_scoring_4', False) == False"/>
-                <field name="scoring_5" invisible="context.get('show_scoring_5', False) == False"/>
+                <field name="scoring_1" string="Scoring" invisible="context.get('show_scoring_1', False) == False"/>
+                <field name="scoring_2" string="Scoring" invisible="context.get('show_scoring_2', False) == False"/>
+                <field name="scoring_3" string="Scoring" invisible="context.get('show_scoring_3', False) == False"/>
+                <field name="scoring_4" string="Scoring" invisible="context.get('show_scoring_4', False) == False"/>
+                <field name="scoring_5" string="Scoring" invisible="context.get('show_scoring_5', False) == False"/>
                 <field name="show_suggest_button" invisible="1"/>
                 <button name="suggest_candidats" string="Suggérer le candidat"  type="object" class="oe_highlight full_width" attrs="{'invisible' : [('show_suggest_button', '=', False)]}"/>
                 <button name="allready_suggest_candidats" string="Candidat suggéré" type="object" readonly="1" class="full_width" attrs="{'invisible' : [('show_suggest_button', '=', True)]}"/>
@@ -347,6 +334,7 @@
                 <field name="experience_id"/>
                 <field name="contract_type_ids"/>
                 <field name="benefit_wished_ids"/>
+                <field name="partner_phone_nospace" invisible="1"/>
             </search>
         </field>
     </record>
@@ -357,7 +345,7 @@
         <field name="inherit_id" ref="hr_recruitment.hr_applicant_view_search_bis"/>
         <field name="arch" type="xml">
             <field name="partner_name" position="replace">
-                <field string="Applicant" name="partner_name" filter_domain="['|', '|', '|', '|', '|', ('name', 'ilike', self), ('partner_name', 'ilike', self), ('email_from', 'ilike', self),('case_number', 'ilike', self),('nomenclature_cv', 'ilike', self),('partner_phone', 'ilike', self)]"/>
+                <field string="Candidat" name="partner_name" filter_domain="['|', '|', '|', '|', '|', '|', ('name', 'ilike', self), ('partner_name', 'ilike', self), ('email_from', 'ilike', self),('case_number', 'ilike', self),('nomenclature_cv', 'ilike', self),('partner_phone', 'ilike', self),('partner_phone_nospace', 'ilike', self)]"/>
             </field>
             <field name="partner_name" position="after">
                 <field name="nomenclature_cv"/>

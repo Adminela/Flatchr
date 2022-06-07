@@ -1,0 +1,67 @@
+<?xml version='1.0' encoding='utf-8'?>
+<odoo>
+
+    <record id="ela_hr_hr_applicant_crm_view_form" model="ir.ui.view">
+        <field name="name">ela.hr.hr.applicant.crm.stage.view.form</field>
+        <field name="model">hr.applicant.crm</field>
+        <field name="arch" type="xml">
+            <form string="Candidature">
+                <sheet>
+                    <group>
+                        <group>
+                            <field name="applicant_id" readonly="1"/>
+                            <field name="stage_id" options="{'no_create_edit': True, 'no_quick_create': True}"/>
+                            <field name="stage_sequence" invisible="1"/>
+                            <field name="last_stage_date"/>
+                        </group>
+                        <group>
+                            <field name="crm_id" readonly="1"/>
+                            <field name="response"/>
+                            <field name="response_date"/>
+                        </group>
+                    </group>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids"/>
+                    <field name="activity_ids"/>
+                    <field name="message_ids" options="{'open_attachments': True}"/>
+                </div>
+            </form>
+        </field>
+    </record>
+
+    <record id="ela_hr_hr_applicant_crm_view_tree" model="ir.ui.view">
+        <field name="name">ela.hr.hr.applicant.crm.view.tree</field>
+        <field name="model">hr.applicant.crm</field>
+        <field name="arch" type="xml">
+            <tree string="Candidatures">
+                <field name="applicant_id" readonly="1"/>
+                <field name="stage_id" options="{'no_create_edit': True, 'no_quick_create': True}"/>
+                <field name="stage_sequence" invisible="1"/>
+                <field name="last_stage_date"/>
+                <field name="response"/>
+                <field name="response_date"/>
+            </tree>
+        </field>
+    </record>
+
+    <record model="ir.actions.act_window" id="ela_hr_hr_applicant_crm_view">
+        <field name="name">Candidatures</field>
+        <field name="res_model">hr.applicant.crm</field>
+        <field name="view_mode">tree,form</field>
+        <field name="context">{}</field>
+        <field name="help" type="html">
+            <p>
+            </p>
+        </field>
+    </record>
+
+    <menuitem id="menu_crm_applicant"
+        name="Candidatures"
+        groups="hr_recruitment.group_hr_recruitment_user"
+        action="ela_hr_hr_applicant_crm_view"
+        parent="crm.crm_menu_sales"
+        sequence="1"
+    />
+
+</odoo>

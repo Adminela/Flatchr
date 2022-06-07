@@ -4,10 +4,11 @@
 
 from odoo import api, fields, models
 from odoo.exceptions import ValidationError
-
+import numpy as np
 
 class HrApplicantDuplicateWizard(models.TransientModel):
     _name = 'hr.applicant.duplicate.wizard'
+    _description = 'Assistance doublons candidats'
 
     applicant_ids = fields.Many2many('hr.applicant', string='Candidats')
     remaining_applicant_ids = fields.Many2many('hr.applicant', 'remaining_applicant_rel', string='Duplicate candidats')
@@ -21,8 +22,8 @@ class HrApplicantDuplicateWizard(models.TransientModel):
         default='start'
     )
     user_id = fields.Many2one('res.users', 'Recruteur')
-    pages = fields.Integer(string='Total pages', tracking=True)
-    current_page = fields.Integer(string='Page courante', tracking=True)
+    pages = fields.Integer(string='Total pages')
+    current_page = fields.Integer(string='Page courante')
 
     def is_integer_list(self, ids):
         return all(isinstance(i, int) for i in ids)
@@ -39,7 +40,7 @@ class HrApplicantDuplicateWizard(models.TransientModel):
             self.remaining_applicant_ids = [(3, applicant_id.id)]
         
         if self.remaining_applicant_ids:
-            self.applicant_ids = self.env['hr.applicant'].search([('email_from', '=', self.remaining_applicant_ids[0].email_from)])
+            self.applicant_ids = self.env['hr.applicant'].with_context(active_test=False).search([('email_from', '=', self.remaining_applicant_ids[0].email_from)])
         else:
             self.applicant_ids = False
             self.state = 'finished'
@@ -49,12 +50,16 @@ class HrApplicantDuplicateWizard(models.TransientModel):
     def start_process_cb(self):
         self.remaining_applicant_ids = self.env['hr.applicant'].browse(self._context.get('active_ids', False))
         self.applicant_ids = self.remaining_applicant_ids.filtered(lambda app: app.application_count == 0)
-        
-        self.pages = len(self.remaining_applicant_ids.filtered(lambda app: app.application_count > 0)) + 1
+        self.pages = len(set(self.remaining_applicant_ids.filtered(lambda app: app.application_count > 0).mapped('email_from')))
 
         self.state = 'pending'
 
-        return self._next_screen()
+        if self.applicant_ids:
+            self.pages += 1
+            return self._next_screen()
+        else:
+            #raise ValidationError("HELLO")
+            return self.next_cb()
 
     def close_cb(self):
         return {'type': 'ir.actions.act_window_close'}
@@ -69,4 +74,5 @@ class HrApplicantDuplicateWizard(models.TransientModel):
             'view_mode': 'form',
             'limit': 1000,
             'target': 'new',
+           'context': {'active_test': False},
         }

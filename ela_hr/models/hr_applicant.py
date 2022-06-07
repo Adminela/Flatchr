@@ -100,6 +100,7 @@ class HrApplicant(models.Model):
     statut = fields.Char(string='Statut', tracking=True)
     email_from = fields.Char(tracking=True)
     partner_phone = fields.Char(tracking=True)
+    partner_phone_nospace = fields.Char("Phone nospace", size=32, compute='_compute_partner_phone_nospace', store=True)
     is_premium = fields.Boolean(string='CV Premium', tracking=True)
     prix_formation = fields.Float(string='Prix formation', tracking=True, groups="ela_hr.group_hide_prices")
     solde_formation = fields.Float(string='Solde', tracking=True, groups="ela_hr.group_hide_prices")
@@ -118,12 +119,11 @@ class HrApplicant(models.Model):
     stage_domain = fields.Char(string='Stage domain', compute='_compute_stage_domain')
     active_ela = fields.Boolean(string='Active ELA', tracking=True, default=True)
 
-    scoring = fields.Integer(string='Scoring', compute='_compute_scoring', store=True)
-    scoring_1 = fields.Integer(string='Scoring', compute='_compute_scoring', store=True)
-    scoring_2 = fields.Integer(string='Scoring', compute='_compute_scoring', store=True)
-    scoring_3 = fields.Integer(string='Scoring', compute='_compute_scoring', store=True)
-    scoring_4 = fields.Integer(string='Scoring', compute='_compute_scoring', store=True)
-    scoring_5 = fields.Integer(string='Scoring', compute='_compute_scoring', store=True)
+    scoring_1 = fields.Integer(string='Scoring 1', compute='_compute_scoring', store=True)
+    scoring_2 = fields.Integer(string='Scoring 2', compute='_compute_scoring', store=True)
+    scoring_3 = fields.Integer(string='Scoring 3', compute='_compute_scoring', store=True)
+    scoring_4 = fields.Integer(string='Scoring 4', compute='_compute_scoring', store=True)
+    scoring_5 = fields.Integer(string='Scoring 5', compute='_compute_scoring', store=True)
 
     crm_ids = fields.One2many('hr.applicant.crm', inverse_name='applicant_id', string='CVs présentés')
     crm_suggested_nb = fields.Integer(string='# Suggestion', compute="_compute_nbs", store=True)
@@ -139,6 +139,11 @@ class HrApplicant(models.Model):
     _sql_constraints = [
         ('uniq_nomenclature_cv', 'unique(nomenclature_cv)', "'ATTENTION' Cette nomenclature CV existe déjà !")
     ]
+
+    @api.depends("partner_phone")
+    def _compute_partner_phone_nospace(self):
+        for record in self:
+            record.partner_phone_nospace = record.partner_phone.replace(" ", "") if record.partner_phone else False
 
     @api.depends("activity_ids", "activity_ids.nrp")
     def _compute_nb_nrp(self):

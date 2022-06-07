@@ -6,7 +6,8 @@ from odoo import fields, api, models, _
 
 
 class ProjectTaskType(models.Model):
-    _inherit = "project.task.type"
+    _inherit = ["project.task.type", 'mail.thread']
+    _name = "project.task.type"
 
     stage_id = fields.Many2one("hr.recruitment.stage", string='Étape de déplacement', ondelete='restrict', tracking=True)
     to_paiement = fields.Boolean(string='Mettre à payer', help='Si cochée, le candidat sera mentionné "À payer" s\'il est tagué "Rentré en formation"', tracking=True)
