@@ -6,7 +6,8 @@ from odoo import fields, api, models, _
 
 
 class HrRecruitmentStage(models.Model):
-    _inherit = "hr.recruitment.stage"
+    _inherit = ["hr.recruitment.stage", 'mail.thread']
+    _name = "hr.recruitment.stage"
 
     is_create_project_task = fields.Boolean(string='Créer formation', help='Si cochée, une tâche dans projet va être créée lors ce que l\'applicant est déplacé dans cette étape', tracking=True)
     is_reset = fields.Boolean(string='Réinitialiser', help='Si cochée, les candidats dans cette étape seront réinitialisés :\n'

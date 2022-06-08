@@ -1,0 +1,27 @@
+<?xml version='1.0' encoding='utf-8'?>
+<odoo>
+
+    <record model="ir.actions.act_window" id="contacts.action_contacts">
+        <field name="domain">[('flatchr_applicant_id', '=', False)]</field>
+    </record>
+
+    <record model="ir.actions.act_window" id="action_res_partner_menu_flatchr_contacts_tree">
+        <field name="name">Contacts Flatchr</field>
+        <field name="res_model">res.partner</field>
+        <field name="view_mode">kanban,tree,form,activity</field>
+        <field name="context">{'default_is_company': True}</field>
+        <field name="domain">[('flatchr_applicant_id', '!=', False)]</field>
+        <field name="help" type="html">
+            <p>
+            </p>
+        </field>
+    </record>
+
+    <menuitem id="res_partner_menu_flatchr_contacts"
+        name="Contacts Flatchr"
+        action="action_res_partner_menu_flatchr_contacts_tree"
+        parent="contacts.menu_contacts"
+        sequence="1"
+    />
+
+</odoo>

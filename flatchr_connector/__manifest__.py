@@ -12,11 +12,13 @@
     "license": "OEEL-1",
     "depends": [
         'hr_recruitment',
+        'contacts',
     ],
     "data": [
         "data/ir_cron.xml",
         "views/hr_applicant.xml",
         "views/hr_job.xml",
+        "views/res_partner_view.xml",
         "views/res_config_settings.xml",
         "wizard/csv_dl_wizard.xml",
         "security/ir.model.access.csv"

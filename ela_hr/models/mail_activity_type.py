@@ -7,7 +7,7 @@ from odoo.exceptions import ValidationError
 class MailActivityType(models.Model):
     _inherit = 'mail.activity.type'
 
-    nrp = fields.Boolean(string='NRP', tracking=True)
+    nrp = fields.Boolean(string='NRP')
     nrp_triggered_next_type_id = fields.Many2one('mail.activity.type', string='Prochaine activité NRP', compute='_compute_triggered_next_type_id',
         inverse='_inverse_triggered_next_type_id', store=True, readonly=False,
         domain="['|', ('res_model', '=', False), ('res_model', '=', res_model)]", ondelete='restrict')
@@ -18,4 +18,4 @@ class MailActivityType(models.Model):
         ('weeks', 'weeks'),
         ('months', 'months')], string="NRP Delay units", help="Unit of delay", required=True, default='days')
     nrp_delay_from = fields.Selection([('current_date', 'after completion date'), ('previous_activity', 'after previous activity deadline')], 
-                                      string="Delay Type", help="Type of delay", required=True, default='previous_activity')
+                                      string="NRP Delay from", help="Type of delay", required=True, default='previous_activity')

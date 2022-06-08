@@ -10,5 +10,5 @@ from collections import defaultdict
 class MailActivity(models.Model):
     _inherit = 'mail.activity'
 
-    nrp = fields.Boolean(string='NRP', tracking=True)
+    nrp = fields.Boolean(string='NRP')
     nrp_previous_activity_type_id = fields.Many2one('mail.activity.type', string='NRP Previous Activity Type', readonly=True)

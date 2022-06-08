@@ -49,7 +49,7 @@ class CrmLead(models.Model):
     metier_ids = fields.Many2many("hr.metier", string='Métiers', ondelete="restrict", tracking=True)
     metier_ids_score = fields.Integer(string='Métiers score')
     skill_ids = fields.Many2many("hr.applicant.skill", string='Compétences', ondelete="restrict", tracking=True)
-    skill_ids_score = fields.Integer(string='Métiers score')
+    skill_ids_score = fields.Integer(string='Compétences score')
     categ_ids = fields.Many2many("hr.applicant.category", string='Etiquettes', ondelete="restrict", tracking=True)
     categ_ids_score = fields.Integer(string='Etiquettes score')
 
@@ -58,6 +58,8 @@ class CrmLead(models.Model):
     candidat_suggested_nb = fields.Integer(string='# Suggérés', compute="_compute_nbs", store=True)
     candidat_presented_nb = fields.Integer(string='# CVs présentés', compute="_compute_nbs", store=True)
     candidat_sent_nb = fields.Integer(string='# Envoyés en RDV', compute="_compute_nbs", store=True)
+    
+    child_ids = fields.One2many(related='partner_id.child_ids', string='Contacts & Adresses', readonly=False)
 
     @api.depends("candidat_crm_suggested_ids", "candidat_crm_suggested_ids.stage_id")
     def _compute_nbs(self):

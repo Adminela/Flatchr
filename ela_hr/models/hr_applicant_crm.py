@@ -13,8 +13,7 @@ SEND_RDV_STAGE_NAME='Envoyé en RDV'
 
 class HrApplicantCrm(models.Model):
     _name = "hr.applicant.crm"
-    _inherit = ['mail.thread.cc',
-                'mail.activity.mixin']
+    _inherit = ['mail.thread.cc', 'mail.activity.mixin']
     _description = "Hr applicant crm"
     _order = "id"
     _primary_email = 'email_from'
