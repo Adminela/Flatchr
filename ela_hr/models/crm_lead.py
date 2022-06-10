@@ -106,7 +106,7 @@ class CrmLead(models.Model):
         if self.code_postal_score:
             search_domain = expression.OR([search_domain, [('code_postal', '=', self.code_postal)]])
             search_view_arch += """
-                <filter string="Code postal est égale à '%s'" name="code_postal_filter" domain="[('code_postal', '=', %s)]"/>
+                <filter string="Code postal est égale à '%s'" name="code_postal_filter" domain="[('code_postal', '=', '%s')]"/>
             """%(self.code_postal, self.code_postal)
             context.update({'search_default_code_postal_filter' : 1})
 
