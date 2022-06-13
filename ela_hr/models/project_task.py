@@ -61,11 +61,12 @@ class ProjectTask(models.Model):
 
     def _compute_meeting_count(self):
         if self.applicant_id.ids:
-            meeting_data = self.env['calendar.event'].sudo().read_group(
+            meeting_data = self.env['calendar.event'].read_group(
                 [('task_id', 'in', self.ids)],
                 ['task_id'],
                 ['task_id']
             )
+            
             mapped_data = {m['task_id'][0]: m['task_id_count'] for m in meeting_data}
         else:
             mapped_data = dict()

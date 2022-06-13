@@ -6,6 +6,10 @@
         <field name="model">mail.activity.type</field>
         <field name="inherit_id" ref="mail.mail_activity_type_view_form"/>
         <field name="arch" type="xml">
+            <field name="mail_template_ids" position="before">
+                <field name="next_activity_res_model" string="Modèle"/>
+                <field name="next_activity_res_field" string="Champs" attrs="{'required': [('next_activity_res_model', '!=', False)], 'invisible': [('next_activity_res_model', '=', False)]}"/>
+            </field>
             <group name="activity_planning" position="inside">
                 <field name="nrp"/>
             </group>
@@ -15,8 +19,11 @@
                     <group>
                     </group>
                     <group name="nrp_activity_planning" string="Activité NRP suivante">
-                        <field name="nrp_triggered_next_type_id" options="{'no_open': True}" context="{'default_res_model': res_model}" attrs="{'required': [('nrp', '=', True)]}"/>
-                        <field name="nrp_mail_template_ids" widget="many2many_tags" domain="[('model_id.model', '=', res_model)]" attrs="{'invisible': [('res_model', '=', False)]}" context="{'default_model': res_model}"/>
+                        <field name="nrp_chaining_type"/>
+                        <field name="nrp_next_activity_res_model" string="Modèle"/>
+                        <field name="nrp_next_activity_res_field" string="Champs" attrs="{'required': [('nrp_next_activity_res_model', '!=', False)], 'invisible': [('nrp_next_activity_res_model', '=', False)]}"/>
+                        <field name="nrp_triggered_next_type_id" options="{'no_open': True}" context="{'default_res_model': res_model}" attrs="{'required': ['&amp;', ('nrp_chaining_type', '=', 'trigger'), ('category', '!=', 'upload_file')], 'invisible': ['&amp;', ('nrp_chaining_type', '=', 'suggest'), ('category', '!=', 'upload_file')]}"/>
+                        <field name="nrp_mail_template_ids" widget="many2many_tags" domain="[('model_id.model', '=', nrp_next_activity_res_model)]" attrs="{'invisible': [('res_model', '=', False)]}" context="{'default_model': res_model}"/>
                         <label for="nrp_delay_count"/>
                         <div>
                             <div class="o_row">

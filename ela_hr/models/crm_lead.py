@@ -59,7 +59,7 @@ class CrmLead(models.Model):
     candidat_presented_nb = fields.Integer(string='# CVs présentés', compute="_compute_nbs", store=True)
     candidat_sent_nb = fields.Integer(string='# Envoyés en RDV', compute="_compute_nbs", store=True)
     
-    child_ids = fields.One2many(related='partner_id.child_ids', string='Contacts & Adresses', readonly=False)
+    child_ids = fields.One2many(related='partner_id.child_ids', string='Contacts & Adresses')
 
     @api.depends("candidat_crm_suggested_ids", "candidat_crm_suggested_ids.stage_id")
     def _compute_nbs(self):
@@ -106,7 +106,7 @@ class CrmLead(models.Model):
         if self.code_postal_score:
             search_domain = expression.OR([search_domain, [('code_postal', '=', self.code_postal)]])
             search_view_arch += """
-                <filter string="Code postal est égale à '%s'" name="code_postal_filter" domain="[('code_postal', '=', %s)]"/>
+                <filter string="Code postal est égale à '%s'" name="code_postal_filter" domain="[('code_postal', '=', '%s')]"/>
             """%(self.code_postal, self.code_postal)
             context.update({'search_default_code_postal_filter' : 1})
 
@@ -181,10 +181,14 @@ class CrmLead(models.Model):
             context.update({'search_default_filiere_ids_filter' : 1})
 
         if self.metier_ids_score:
+            final_metier_names = []
+            for metier_name in self.metier_ids.mapped("name"):
+                final_metier_names.append(metier_name.replace('&','&amp;'))
+            #raise ValidationError("%s" %final_metier_names)
             search_domain = expression.OR([search_domain, [('metier_ids', 'in', self.metier_ids.ids)]])
             search_view_arch += """
                 <filter string="Métiers contient %s" name="metier_ids_filter" domain="[('metier_ids', 'in', %s)]"/>
-            """%(self.metier_ids.mapped("name"), self.metier_ids.ids)
+            """%(final_metier_names, self.metier_ids.ids)
             context.update({'search_default_metier_ids_filter' : 1})
 
         if self.skill_ids_score:

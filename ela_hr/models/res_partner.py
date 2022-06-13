@@ -9,11 +9,9 @@ from odoo.exceptions import ValidationError
 class ResPartner(models.Model):
     _inherit = 'res.partner'
 
-    #opportunity_applicant_ids = fields.One2many('hr.applicant.crm', related='opportunity_ids.candidat_crm_suggested_ids')
     opportunity_applicant_ids = fields.One2many('hr.applicant.crm', compute='_compute_opportunity_applicant_ids')
     
     def _compute_opportunity_applicant_ids(self):
         for record in self:
             record.opportunity_applicant_ids = record.opportunity_ids.mapped('candidat_crm_suggested_ids')
-            #raise ValidationError("%s" %record.opportunity_applicant_ids)
     
