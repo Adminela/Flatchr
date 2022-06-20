@@ -186,7 +186,8 @@ class MailActivity(models.Model):
                 related_object = self.env[self.previous_activity_type_id.res_model].browse(self.res_id_origin)
                 related_object_next_name = self.res_field.name
                 self.res_id = related_object[related_object_next_name].id
-                #raise ValidationError(related_object_next_name)
+                if not self.res_id:
+                    raise ValidationError("Le champs '%s' n'est pas renseigné" %(self.res_field.field_description))
             else:
                 self.res_id = self.res_id_origin
 
