@@ -25,7 +25,7 @@
                         <group col="6">
                             <group colspan="5">
                                 <field name="metier_ids" widget="many2many_tags" options="{'no_create_edit': True, 'no_quick_create': True}" attrs="{'required': [('metier_ids_score', '!=', 0)]}"/>
-                                <field name="skill_ids" widget="many2many_tags" options="{'no_create_edit': True, 'no_quick_create': True}" attrs="{'required': [('metier_ids_score', '!=', 0)]}"/>
+                                <field name="skill_ids" widget="many2many_tags" options="{'no_create_edit': True, 'no_quick_create': True}" attrs="{'required': [('skill_ids_score', '!=', 0)]}"/>
                             </group>
                             <group col="1">
                                 <field name="metier_ids_score" nolabel="1"/>
@@ -116,7 +116,7 @@
                     </group>
                 </page>
                 <page string="Contacts &amp; Adresses">
-                    <field name="child_ids" mode="kanban"/>
+                    <field name="child_ids"/>
                 </page>
             </page>
             <div name="button_box" position="inside">

@@ -1,0 +1,40 @@
+<?xml version='1.0' encoding='utf-8'?>
+<odoo>
+<p style="margin:0px 0 12px 0;box-sizing:border-box;">Bonjour,</p>
+    
+    
+<p style="margin:0px 0 12px 0;box-sizing:border-box;">Suite à nos derniers échanges, je reviens vers vous pour le poste de <span style="text-decoration:none;box-sizing:border-box;background-color:transparent;color:#9a6c8e;"><strong t-out="object.crm_id.name" data-oe-t-inline="true" style="box-sizing:border-box;font-weight: bolder;" contenteditable="false">Post exemple</strong></span> auquel nous avons transmis votre candidature le <span style="text-decoration:none;box-sizing:border-box;background-color:transparent;color:#9a6c8e;"><strong t-out="object.response_date" data-oe-t-inline="true" style="box-sizing:border-box;font-weight: bolder;" contenteditable="false">05/08/2022</strong></span></p>
+    
+<p style="margin:0px 0 12px 0;box-sizing:border-box;">Votre profil est ressorti suite à notre skill matching pour un poste de <t t-out="object.crm_id.name" data-oe-t-inline="true" style="font-weight: bolder;" contenteditable="false">Post exemple</t>.</p>
+<p style="margin:0px 0 12px 0;box-sizing:border-box;">Si vous êtes disponible et motivé pour ce poste merci de nous le notifier en répondant à cet email en indiquant vos disponibilités.</p>
+<p style="margin:0px 0 12px 0;box-sizing:border-box;">Si l'intituler du poste ne correspond pas a votre attente, merci de nous le preciser en retour de ce mail.</p>
+<p style="margin:0px 0 12px 0;box-sizing:border-box;">Nous espérons le présenter très rapidement au service recrutement de notre partenaire afin de vous donner un retour, positif ou négatif, rapidement.</p>
+<p style="margin:0px 0 12px 0;box-sizing:border-box;">Bon courage et belle journée,</p>
+
+<!-- FOOTER -->
+<t t-if="user.signature" data-oe-t-group-active="true" data-oe-t-group="3" data-oe-t-inline="true">
+    <t t-out="user.signature" data-oe-t-inline="true" contenteditable="false">Signature</t>
+</t>
+<table border="0" cellpadding="0" cellspacing="0" width="590" style="box-sizing:border-box;min-width: 590px; background-color: white; font-size: 11px; padding: 0px 8px 0px 8px; border-collapse:separate;">
+    <tbody>
+        <tr>
+            <td valign="middle" align="left">
+                <t t-out="object.applicant_id.company_id.name or ''" data-oe-t-inline="true" contenteditable="false">YourCompany</t>
+            </td>
+        </tr>
+        <tr>
+            <td valign="middle" align="left" style="opacity: 0.7;">
+                <t t-out="object.applicant_id.company_id.phone or ''" data-oe-t-inline="true" contenteditable="false">+1 650-123-4567</t>
+                <t t-if="object.applicant_id.company_id.email" data-oe-t-group-active="true" data-oe-t-group="4" data-oe-t-inline="true">
+                | <a t-attf-href="'mailto:%s' % {{ object.applicant_id.company_id.email }}" style="box-sizing:border-box;background-color:transparent;text-decoration:none; color: #454748;"><t t-out="object.applicant_id.company_id.email or ''" data-oe-t-inline="true" contenteditable="false">info@yourcompany.com</t></a>
+                </t>
+                <t t-if="object.applicant_id.company_id.website" data-oe-t-group-active="true" data-oe-t-group="5" data-oe-t-inline="true">
+                    | <a t-attf-href="'%s' % {{ object.applicant_id.company_id.website }}" style="box-sizing:border-box;background-color:transparent;text-decoration:none; color: #454748;">
+                        <t t-out="object.applicant_id.company_id.website or ''" data-oe-t-inline="true" contenteditable="false">http://www.example.com</t></a>
+                </t>
+            </td>
+        </tr>
+    </tbody>
+</table>
+
+</odoo>

@@ -329,7 +329,9 @@ class HrApplicant(models.Model):
 
     def _compute_activities_count(self):
         for record in self:
-            record.activities_count = len(record.with_context({'active_test' : False}).activity_ids)
+            #raise ValidationError(record.env['mail.activity'].search([('res_model', '=', 'hr.applicant'), ('res_id', '=', record.id), ('active', '=', False)]))
+            #raise ValidationError(record.with_context(active_test=False).activity_ids)
+            record.activities_count = len(record.with_context(active_test=False).activity_ids)
 
     def action_show_activities(self):
         return {

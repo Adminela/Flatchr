@@ -52,13 +52,16 @@
     'assets': {
         'web.assets_backend': [
             'ela_hr/static/src/css/styles.css',
-            'ela_hr/static/src/components/activity/activity.js',
+            'ela_hr/static/src/components/activity/activity_mark_done_popover.scss',
+            #'ela_hr/static/src/models/activity/activity.js',
+            #'ela_hr/static/src/components/activity/activity.js',
         ],
         'mail.assets_discuss_public': [
             #'ela_hr/static/src/components/activity/activity.js',
         ],
         'web.assets_common': [
-            #'ela_hr/static/src/components/activity/activity.js',
+            'ela_hr/static/src/models/activity/activity.js',
+            'ela_hr/static/src/components/activity/activity.js',
         ],
         'web.assets_qweb': [
             'ela_hr/static/src/components/activity/activity.xml'

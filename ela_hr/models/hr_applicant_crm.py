@@ -14,11 +14,13 @@ SEND_RDV_STAGE_NAME='Envoyé en RDV'
 class HrApplicantCrm(models.Model):
     _name = "hr.applicant.crm"
     _inherit = ['mail.thread.cc', 'mail.activity.mixin']
-    _description = "Hr applicant crm"
+    _description = "Candidature"
     _order = "id"
     _primary_email = 'email_from'
     _mailing_enabled = True
+    _rec_name = "display_name"
     
+    display_name = fields.Char(string='Nom affiché', compute="_compute_display_name")
     applicant_id = fields.Many2one("hr.applicant", required=True, string='Candidat')
     email_from = fields.Char(related="crm_id.email_from", string="Email", store=True)
     crm_id = fields.Many2one("crm.lead", required=True, string='Opportunité')
@@ -33,6 +35,11 @@ class HrApplicantCrm(models.Model):
     )
     response_date = fields.Date(string="Date de résponse", compute="_compute_response_date", readonly=True, store=True)
 
+    @api.depends("crm_id", "applicant_id")
+    def _compute_display_name(self):
+        for record in self:
+            record.display_name = "%s - %s" %(record.crm_id.name, record.applicant_id.name) 
+    
     @api.depends("stage_id")
     def _compute_last_stage_date(self):
         for record in self:

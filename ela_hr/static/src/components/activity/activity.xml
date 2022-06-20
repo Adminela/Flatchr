@@ -3,9 +3,14 @@
 
     <t t-inherit="mail.ActivityMarkDonePopover" t-inherit-mode="extension">
         <xpath expr="//button[hasclass('o_ActivityMarkDonePopover_doneScheduleNextButton')]" position="after">
-                <button type="button" class="o_ActivityMarkDonePopover_doneButton btn btn-sm btn-primary" t-on-click="_onClickNRP">
-                 NRP
+            <button type="button" class="o_ActivityMarkDonePopover_NRPdoneScheduleNextButton btn btn-sm btn-primary" t-on-click="_onClickNrpDoneAndScheduleNext" t-esc="NRP_DONE_AND_SCHEDULE_NEXT"/>
+        </xpath>
+        <xpath expr="//button[hasclass('o_ActivityMarkDonePopover_doneButton')]" position="after">
+            <t t-if="activity.chaining_type === 'suggest'">
+                <button type="button" class="o_ActivityMarkDonePopover_NRPdoneButton btn btn-sm btn-primary" t-on-click="_onClickNRP">
+                    NRP
                 </button>
+            </t>
         </xpath>
     </t>
 </templates>
