@@ -7,24 +7,29 @@
         <field name="inherit_id" ref="mail.mail_activity_type_view_form"/>
         <field name="arch" type="xml">
             <field name="mail_template_ids" position="before">
-                <field name="next_activity_res_model" string="Modèle"/>
-                <field name="next_activity_res_field" string="Champs" attrs="{'required': [('next_activity_res_model', '!=', False)], 'invisible': [('next_activity_res_model', '=', False)]}"/>
+                <field name="next_activity_res_model" string="Modèle" attrs="{'invisible': [('nrp_chaining_type', '=', 'suggest')]}"/>
+                <field name="required_field" invisible="1"/>
+                <field name="next_activity_res_field" string="Champs" attrs="{'required': [('required_field', '=', True)], 'invisible': [('required_field', '=', False)]}"/>
             </field>
             <group name="activity_planning" position="inside">
                 <field name="nrp"/>
             </group>
-                
+            <field name="decoration_type" position="after">
+                <field name="many2one_model_ids" invisible="1"/>
+            </field>
             <xpath expr="//sheet/group" position="after">
                 <group attrs="{'invisible': [('nrp', '=', False)]}">
                     <group>
                     </group>
                     <group name="nrp_activity_planning" string="Activité NRP suivante">
                         <field name="nrp_chaining_type"/>
-                        <field name="nrp_next_activity_res_model" string="Modèle"/>
-                        <field name="nrp_next_activity_res_field" string="Champs" attrs="{'required': [('nrp_next_activity_res_model', '!=', False)], 'invisible': [('nrp_next_activity_res_model', '=', False)]}"/>
                         <field name="nrp_triggered_next_type_id" options="{'no_open': True}" context="{'default_res_model': res_model}" attrs="{'required': ['&amp;', ('nrp_chaining_type', '=', 'trigger'), ('category', '!=', 'upload_file')], 'invisible': ['&amp;', ('nrp_chaining_type', '=', 'suggest'), ('category', '!=', 'upload_file')]}"/>
+                        <field name="nrp_next_activity_res_model" string="Modèle" attrs="{'invisible': [('nrp_chaining_type', '=', 'suggest')]}"/>
+                        <field name="required_nrp_field" invisible="1"/>
+                        <field name="nrp_next_activity_res_field" string="Champs" attrs="{'required': [('required_nrp_field', '=', True)], 'invisible': [('required_nrp_field', '=', False)]}"/>
+                        <field name="nrp_suggested_next_type_ids" widget="many2many_tags" context="{'default_res_model': res_model}" attrs="{'invisible': ['|', ('nrp_chaining_type', '=', 'trigger'), ('category', '=', 'upload_file')]}"/>
                         <field name="nrp_mail_template_ids" widget="many2many_tags" domain="[('model_id.model', '=', nrp_next_activity_res_model)]" attrs="{'invisible': [('res_model', '=', False)]}" context="{'default_model': res_model}"/>
-                        <label for="nrp_delay_count"/>
+                        <label for="nrp_delay_count" string="Date prévue"/>
                         <div>
                             <div class="o_row">
                                 <field class="col-1 pl-0 pr-0" name="nrp_delay_count"/>

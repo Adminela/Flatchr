@@ -40,6 +40,12 @@ export class ActivityMarkDonePopover extends Component {
         return this.env._t("Done & Schedule Next");
     }
 
+    /**
+     * @returns {string}
+     */
+    get NRP_DONE_AND_SCHEDULE_NEXT() {
+        return this.env._t("NRP et PLANIFIER LE PROCHAIN");
+    }
     //--------------------------------------------------------------------------
     // Private
     //--------------------------------------------------------------------------
@@ -97,9 +103,16 @@ export class ActivityMarkDonePopover extends Component {
      */
     async _onClickDoneAndScheduleNext() {
         await this.activity.markAsDoneAndScheduleNext({
-            feedback: this._feedbackTextareaRef.el.value,
-            nrp: true,
-        });
+            feedback: this._feedbackTextareaRef.el.value});
+        this.trigger('reload', { keepChanges: true });
+    }
+
+    /**
+     * @private
+     */
+    async _onClickNrpDoneAndScheduleNext() {
+        await this.activity.markAsDoneAndScheduleNextNRP({
+            feedback: this._feedbackTextareaRef.el.value});
         this.trigger('reload', { keepChanges: true });
     }
 

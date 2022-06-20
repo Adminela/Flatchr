@@ -1,0 +1,14 @@
+.o_ActivityMarkDonePopover_doneScheduleNextButton {
+}
+
+.o_ActivityMarkDonePopover_NRPdoneScheduleNextButton {
+    margin: map-get($spacers, 0) map-get($spacers, 2);
+}
+
+.o_ActivityMarkDonePopover_doneButton {
+    margin: map-get($spacers, 2) map-get($spacers, 0);
+}
+
+.o_ActivityMarkDonePopover_NRPdoneButton {
+    margin: map-get($spacers, 2) map-get($spacers, 2);
+}

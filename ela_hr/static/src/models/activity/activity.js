@@ -48,9 +48,9 @@ function factory(dependencies) {
             if ('date_deadline' in data) {
                 data2.dateDeadline = data.date_deadline;
             }
-            if ('chaining_type' in data) {
+            /**if ('chaining_type' in data) {
                 data2.chaining_type = data.chaining_type;
-            }
+            }*/
             if ('icon' in data) {
                 data2.icon = data.icon;
             }
@@ -197,15 +197,43 @@ function factory(dependencies) {
          * @param {string} param0.feedback
          * @returns {Object}
          */
-        async markAsDoneAndScheduleNext({ feedback, nrp }) {
+        async markAsDoneAndScheduleNext({ feedback}) {
             const action = await this.async(() => this.env.services.rpc({
                 model: 'mail.activity',
                 method: 'action_feedback_schedule_next',
                 args: [[this.id]],
                 kwargs: { 
-                    feedback,
-                    nrp,
+                    feedback},
+            }));
+            this.thread.refresh();
+            const thread = this.thread;
+            this.delete();
+            if (!action) {
+                thread.refreshActivities();
+                return;
+            }
+            this.env.bus.trigger('do-action', {
+                action,
+                options: {
+                    on_close: () => {
+                        thread.refreshActivities();
+                    },
                 },
+            });
+        }
+
+        /**
+         * @param {Object} param0
+         * @param {string} param0.feedback
+         * @returns {Object}
+         */
+        async markAsDoneAndScheduleNextNRP({ feedback}) {
+            const action = await this.async(() => this.env.services.rpc({
+                model: 'mail.activity',
+                method: 'action_nrp_feedback_schedule_next',
+                args: [[this.id]],
+                kwargs: { 
+                    feedback},
             }));
             this.thread.refresh();
             const thread = this.thread;

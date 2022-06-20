@@ -15,4 +15,24 @@
         </field>
     </record>
 
+    <record id="ela_hr_mail_activity_view_form_popup" model="ir.ui.view">
+        <field name="name">ela.hr.mail.activity.view.form.popup</field>
+        <field name="model">mail.activity</field>
+        <field name="priority">90</field>
+        <field name="inherit_id" ref="mail.mail_activity_view_form_popup"/>
+        <field name="arch" type="xml">
+            <field name="state" position="after">
+                <field name="res_id_origin" invisible="1"/>
+                <field name="res_model_origin" invisible="1"/>
+                <field name="required_field" invisible="1"/>
+                <field name="res_field" attrs="{'required': [('required_field', '=', True)], 'invisible': [('required_field', '=', False)]}"/>
+            </field>
+            <field name="recommended_activity_type_id" position="replace">
+                <field name="from_nrp" invisible="1"/>
+                <field name="nrp_recommended_activity_type_id" widget="selection_badge" domain="[('nrp_previous_type_ids', '=', previous_activity_type_id)]" attrs="{'invisible': [('from_nrp', '=', False)]}" nolabel="1"/>
+                <field name="recommended_activity_type_id" widget="selection_badge" domain="[('previous_type_ids', '=', previous_activity_type_id)]" attrs="{'invisible': [('from_nrp', '=', True)]}" nolabel="1"/>
+            </field>
+        </field>
+    </record>
+
 </odoo>
