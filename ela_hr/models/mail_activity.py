@@ -21,20 +21,31 @@ class MailActivity(models.Model):
     nrp_next_activity_res_id = fields.Many2oneReference(string='Related NRP Document ID', index=True, compute="_compute_nrp_next_activity_res_id", required=True, model_field='nrp_next_activity_res_model')
     next_activity_type_id = fields.Many2one(related='activity_type_id.triggered_next_type_id', readonly=True)
     next_activity_res_model = fields.Selection(selection=_get_model_selection, string='Related next Document Model', index=True, related='next_activity_type_id.res_model', compute_sudo=True, store=True, readonly=True)
-    next_activity_res_id = fields.Many2oneReference(string='Related Document ID', index=True, compute="_compute_next_activity_res_id", required=True, model_field='nrp_next_activity_res_model')
+    next_activity_res_id = fields.Many2oneReference(string='Related Document ID', index=True, compute="_compute_next_activity_res_id", required=True, model_field='next_activity_res_model')
     from_nrp = fields.Boolean(string='FROM NRP')
     activity_type_id = fields.Many2one(domain=[])
 
     res_id_origin = fields.Integer(string='Enregistrement d\'origine')
     res_model_origin = fields.Selection(related='previous_activity_type_id.res_model', string="Modèle", store=True)
+    #res_model_origin = fields.Selection(selection=_get_model_selection, compute='_compute_res_model_origin', compute_sudo=True, string="Modèle")
     required_field = fields.Boolean(string='Champs Invisible', compute='_compute_required_field')
     res_field = fields.Many2one('ir.model.fields', string='Champs', domain="[('model_id', '=', res_model_origin), ('relation', '=', res_model)]")
 
     nrp_recommended_activity_type_id = fields.Many2one('mail.activity.type', string="NRP Recommended Activity Type")
 
-    @api.depends('previous_activity_type_id', 'previous_activity_type_id.res_model', 'res_model')
+    def _compute_res_model_origin(self):
+        for record in self:
+            if record.previous_activity_type_id:
+                record.res_model_origin = record.previous_activity_type_id.res_model
+            else:
+                record.res_model_origin = record.res_model
+            raise ValidationError("TEST %s" %record.previous_activity_type_id)
+
+    @api.depends('activity_type_id', 'previous_activity_type_id', 'previous_activity_type_id.res_model', 'res_model_origin', 'res_model')
     def _compute_required_field(self):
         for record in self:
+            test = record.res_model_origin
+            #raise ValidationError("HELLO %s" %record.res_model_origin)
             if record.res_model and record.previous_activity_type_id.res_model and record.previous_activity_type_id.res_model != record.res_model:
                 record.required_field = True
             else:
@@ -60,21 +71,19 @@ class MailActivity(models.Model):
 
     def action_feedback(self, feedback=False, nrp=False, attachment_ids=None):
         if nrp:
-            for nrp_mail_template_id in self.nrp_mail_template_ids:
-                mail_id = nrp_mail_template_id.sudo().send_mail(self.res_id, force_send=True)
             messages, next_activities = self.with_context(nrp=True)._action_done_nrp(feedback=feedback, attachment_ids=attachment_ids)
             return messages.ids and messages.ids[0] or False
                 
         return super(MailActivity, self).action_feedback(feedback, attachment_ids)
 
-    def _calculate_date_deadline(self, activity_type):
-        if self._context.get('nrp'):
-            base = fields.Date.context_today(self)
-            if activity_type.nrp_delay_from == 'previous_activity' and 'activity_previous_deadline' in self.env.context:
-                base = fields.Date.from_string(self.env.context.get('activity_previous_deadline'))
-            return base + relativedelta(**{activity_type.nrp_delay_unit: activity_type.nrp_delay_count})
-        else:
-            return super(MailActivity, self)._calculate_date_deadline(activity_type)
+    #def _calculate_date_deadline(self, activity_type):
+    #    if self._context.get('nrp'):
+    #        base = fields.Date.context_today(self)
+    #        if activity_type.nrp_delay_from == 'previous_activity' and 'activity_previous_deadline' in self.env.context:
+    #            base = fields.Date.from_string(self.env.context.get('activity_previous_deadline'))
+    #        return base + relativedelta(**{activity_type.nrp_delay_unit: activity_type.nrp_delay_count})
+    #    else:
+    #        return super(MailActivity, self)._calculate_date_deadline(activity_type)
 
     def _onchange_nrp_previous_activity_type_id(self):
         for record in self:
@@ -97,18 +106,14 @@ class MailActivity(models.Model):
             res_id = self.nrp_next_activity_res_id
             res_model = self.nrp_next_activity_res_model
 
-        elif not self.nrp:
-            if not self.nrp_next_activity_res_id:
+        else:
+            if not self.next_activity_res_id:
                 related_object = self.env[self.res_model].browse(self.res_id)
                 related_object_next_name = related_object.activity_type_id.next_activity_res_field.name
-                raise ValidationError("Le champs '%s' n'est pas renseigné" %(related_object.activity_type_id.nrp_next_activity_res_field.field_description))
+                raise ValidationError("Le champs '%s' n'est pas renseigné" %(related_object.activity_type_id.next_activity_res_field.field_description))
 
             res_id = self.next_activity_res_id
             res_model = self.next_activity_res_model
-
-        else:
-            res_id = self.res_id
-            res_model = self.res_model
 
         vals.update({
             'previous_activity_type_id': self.activity_type_id.id,
@@ -116,6 +121,7 @@ class MailActivity(models.Model):
             'res_model': res_model,
             'res_model_id': self.env['ir.model']._get(res_model).id,
         })
+
         virtual_activity = self.new(vals)
         
         if self.nrp:
@@ -125,18 +131,28 @@ class MailActivity(models.Model):
             virtual_activity._onchange_previous_activity_type_id()
             virtual_activity._onchange_activity_type_id()
 
+
+        related_object = self.env[res_model].browse(res_id)
+        user_id = related_object[virtual_activity.activity_type_id.activity_user_field_id.name]
+
+        if user_id:
+            virtual_activity.user_id = user_id
+
         return virtual_activity._convert_to_write(virtual_activity._cache)
 
     def _action_done_nrp(self, feedback=False, attachment_ids=None):
-        self.nrp = True
         # marking as 'done'
         messages = self.env["mail.message"]
         next_activities_values = []
         for activity in self:
+            activity.nrp = True
             # extract value to generate next activities
             if activity.nrp_chaining_type == 'trigger':
                 vals = activity.with_context(activity_previous_deadline=activity.date_deadline)._prepare_next_activity_values()
                 next_activities_values.append(vals)
+
+            for nrp_mail_template_id in activity.nrp_mail_template_ids:
+                mail_id = nrp_mail_template_id.sudo().send_mail(activity.res_id, force_send=True)
 
             # post message on activity, before deleting it
             record = self.env[activity.res_model].browse(activity.res_id)
@@ -174,7 +190,6 @@ class MailActivity(models.Model):
         else:
             super(MailActivity, self)._onchange_recommended_activity_type_id()
 
-        
         if not self.res_id_origin:
             self.res_id_origin = self.res_id
 
@@ -200,6 +215,7 @@ class MailActivity(models.Model):
             default_res_model=self.res_model,
             default_from_nrp=True,
         )
+
         messages, next_activities = self._action_done_nrp(feedback=feedback)  # will unlink activity, dont access self after that
         if next_activities:
             return False
@@ -220,4 +236,17 @@ class MailActivity(models.Model):
                 record.has_recommended_activities = bool(record.previous_activity_type_id.nrp_suggested_next_type_ids)
             else:
                 record.has_recommended_activities = bool(record.previous_activity_type_id.suggested_next_type_ids)
-            
+
+    def action_create_calendar_event(self):
+        action = super(MailActivity, self).action_create_calendar_event()
+        
+        if self.activity_type_id.default_user_id:
+            if self.activity_type_id.default_user_id.partner_id:
+                action['context'].update({
+                    'default_user_id': self.activity_type_id.default_user_id.id,
+                    'default_partner_ids': [(6, 0, [self.activity_type_id.default_user_id.partner_id.id])],
+                })
+            else:
+                raise ValidationError("Il y a une erreur avec l'utilisateur choisis dans le type d'activité")
+
+        return action

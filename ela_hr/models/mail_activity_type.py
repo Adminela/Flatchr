@@ -43,6 +43,10 @@ class MailActivityType(models.Model):
     next_activity_res_field = fields.Many2one('ir.model.fields', string='Champs', domain="[('model_id', '=', res_model), ('relation', '=', next_activity_res_model)]")
     required_field = fields.Boolean(string='Champs Invisible', compute='_compute_required_field')
 
+    activity_user_field_id = fields.Many2one('ir.model.fields', string='Champ utilisateur', domain="[('model_id.model', '=', res_model),('relation', '=', 'res.users')]", help="Technical name of the user on the record")
+    
+    is_rdv_pedagogique = fields.Boolean(string='Est RDV Pédagogique')
+    is_rdv_rh = fields.Boolean(string='Est RDV RH')
 
 
     @api.onchange('many2one_model_ids')
@@ -75,7 +79,6 @@ class MailActivityType(models.Model):
             if record.res_model:
                 ralations = record.env['ir.model'].search([('model', '=', record.res_model)]).field_id.filtered(lambda f: f.ttype == 'many2one').mapped('relation')
                 model_ids = record.env['ir.model'].search([('model', 'in', ralations)])
-                #raise ValidationError(models)
                 record.many2one_model_ids = model_ids
             else:
                 record.many2one_model_ids = False
