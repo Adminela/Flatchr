@@ -23,7 +23,7 @@ class ProjectTask(models.Model):
     case_number = fields.Char(related="applicant_id.case_number", readonly=False, tracking=True, store=True)
     niveau = fields.Many2one(related="applicant_id.niveau", readonly=False, tracking=True, store=True)
     nombre_dheures = fields.Integer(related="applicant_id.nombre_dheures", readonly=False, tracking=True, store=True)
-    date_entree_call = fields.Date(related="applicant_id.date_entree_call", readonly=False, tracking=True, store=True)
+    date_entree_call = fields.Datetime(related="applicant_id.date_entree_call", readonly=False, tracking=True, store=True)
     date_inscription = fields.Date(related="applicant_id.date_inscription", readonly=False, tracking=True, store=True)
     # Pédagogique
     login = fields.Char(related="applicant_id.login", readonly=False, tracking=True, store=True, groups="ela_hr.group_hide_password")
@@ -57,7 +57,7 @@ class ProjectTask(models.Model):
                 if record.stage_id.cancel:
                     record.applicant_id.active_ela = False
                 else:
-                        record.applicant_id.active_ela = True
+                    record.applicant_id.active_ela = True
 
     def _compute_meeting_count(self):
         if self.applicant_id.ids:

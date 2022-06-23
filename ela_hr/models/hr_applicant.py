@@ -27,7 +27,8 @@ class HrApplicant(models.Model):
     case_number = fields.Char(string='N° de dossier', tracking=True)
     niveau = fields.Many2one("hr.applicant.niveau", string='Niveau',tracking=True)
     nombre_dheures = fields.Integer(string='Nombre d\'heures', tracking=True)
-    date_entree_call = fields.Date(string='Date entrée call', tracking=True)
+    date_entree_call = fields.Datetime(string='Date entrée call', compute="_compute_date_entree_call", inverse="_inverse_date_entree_call", store=True, tracking=True)
+    date_rdv_rh = fields.Datetime(string='Date RDV RH', compute="_compute_date_rdv_rh", inverse="_inverse_date_rdv_rh", store=True, tracking=True)
     date_inscription = fields.Date(string='Date d\'inscription', tracking=True)
     # Pédagogique
     login = fields.Char(string='Login', tracking=True, groups="ela_hr.group_hide_password")
@@ -65,8 +66,8 @@ class HrApplicant(models.Model):
     comptage = fields.Integer(string='Comptage', tracking=True)
     date_naissance = fields.Date(string='Date de naissance', tracking=True)
     genre = fields.Selection([
-        ("monsieur", "Monsieur"),
-        ("madame", "Madame"),
+        ("Monsieur", "Monsieur"),
+        ("Madame", "Madame"),
         ],
         'Genre',
         tracking=True
@@ -140,6 +141,27 @@ class HrApplicant(models.Model):
         ('uniq_nomenclature_cv', 'unique(nomenclature_cv)', "'ATTENTION' Cette nomenclature CV existe déjà !")
     ]
 
+    @api.depends("task_id.activity_ids.activity_type_id.is_rdv_pedagogique", "task_id.activity_ids.calendar_event_id.start")
+    def _compute_date_entree_call(self):
+        for record in self:
+            if record.task_id:
+                for activity in record.task_id.activity_ids:
+                    if activity.activity_type_id.is_rdv_pedagogique and activity.calendar_event_id:
+                        record.date_entree_call = activity.calendar_event_id.start
+
+    def _inverse_date_entree_call(self):
+        pass
+
+    @api.depends("activity_ids.activity_type_id.is_rdv_rh", "activity_ids.calendar_event_id.start")
+    def _compute_date_rdv_rh(self):
+        for record in self:
+            for activity in record.activity_ids:
+                if activity.activity_type_id.is_rdv_rh and activity.calendar_event_id:
+                    record.date_rdv_rh = activity.calendar_event_id.start
+
+    def _inverse_date_rdv_rh(self):
+        pass
+        
     @api.depends("partner_phone")
     def _compute_partner_phone_nospace(self):
         for record in self:

@@ -17,9 +17,15 @@
             <field name="decoration_type" position="after">
                 <field name="many2one_model_ids" invisible="1"/>
             </field>
+            <field name="default_user_id" position="after">
+                <field name="many2one_model_ids" invisible="1"/>
+                <field name="activity_user_field_id" options="{'no_create_edit': True, 'no_quick_create': True}"/>
+            </field>
             <xpath expr="//sheet/group" position="after">
                 <group attrs="{'invisible': [('nrp', '=', False)]}">
-                    <group>
+                    <group name="infos_ela" string="Informations ELA">
+                        <field name="is_rdv_pedagogique"/>
+                        <field name="is_rdv_rh"/>
                     </group>
                     <group name="nrp_activity_planning" string="Activité NRP suivante">
                         <field name="nrp_chaining_type"/>
@@ -28,15 +34,15 @@
                         <field name="required_nrp_field" invisible="1"/>
                         <field name="nrp_next_activity_res_field" string="Champs" attrs="{'required': [('required_nrp_field', '=', True)], 'invisible': [('required_nrp_field', '=', False)]}"/>
                         <field name="nrp_suggested_next_type_ids" widget="many2many_tags" context="{'default_res_model': res_model}" attrs="{'invisible': ['|', ('nrp_chaining_type', '=', 'trigger'), ('category', '=', 'upload_file')]}"/>
-                        <field name="nrp_mail_template_ids" widget="many2many_tags" domain="[('model_id.model', '=', nrp_next_activity_res_model)]" attrs="{'invisible': [('res_model', '=', False)]}" context="{'default_model': res_model}"/>
-                        <label for="nrp_delay_count" string="Date prévue"/>
+                        <field name="nrp_mail_template_ids" widget="many2many_tags" domain="[('model_id.model', '=', res_model)]" attrs="{'invisible': [('res_model', '=', False)]}" context="{'default_model': res_model}"/>
+                        <!--<label for="nrp_delay_count" string="Date prévue"/>
                         <div>
                             <div class="o_row">
                                 <field class="col-1 pl-0 pr-0" name="nrp_delay_count"/>
                                 <field class="col-3 pl-1 pr-1" name="nrp_delay_unit"/>
-                                <field name="delay_from"/>
+                                <field name="nrp_delay_from"/>
                             </div>
-                        </div>
+                        </div>-->
                     </group>
                 </group>
             </xpath>

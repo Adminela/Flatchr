@@ -173,9 +173,14 @@
                 </group>
             </xpath>
             <page name="misc" position="inside">
-                <group name="nrp" string="NRP">
-                    <field name="nb_nrp"/>
-                    <field name="nb_nrp_rappel"/>
+                <group>
+                    <group name="nrp" string="NRP">
+                        <field name="nb_nrp"/>
+                        <field name="nb_nrp_rappel"/>
+                    </group>
+                    <group name="nrp" string="Dates">
+                        <field name="date_rdv_rh"/>
+                    </group>
                 </group>
             </page>
         </field>
