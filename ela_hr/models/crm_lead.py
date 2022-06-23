@@ -183,8 +183,7 @@ class CrmLead(models.Model):
         if self.metier_ids_score:
             final_metier_names = []
             for metier_name in self.metier_ids.mapped("name"):
-                final_metier_names.append(metier_name.replace('&','&amp;'))
-            #raise ValidationError("%s" %final_metier_names)
+                final_metier_names.append(metier_name.replace('&','&amp;').replace('\'','&apos;'))
             search_domain = expression.OR([search_domain, [('metier_ids', 'in', self.metier_ids.ids)]])
             search_view_arch += """
                 <filter string="Métiers contient %s" name="metier_ids_filter" domain="[('metier_ids', 'in', %s)]"/>
@@ -199,10 +198,13 @@ class CrmLead(models.Model):
             context.update({'search_default_skill_ids_filter' : 1})
 
         if self.categ_ids_score:
+            final_categ_names = []
+            for categ_name in self.categ_ids.mapped("name"):
+                final_categ_names.append(categ_name.replace('&','&amp;').replace('\'','&apos;'))
             search_domain = expression.OR([search_domain, [('categ_ids', 'in', self.categ_ids.ids)]])
             search_view_arch += """
                 <filter string="Compétences contient %s" name="categ_ids_filter" domain="[('categ_ids', 'in', %s)]"/>
-            """%(self.categ_ids.mapped("name"), self.categ_ids.ids)
+            """%(final_categ_names, self.categ_ids.ids)
             context.update({'search_default_categ_ids_filter' : 1})
 
         if context == {}:
