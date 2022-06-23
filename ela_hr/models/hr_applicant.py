@@ -371,6 +371,10 @@ class HrApplicant(models.Model):
 
     def write(self,vals):
         res = super(HrApplicant, self).write(vals)
+
+        if 'in_formation' in vals and self.task_id:
+            self.task_id._onchange_stage_id()
+
         if 'stage_id' in vals:
             if self.stage_id.is_create_project_task:
                 if self.formation:
