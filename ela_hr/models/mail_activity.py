@@ -133,10 +133,11 @@ class MailActivity(models.Model):
 
 
         related_object = self.env[res_model].browse(res_id)
-        user_id = related_object[virtual_activity.activity_type_id.activity_user_field_id.name]
+        if virtual_activity.activity_type_id.activity_user_field_id:
+            user_id = related_object[virtual_activity.activity_type_id.activity_user_field_id.name]
 
-        if user_id:
-            virtual_activity.user_id = user_id
+            if user_id:
+                virtual_activity.user_id = user_id
 
         return virtual_activity._convert_to_write(virtual_activity._cache)
 
