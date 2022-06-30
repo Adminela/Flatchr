@@ -11,7 +11,7 @@ class MailActivity(models.Model):
     _inherit = 'mail.activity'
 
     def _get_model_selection(self):
-        return super(MailActivity, self)._get_model_selection()
+        return self.env['mail.activity.type']._get_model_selection()
 
     nrp = fields.Boolean(string='NRP')
     nrp_chaining_type = fields.Selection(related='activity_type_id.nrp_chaining_type', readonly=True)
@@ -25,31 +25,61 @@ class MailActivity(models.Model):
     from_nrp = fields.Boolean(string='FROM NRP')
     activity_type_id = fields.Many2one(domain=[])
 
+    #res_model_origin = fields.Selection(related='previous_activity_type_id.res_model', string="Modèle", store=True)
+    res_model_origin = fields.Selection(selection=_get_model_selection, compute='_compute_res_model_origin', compute_sudo=True, store=True, string="Modèle origin")
     res_id_origin = fields.Integer(string='Enregistrement d\'origine')
-    res_model_origin = fields.Selection(related='previous_activity_type_id.res_model', string="Modèle", store=True)
-    #res_model_origin = fields.Selection(selection=_get_model_selection, compute='_compute_res_model_origin', compute_sudo=True, string="Modèle")
-    required_field = fields.Boolean(string='Champs Invisible', compute='_compute_required_field')
-    res_field = fields.Many2one('ir.model.fields', string='Champs', domain="[('model_id', '=', res_model_origin), ('relation', '=', res_model)]")
+    res_model_dest = fields.Selection(selection=_get_model_selection, compute='_compute_res_model_dest', compute_sudo=True, store=True, string="Modèle dest")
+    res_id_dest = fields.Integer(string='Enregistrement de destination', compute='_compute_res_id_dest', )
+    required_field = fields.Boolean(string='Champs Invisible', compute='_compute_required_field', store=True)
+    res_field = fields.Many2one('ir.model.fields', string='Champs', domain="[('model_id', '=', res_model_origin), ('relation', '=', res_model_dest)]")
 
     nrp_recommended_activity_type_id = fields.Many2one('mail.activity.type', string="NRP Recommended Activity Type")
 
+    @api.depends('previous_activity_type_id', 'previous_activity_type_id.res_model', 'res_model')
     def _compute_res_model_origin(self):
         for record in self:
-            if record.previous_activity_type_id:
-                record.res_model_origin = record.previous_activity_type_id.res_model
-            else:
-                record.res_model_origin = record.res_model
-            raise ValidationError("TEST %s" %record.previous_activity_type_id)
+            if not record.res_model_origin:
+                if record.previous_activity_type_id:
+                    record.res_model_origin = record.previous_activity_type_id.res_model
 
-    @api.depends('activity_type_id', 'previous_activity_type_id', 'previous_activity_type_id.res_model', 'res_model_origin', 'res_model')
+                if not record.res_model_origin:
+                    record.res_model_origin = record.res_model
+
+    @api.depends('activity_type_id', 'activity_type_id.res_model')
+    def _compute_res_model_dest(self):
+        for record in self:
+            if record.activity_type_id:
+                record.res_model_dest = record.activity_type_id.res_model
+
+            if not record.res_model_dest:
+                record.res_model_dest = record.res_model
+
+    @api.onchange('activity_type_id', 'activity_type_id.res_model')
+    def _onchange_activity_type_id(self):
+        for record in self:
+            if record.activity_type_id and record.activity_type_id.res_model:
+                record.res_model = record.activity_type_id.res_model
+
+    @api.onchange('res_model', 'res_field')
+    def _onchange_res_field(self):
+        for record in self:
+            if record.res_model and record.res_field:
+                related_object = record.env[record.res_model_origin].browse(record.res_id)
+                record.res_id = related_object[record.res_field.name].id
+
+    @api.depends('res_model_dest', 'res_field')
+    def _compute_res_id_dest(self):
+        for record in self:
+            if record.res_model_dest and record.res_field:
+                related_object = record.env[record.res_model].browse(record.res_id)
+                record.res_id_dest = related_object[record.res_field.name].id
+            else:
+                record.res_id_dest = False
+
+    @api.depends('res_model_origin', 'res_model_dest')
     def _compute_required_field(self):
         for record in self:
-            test = record.res_model_origin
-            #raise ValidationError("HELLO %s" %record.res_model_origin)
-            if record.res_model and record.previous_activity_type_id.res_model and record.previous_activity_type_id.res_model != record.res_model:
-                record.required_field = True
-            else:
-                record.required_field = False
+            record.required_field = True if record.res_model_origin != record.res_model_dest else False
 
     def _compute_nrp_next_activity_res_id(self):
         for record in self:
