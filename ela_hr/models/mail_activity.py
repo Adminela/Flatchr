@@ -251,3 +251,4 @@ class MailActivity(models.Model):
                 raise ValidationError("Il y a une erreur avec l'utilisateur choisis dans le type d'activité")
 
         return action
+    

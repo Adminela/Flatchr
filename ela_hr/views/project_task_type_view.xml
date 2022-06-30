@@ -9,6 +9,7 @@
                 <field name="stage_id"/>
                 <field name="to_paiement"/>
                 <field name="cancel"/>
+                <field name="annulation_titulaire"/>
             </field>
         </field>
     </record>
@@ -22,6 +23,7 @@
                 <field name="stage_id"/>
                 <field name="to_paiement"/>
                 <field name="cancel"/>
+                <field name="annulation_titulaire"/>
             </field>
         </field>
     </record>

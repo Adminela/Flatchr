@@ -23,7 +23,7 @@ class HrApplicant(models.Model):
     date_source = fields.Datetime(string='Date de synchronisation', help="Date à laquelle le candidat a été enregistré dans Odoo via l'API", tracking=True)
     secteur_ids = fields.Many2many("hr.activity", string='Secteur d\'activité', ondelete="restrict", tracking=True)
     filiere_ids = fields.Many2many("hr.channel", string='Filière', ondelete="restrict", tracking=True)
-    metier_ids = fields.Many2many("hr.metier", string='Métier', ondelete="restrict", tracking=True)
+    metier_ids = fields.Many2many("hr.metier", string='Métiers souhaités', ondelete="restrict", tracking=True)
 
     @api.depends('application_count')
     def _compute_job_count(self):

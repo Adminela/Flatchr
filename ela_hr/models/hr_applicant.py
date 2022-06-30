@@ -73,7 +73,8 @@ class HrApplicant(models.Model):
         tracking=True
     )
     lieu_naissance = fields.Char(string='Lieu de naissance', tracking=True)
-    skill_ids = fields.Many2many("hr.applicant.skill", string='Compétence', ondelete="restrict", tracking=True)
+    skill_ids = fields.Many2many("hr.applicant.skill", string='Hard skills', ondelete="restrict", tracking=True)
+    #categ_ids = fields.Many2many(string='Soft skills')
     # Recrutement
     workzone_ids = fields.Many2many("hr.applicant.workzone", string='Zone de travail', ondelete="restrict", tracking=True)
     code_postal = fields.Char(string='Code postal', tracking=True)
@@ -110,12 +111,14 @@ class HrApplicant(models.Model):
     payment_state = fields.Selection([
         ("to_be_sold", "À payer"),
         ("sold", "Payé"),
+        ("to_remove", "À retirer"),
         ],
         'État du paiement',
         tracking=True
     )
     to_be_sold_date = fields.Date(string='Date à payer', compute='_compute_to_be_sold_date', store=True, tracking=True)
     sold_date = fields.Date(string='Date de paiement', compute='_compute_to_be_sold_date', store=True, tracking=True)
+    to_remove_date = fields.Date(string='Date de retrait', compute='_compute_to_be_sold_date', store=True, tracking=True)
 
     stage_domain = fields.Char(string='Stage domain', compute='_compute_stage_domain')
     active_ela = fields.Boolean(string='Active ELA', tracking=True, default=True)
@@ -187,12 +190,19 @@ class HrApplicant(models.Model):
             if record.payment_state == 'to_be_sold':
                 record.to_be_sold_date = date.today()
                 record.sold_date = False
+                record.to_remove_date = False
             elif record.payment_state == 'sold':
                 record.to_be_sold_date = record.to_be_sold_date
                 record.sold_date = date.today()
+                record.to_remove_date = False
+            elif record.payment_state == 'to_remove':
+                record.to_be_sold_date = record.to_be_sold_date
+                record.sold_date = record.sold_date
+                record.to_remove_date = date.today()
             else:
                 record.to_be_sold_date = False
                 record.sold_date = False
+                record.to_remove_date = False
 
     @api.depends("crm_ids")
     def _compute_show_suggest_button(self):

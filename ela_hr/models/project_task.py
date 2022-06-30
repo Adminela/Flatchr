@@ -38,6 +38,7 @@ class ProjectTask(models.Model):
     prix_formation = fields.Float(related="applicant_id.prix_formation", readonly=False, tracking=True, store=True, groups="ela_hr.group_hide_prices")
     solde_formation = fields.Float(related="applicant_id.solde_formation", readonly=False, tracking=True, store=True, groups="ela_hr.group_hide_prices")
     in_formation = fields.Boolean(related="applicant_id.in_formation", readonly=False, tracking=True, store=True)
+    
     payment_state = fields.Selection(related="applicant_id.payment_state", readonly=False, tracking=True, store=True)
 
     meeting_count = fields.Integer(compute='_compute_meeting_count', help='Meeting Count')
@@ -49,9 +50,13 @@ class ProjectTask(models.Model):
             if record.stage_id.stage_id:
                 record.applicant_id.stage_id = record.stage_id.stage_id
 
-            if record.stage_id.to_paiement and record.in_formation:
+            if record.stage_id.to_paiement: #and record.in_formation:
                 if not record.payment_state:
                     record.payment_state = 'to_be_sold'
+
+            if record.stage_id.annulation_titulaire:
+                if record.date_last_stage_update.date and record.date_entree and record.date_last_stage_update.date() < record.date_entree:
+                    record.payment_state = 'to_remove'
 
             if record.applicant_id:
                 if record.stage_id.cancel:

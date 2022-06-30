@@ -12,9 +12,9 @@
                     <group>
                         <group col="6">
                             <group colspan="5">
-                                <field name="secteur_ids" widget="many2many_tags" options="{'no_create_edit': True, 'no_quick_create': True}" attrs="{'required': [('secteur_ids_score', '!=', 0)]}"/>
-                                <field name="filiere_ids" widget="many2many_tags" options="{'no_create_edit': True, 'no_quick_create': True}" attrs="{'required': [('filiere_ids_score', '!=', 0)]}"/>
-                                <field name="categ_ids" widget="many2many_tags" options="{'no_create_edit': True, 'no_quick_create': True}" attrs="{'required': [('categ_ids_score', '!=', 0)]}"/>
+                                <field name="secteur_ids" readonly="1" widget="many2many_tags" options="{'no_create_edit': True, 'no_quick_create': True}" attrs="{'required': [('secteur_ids_score', '!=', 0)]}"/>
+                                <field name="filiere_ids" readonly="1" widget="many2many_tags" options="{'no_create_edit': True, 'no_quick_create': True}" attrs="{'required': [('filiere_ids_score', '!=', 0)]}"/>
+                                <field name="categ_ids" widget="many2many_tags" placeholder="Ex. Dynamique, autonome..." options="{'no_create_edit': True, 'no_quick_create': True}" attrs="{'required': [('categ_ids_score', '!=', 0)]}"/>
                             </group>
                             <group col="1">
                                 <field name="secteur_ids_score" nolabel="1"/>
@@ -25,7 +25,7 @@
                         <group col="6">
                             <group colspan="5">
                                 <field name="metier_ids" widget="many2many_tags" options="{'no_create_edit': True, 'no_quick_create': True}" attrs="{'required': [('metier_ids_score', '!=', 0)]}"/>
-                                <field name="skill_ids" widget="many2many_tags" options="{'no_create_edit': True, 'no_quick_create': True}" attrs="{'required': [('skill_ids_score', '!=', 0)]}"/>
+                                <field name="skill_ids" widget="many2many_tags" placeholder="Ex. Anglais, Excel..." options="{'no_create_edit': True, 'no_quick_create': True}" attrs="{'required': [('skill_ids_score', '!=', 0)]}"/>
                             </group>
                             <group col="1">
                                 <field name="metier_ids_score" nolabel="1"/>
@@ -126,6 +126,21 @@
             </div>
         </field>                
     </record>
+
+    <record id="ela_hr_crm_lead_view_form_mgr" model="ir.ui.view">
+        <field name="name">ela.hr.crm.lead.view.form.mgr</field>
+        <field name="model">crm.lead</field>
+        <field name="inherit_id" ref="ela_hr_crm_lead_view_form" />
+        <field name="groups_id" eval="[(6, 0, [ref('hr_recruitment.group_hr_recruitment_manager')])]" />                
+        <field name="arch" type="xml">                                   
+            <field name="filiere_ids" position="attributes">
+               <attribute name="readonly">0</attribute>                   
+            </field>
+            <field name="secteur_ids" position="attributes">
+               <attribute name="readonly">0</attribute>                   
+            </field>            
+        </field>
+    </record>    
 
     <record id="ela_hr_crm_case_tree_view_oppor" model="ir.ui.view">
         <field name="name">ela.hr.crm.case.tree.view.oppor</field>

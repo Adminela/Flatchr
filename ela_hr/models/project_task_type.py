@@ -12,3 +12,4 @@ class ProjectTaskType(models.Model):
     stage_id = fields.Many2one("hr.recruitment.stage", string='Étape de déplacement', ondelete='restrict', tracking=True)
     to_paiement = fields.Boolean(string='Mettre à payer', help='Si cochée, le candidat sera mentionné "À payer" s\'il est tagué "Rentré en formation"', tracking=True)
     cancel = fields.Boolean(string='Archiver candidat', help='Si cochée, le candidat sera archivé et le commercial en charge notifié', tracking=True)
+    annulation_titulaire = fields.Boolean(string='Annulation titulaire', help='Si cochée, le candidat sera placé dans l\'état e paiment "A retirer"' , tracking=True)
