@@ -47,22 +47,30 @@ class ProjectTask(models.Model):
     @api.onchange("stage_id", "in_formation")
     def _onchange_stage_id(self):
         for record in self:
-            if record.stage_id.stage_id:
-                record.applicant_id.stage_id = record.stage_id.stage_id
+            if record.create_date <= datetime.strptime('01/07/22', '%d/%m/%y'):
+                if record.stage_id.to_paiement and record.in_formation:
+                    if not record.payment_state:
+                        record.payment_state = 'to_be_sold'
 
-            if record.stage_id.to_paiement: #and record.in_formation:
-                if not record.payment_state:
-                    record.payment_state = 'to_be_sold'
+    @api.onchange("stage_id")
+    def _onchange_new_stage_id(self):
+            if record.create_date > datetime.strptime('01/07/22', '%d/%m/%y'):
+                if record.stage_id.to_paiement:
+                    if not record.payment_state:
+                        record.payment_state = 'to_be_sold'
 
-            if record.stage_id.annulation_titulaire:
-                if record.date_last_stage_update.date and record.date_entree and record.date_last_stage_update.date() < record.date_entree:
-                    record.payment_state = 'to_remove'
+                if record.stage_id.annulation_titulaire:
+                    if record.date_last_stage_update.date and record.date_entree and record.date_last_stage_update.date() < record.date_entree:
+                        record.payment_state = 'to_remove'
 
             if record.applicant_id:
                 if record.stage_id.cancel:
                     record.applicant_id.active_ela = False
                 else:
                     record.applicant_id.active_ela = True
+
+            if record.stage_id.stage_id:
+                record.applicant_id.stage_id = record.stage_id.stage_id
 
     def _compute_meeting_count(self):
         if self.applicant_id.ids:
