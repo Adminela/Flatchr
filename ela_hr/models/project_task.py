@@ -54,6 +54,7 @@ class ProjectTask(models.Model):
 
     @api.onchange("stage_id")
     def _onchange_new_stage_id(self):
+        for record in self:
             if record.create_date > datetime.strptime('01/07/22', '%d/%m/%y'):
                 if record.stage_id.to_paiement:
                     if not record.payment_state:
