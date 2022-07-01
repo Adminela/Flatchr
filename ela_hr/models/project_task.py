@@ -4,6 +4,7 @@
 
 from odoo import fields, api, models, _
 from odoo.exceptions import ValidationError
+from datetime import datetime
 
 class ProjectTask(models.Model):
     _inherit = "project.task"
