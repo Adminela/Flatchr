@@ -299,7 +299,6 @@ class HrApplicant(models.Model):
                 for metier_experience_id in record.metier_experience_ids:
                     metier_experience_score_id = crm_id.metier_experience_score_ids.filtered(lambda msc : msc.metier_id == metier_experience_id.metier_id)
                     if metier_experience_score_id and metier_experience_id.experience_id and metier_experience_id.experience_id.sequence >= metier_experience_score_id.experience_id.sequence:
-                        #raise ValidationError("HELLO %s - %s" %(metier_experience_score_id.score, record.id))
                         scoring += metier_experience_score_id.score
 
                 if self.env.user:
