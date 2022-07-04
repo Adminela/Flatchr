@@ -27,12 +27,6 @@
                     <field name="is_premium" invisible="1"/>
                 </button>
             </xpath>
-            <xpath expr="//field[@name='source_id']" position="replace">
-                <field name="secteur_ids" widget="many2many_tags" readonly="1"/>
-                <field name="filiere_ids" widget="many2many_tags" readonly="1"/>
-                <field name="metier_ids" widget="many2many_tags"/>
-                <field name="skill_ids" placeholder="Ex. Anglais, Excel..." widget="many2many_tags"/>
-            </xpath>
             <xpath expr="//widget[@name='web_ribbon']" position="replace">
                 <field name="active_ela" invisible="1"/>
                 <widget name="web_ribbon" title="annulé" bg_color="bg-danger" attrs="{'invisible': [('active_ela', '=', True)]}"/>
@@ -55,12 +49,20 @@
             <field name="categ_ids" position="attributes">
                 <attribute name="string">Soft skills</attribute>
                 <attribute name="placeholder">Ex. Dynamique, autonome...</attribute>
+                <attribute name="options">{'no_create_edit': True, 'no_quick_create': True}</attribute>
             </field>
 
             <field name="categ_ids" position="before">
                 <field name="situation" options="{'no_create_edit': True, 'no_quick_create': True}"/>
                 <field name="appreciation" widget="priority"/>
             </field>
+            <xpath expr="//field[@name='source_id']" position="replace">
+                <field name="secteur_ids" widget="many2many_tags" readonly="1"/>
+                <field name="filiere_ids" widget="many2many_tags" readonly="1"/>
+                <field name="metier_ids" widget="many2many_tags"/>
+                <field name="skill_ids" placeholder="Ex. Anglais, Excel..." widget="many2many_tags" options="{'no_create_edit': True, 'no_quick_create': True}"/>
+                <field name="categ_ids" position="move"/>
+            </xpath>
             <xpath expr="//field[@name='survey_id']" position="before">
                 <xpath expr="//field[@name='job_id']" position="move"/>
                 <xpath expr="//field[@name='department_id']" position="move"/>
@@ -109,7 +111,7 @@
                         </group>
                         <group>
                             <field name="appreciation_hr" widget="priority"/>
-                            <field name="experience_id" options="{'no_create_edit': True, 'no_quick_create': True}"/>
+                            <!--<field name="experience_id" options="{'no_create_edit': True, 'no_quick_create': True}"/>-->
                             <field name="contract_type_ids" widget="many2many_tags" options="{'no_create_edit': True, 'no_quick_create': True}"/>
                             <label for="salaire_minimum_min"/>
                             <div class="o_row">
@@ -119,6 +121,14 @@
                             </div>
                             <field name="benefit_wished_ids" widget="many2many_tags" options="{'no_create_edit': True, 'no_quick_create': True}"/>
                         </group>
+                    </group>
+                    <group>
+                        <field name="metier_experience_ids" mode="tree" nolabel="1">
+                            <tree string="Hard skills" editable="bottom">
+                                <field name="metier_id" options="{'no_create_edit': True, 'no_quick_create': True}"/>
+                                <field name="experience_id" options="{'no_create_edit': True, 'no_quick_create': True}"/>
+                            </tree>
+                        </field>
                     </group>
                 </page>
                 <page string="Pédagogie">
@@ -325,7 +335,7 @@
                 <field name="mobilite"/>
                 <field name="heure_semaine"/>
                 <field name="appreciation_hr"/>
-                <field name="experience_id"/>
+                <!--<field name="experience_id"/>-->
                 <field name="contract_type_ids" widget="many2many_tags"/>
                 <field name="salaire_minimum_min"/>
                 <field name="salaire_minimum_max"/>
@@ -358,7 +368,7 @@
                 <field name="mobilite"/>
                 <field name="heure_semaine"/>
                 <field name="appreciation_hr"/>
-                <field name="experience_id"/>
+                <!--<field name="experience_id"/>-->
                 <field name="contract_type_ids"/>
                 <field name="benefit_wished_ids"/>
                 <field name="partner_phone_nospace" invisible="1"/>

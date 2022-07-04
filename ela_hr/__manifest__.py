@@ -48,6 +48,7 @@
     ],
     "qweb": [
         #"views/web_calendar_templates.xml",
+        'static/src/components/mail_template/mail_template.xml'
     ],
     'assets': {
         'web.assets_backend': [
@@ -64,7 +65,8 @@
             'ela_hr/static/src/components/activity/activity.js',
         ],
         'web.assets_qweb': [
-            'ela_hr/static/src/components/activity/activity.xml'
+            'ela_hr/static/src/components/activity/activity.xml',
+            'ela_hr/static/src/components/mail_template/mail_template.xml',
         ],
     },
     "license": "AGPL-3",

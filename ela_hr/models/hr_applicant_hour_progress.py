@@ -8,7 +8,7 @@ from datetime import date
 class HrApplicantHourProgress(models.Model):
     _name = "hr.applicant.hour.progress"
     _description = "Hr hour progress"
-    _order = "id"
+    _order = "id, date"
 
     applicant_id = fields.Many2one("hr.applicant", string='Applicant', required=True, ondelete='cascade')
     date = fields.Date(string='Date', required=True, default=date.today())

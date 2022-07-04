@@ -106,7 +106,7 @@
         <field name="name">hr.applicant.skill.tree</field>
         <field name="model">hr.applicant.skill</field>
         <field name="arch" type="xml">
-            <tree string="Compétence" editable="bottom">
+            <tree string="Hard skills" editable="bottom">
                 <field name="name"/>
             </tree>
         </field>
@@ -224,7 +224,7 @@
     </record>
 
     <record model="ir.actions.act_window" id="action_hr_applicant_skill_tree">
-        <field name="name">Compétence</field>
+        <field name="name">Hard skills</field>
         <field name="res_model">hr.applicant.skill</field>
         <field name="view_mode">tree</field>
         <field name="context">{}</field>
@@ -323,7 +323,7 @@
     />
 
     <menuitem id="menu_config_skill"
-        name="Expériences"
+        name="Hard skills"
         groups="hr_recruitment.group_hr_recruitment_manager"
         action="action_hr_applicant_skill_tree"
         parent="menu_config_objects"

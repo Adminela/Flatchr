@@ -50,6 +50,8 @@ class CrmLead(models.Model):
     metier_ids_score = fields.Integer(string='Métiers souhaités score')
     skill_ids = fields.Many2many("hr.applicant.skill", string='Hard skills', ondelete="restrict", tracking=True)
     skill_ids_score = fields.Integer(string='Compétences score')
+    metier_experience_score_ids = fields.One2many('hr.applicant.metier.experience.score', inverse_name='crm_id', string='Expériences')
+
     categ_ids = fields.Many2many("hr.applicant.category", string='Soft skills', ondelete="restrict", tracking=True)
     categ_ids_score = fields.Integer(string='Etiquettes score')
 
@@ -60,6 +62,7 @@ class CrmLead(models.Model):
     candidat_sent_nb = fields.Integer(string='# Envoyés en RDV', compute="_compute_nbs", store=True)
     
     child_ids = fields.One2many(related='partner_id.child_ids', string='Contacts & Adresses')
+    privileged_interlocutor_id = fields.Many2one("res.partner", string='Interlocuteur privilégié', ondelete="restrict")
 
     @api.depends("candidat_crm_suggested_ids", "candidat_crm_suggested_ids.stage_id")
     def _compute_nbs(self):
@@ -73,6 +76,7 @@ class CrmLead(models.Model):
 
         context = {}
         search_domain = []
+        domain = []
         search_view_arch = """
             <search string="Candidats">
                 <field string="Applicant" name="partner_name" 
@@ -84,7 +88,7 @@ class CrmLead(models.Model):
                 <field name="mobilite"/>
                 <field name="heure_semaine"/>
                 <field name="appreciation_hr"/>
-                <field name="experience_id"/>
+                <!--<field name="experience_id"/>-->
                 <field name="contract_type_ids"/>
                 <field name="salaire_minimum_min"/>
                 <field name="salaire_minimum_max"/>
@@ -97,11 +101,12 @@ class CrmLead(models.Model):
             """
 
         if self.workzone_ids_score:
-            search_domain = expression.OR([search_domain, [('workzone_ids', 'in', self.workzone_ids.ids)]])
+            search_domain = expression.AND([search_domain, [('workzone_ids', 'in', self.workzone_ids.ids)]])
             search_view_arch += """
                 <filter string="Zones de travail contient %s" name="workzone_ids_filter" domain="[('workzone_ids', 'in', %s)]"/>
             """%(self.workzone_ids.mapped("name"), self.workzone_ids.ids)
-            context.update({'search_default_workzone_ids_filter' : 1})
+            #context.update({'search_default_workzone_ids_filter' : 1})
+            context.update({'search_default_workzone_ids' : self.workzone_ids.ids})
 
         if self.code_postal_score:
             search_domain = expression.OR([search_domain, [('code_postal', '=', self.code_postal)]])
@@ -111,7 +116,7 @@ class CrmLead(models.Model):
             context.update({'search_default_code_postal_filter' : 1})
 
         if self.workhour_ids_score:
-            search_domain = expression.OR([search_domain, [('workhour_ids', 'in', self.workhour_ids.ids)]])
+            search_domain = expression.AND([search_domain, [('workhour_ids', 'in', self.workhour_ids.ids)]])
             search_view_arch += """
                 <filter string="Horaires de travail contient %s" name="workhour_ids_filter" domain="[('workhour_ids', 'in', %s)]"/>
             """%(self.workhour_ids.mapped("name"), self.workhour_ids.ids)
@@ -138,12 +143,12 @@ class CrmLead(models.Model):
             """%(self.appreciation_hr, self.appreciation_hr)
             context.update({'search_default_appreciation_hr_filter' : 1})
 
-        if self.experience_id_score:
-            search_domain = expression.OR([search_domain, [('experience_id.sequence', '>=', self.experience_id.sequence)]])
-            search_view_arch += """
-                <filter string="Expérience est supérieure ou égale à '%s'" name="experience_id_filter" domain="[('experience_id.sequence', '>=', %s)]"/>
-            """%(self.experience_id.name, self.experience_id.sequence)
-            context.update({'search_default_experience_id_filter' : 1})
+        #if self.experience_id_score:
+        #    search_domain = expression.OR([search_domain, [('experience_id.sequence', '>=', self.experience_id.sequence)]])
+        #    search_view_arch += """
+        #        <filter string="Expérience est supérieure ou égale à '%s'" name="experience_id_filter" domain="[('experience_id.sequence', '>=', %s)]"/>
+        #    """%(self.experience_id.name, self.experience_id.sequence)
+        #    #context.update({'search_default_experience_id_filter' : 1})
 
         if self.contract_type_ids_score:
             search_domain = expression.OR([search_domain, [('contract_type_ids', 'in', self.contract_type_ids.ids)]])
@@ -214,20 +219,49 @@ class CrmLead(models.Model):
             context.update({'search_default_none_filter' : 1})
 
         context.update({'crm_id' : self.id})
+        domain = [('workzone_ids', 'in', self.workzone_ids.ids)]
 
         if self.env.user:
             if self.env.user.scoring_column == 'scoring_1':
                 context.update({'show_scoring_1' : True})
+                #domain = [('scoring_1', '!=', 0)]
+                domain = expression.OR([domain, [('scoring_1', '!=', 0)]])
+                search_view_arch += """
+                    <filter string="Expérience par métier" name="scoring_filter" domain="[('scoring_1', '!=', 0)]"/>
+                """
+                context.update({'scoring_filter' : 1})
             elif self.env.user.scoring_column == 'scoring_2':
                 context.update({'show_scoring_2' : True})
+                #domain = [('scoring_2', '!=', 0)]
+                domain = expression.OR([domain, [('scoring_2', '!=', 0)]])
+                search_view_arch += """
+                    <filter string="Expérience par métier" name="scoring_filter" domain="[('scoring_2', '!=', 0)]"/>
+                """
             elif self.env.user.scoring_column == 'scoring_3':
                 context.update({'show_scoring_3' : True})
+                #domain = [('scoring_3', '!=', 0)]
+                domain = expression.OR([domain, [('scoring_3', '!=', 0)]])
+                search_view_arch += """
+                    <filter string="Expérience par métier" name="scoring_filter" domain="[('scoring_3', '!=', 0)]"/>
+                """
             elif self.env.user.scoring_column == 'scoring_4':
                 context.update({'show_scoring_4' : True})
+                #domain = [('scoring_4', '!=', 0)]
+                domain = expression.OR([domain, [('scoring_4', '!=', 0)]])
+                search_view_arch += """
+                    <filter string="Expérience par métier" name="scoring_filter" domain="[('scoring_4', '!=', 0)]"/>
+                """
             elif self.env.user.scoring_column == 'scoring_5':
                 context.update({'show_scoring_5' : True})
+                #domain = [('scoring_5', '!=', 0)]
+                domain = expression.OR([domain, [('scoring_5', '!=', 0)]])
+                search_view_arch += """
+                    <filter string="Expérience par métier" name="scoring_filter" domain="[('scoring_5', '!=', 0)]"/>
+                """
             else:
                 raise ValidationError("Veuillez contacter votre administrateur pour choisir une colonne de scorring pour votre Utilisateur")
+                
+            context.update({'search_default_scoring_filter' : 1})
 
         search_view_arch += """
                 <group expand="0" string="Group By">
@@ -235,15 +269,17 @@ class CrmLead(models.Model):
                     <filter string="Mobilité" name="mobilite" domain="[]" context="{'group_by': 'mobilite'}"/>
                     <filter string="Heure / Semaine" name="heure_semaine" domain="[]" context="{'group_by': 'heure_semaine'}"/>
                     <filter string="Appréciation RH" name="appreciation_hr" domain="[]" context="{'group_by': 'appreciation_hr'}"/>
-                    <filter string="Expérience" name="experience_id" domain="[]" context="{'group_by': 'experience_id'}"/>
+                    <!--<filter string="Expérience" name="experience_id" domain="[]" context="{'group_by': 'experience_id'}"/>-->
                 </group>
             </search>"""
 
         search_view.arch = search_view_arch
 
-        if search_domain:
-            self.env['hr.applicant'].search(search_domain).with_context(crm_id=self.id)._compute_scoring()
-            #self.env['hr.applicant'].search([(1, '=', 1)]).with_context(crm_id=self.id)._compute_scoring()
+        #if search_domain:
+        #    self.env['hr.applicant'].search(search_domain).with_context(crm_id=self.id)._compute_scoring()
+        #self.env['hr.applicant'].search([(1, '=', 1)]).with_context(crm_id=self.id)._compute_scoring()
+        #raise ValidationError("%s" %domain)
+        self.env['hr.applicant'].search(domain).with_context(crm_id=self.id)._compute_scoring()
 
         return {
             'name': _('Suggérer candidats'),

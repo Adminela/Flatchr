@@ -7,6 +7,13 @@
         <field name="arch" type="xml">
             <field name="tag_ids" position="replace"/>
 
+            <xpath expr="//group[@name='lead_partner']/field[@name='partner_id']" position="after">
+                <field name="privileged_interlocutor_id" required="1" domain="['|',('parent_id', '=', partner_id),('id', '=', partner_id)]" options="{'no_create_edit': True, 'no_quick_create': True}"/>
+            </xpath>
+            <xpath expr="//group[@name='opportunity_partner']/field[@name='partner_id']" position="after">
+                <field name="privileged_interlocutor_id"  required="1" domain="['|',('parent_id', '=', partner_id),('id', '=', partner_id)]" options="{'no_create_edit': True, 'no_quick_create': True}"/>
+            </xpath>
+
             <page name="internal_notes" position="before">
                 <page string="Recrutement">
                     <group>
@@ -33,7 +40,15 @@
                             </group>
                         </group>
                     </group>
-                    
+                    <group>
+                        <field name="metier_experience_score_ids" mode="tree" nolabel="1">
+                            <tree string="Hard skills" editable="bottom">
+                                <field name="metier_id" options="{'no_create_edit': True, 'no_quick_create': True}"/>
+                                <field name="experience_id" options="{'no_create_edit': True, 'no_quick_create': True}"/>
+                                <field name="score"/>
+                            </tree>
+                        </field>
+                    </group>
                     <group>
                         <group col="6">
                             <group colspan="5">
@@ -54,14 +69,14 @@
                         <group col="6">
                             <group colspan="5">
                                 <field name="appreciation_hr" widget="priority" attrs="{'required': [('appreciation_hr_score', '!=', 0)]}"/>
-                                <field name="experience_id" options="{'no_create_edit': True, 'no_quick_create': True}" attrs="{'required': [('experience_id_score', '!=', 0)]}"/>
+                                <!--<field name="experience_id" options="{'no_create_edit': True, 'no_quick_create': True}" attrs="{'required': [('experience_id_score', '!=', 0)]}"/>-->
                                 <field name="contract_type_ids" string="Type de contrat" widget="many2many_tags" options="{'no_create_edit': True, 'no_quick_create': True}" attrs="{'required': [('contract_type_ids_score', '!=', 0)]}"/>
                                 <field name="salaire_propose" attrs="{'required': [('salaire_propose_score', '!=', 0)]}"/>
                                 <field name="benefit_offered_ids" widget="many2many_tags" options="{'no_create_edit': True, 'no_quick_create': True}" attrs="{'required': [('benefit_offered_ids_score', '!=', 0)]}"/>
                             </group>
                             <group col="1">
                                 <field name="appreciation_hr_score" nolabel="1"/>
-                                <field name="experience_id_score" nolabel="1"/>
+                                <!--<field name="experience_id_score" nolabel="1"/>-->
                                 <field name="contract_type_ids_score" nolabel="1"/>
                                 <field name="salaire_propose_score" nolabel="1"/>
                                 <field name="benefit_offered_ids_score" nolabel="1"/>

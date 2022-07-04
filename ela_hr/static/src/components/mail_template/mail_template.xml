@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<templates id="template" xml:space="preserve">
+    <t t-inherit="mail.MailTemplate" t-inherit-mode="extension">
+        <xpath expr="//span[hasclass('o_MailTemplate_text')]" position="replace"/>
+        <xpath expr="//button[hasclass('o_MailTemplate_send')]" position="replace"/>
+    </t>
+</templates>

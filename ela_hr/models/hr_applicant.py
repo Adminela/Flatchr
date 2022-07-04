@@ -74,7 +74,7 @@ class HrApplicant(models.Model):
     )
     lieu_naissance = fields.Char(string='Lieu de naissance', tracking=True)
     skill_ids = fields.Many2many("hr.applicant.skill", string='Hard skills', ondelete="restrict", tracking=True)
-    #categ_ids = fields.Many2many(string='Soft skills')
+    metier_experience_ids = fields.One2many('hr.applicant.metier.experience', inverse_name='applicant_id', string='Expériences')
     # Recrutement
     workzone_ids = fields.Many2many("hr.applicant.workzone", string='Zone de travail', ondelete="restrict", tracking=True)
     code_postal = fields.Char(string='Code postal', tracking=True)
@@ -226,10 +226,12 @@ class HrApplicant(models.Model):
                 record.stage_domain = json.dumps([(1, '=', 1)])
 
     def _compute_scoring(self):
-        for record in self:
-            scoring = 0
-            if record._context.get('crm_id', False):
-                crm_id = self.env['crm.lead'].browse(record._context.get('crm_id', False))
+
+        if self._context.get('crm_id', False):
+            crm_id = self.env['crm.lead'].browse(self._context.get('crm_id', False))
+
+            for record in self:
+                scoring = 0
 
                 for workzone_id in record.workzone_ids:
                     if workzone_id in crm_id.workzone_ids:
@@ -254,8 +256,8 @@ class HrApplicant(models.Model):
                 elif record.appreciation_hr and record.appreciation_hr >= crm_id.appreciation_hr:
                     scoring += crm_id.appreciation_hr_score
 
-                if record.experience_id and record.experience_id.sequence >= crm_id.experience_id.sequence:
-                    scoring += crm_id.experience_id_score
+                #if record.experience_id and record.experience_id.sequence >= crm_id.experience_id.sequence:
+                #    scoring += crm_id.experience_id_score
 
                 for contract_type_id in record.contract_type_ids:
                     if contract_type_id in crm_id.contract_type_ids:
@@ -294,17 +296,23 @@ class HrApplicant(models.Model):
                         scoring += crm_id.categ_ids_score
                         break
 
-            if self.env.user:
-                if self.env.user.scoring_column == 'scoring_1':
-                    record.scoring_1 = scoring
-                elif self.env.user.scoring_column == 'scoring_2':
-                    record.scoring_2 = scoring
-                elif self.env.user.scoring_column == 'scoring_3':
-                    record.scoring_3 = scoring
-                elif self.env.user.scoring_column == 'scoring_4':
-                    record.scoring_4 = scoring
-                elif self.env.user.scoring_column == 'scoring_5':
-                    record.scoring_5 = scoring
+                for metier_experience_id in record.metier_experience_ids:
+                    metier_experience_score_id = crm_id.metier_experience_score_ids.filtered(lambda msc : msc.metier_id == metier_experience_id.metier_id)
+                    if metier_experience_score_id and metier_experience_id.experience_id and metier_experience_id.experience_id.sequence >= metier_experience_score_id.experience_id.sequence:
+                        #raise ValidationError("HELLO %s - %s" %(metier_experience_score_id.score, record.id))
+                        scoring += metier_experience_score_id.score
+
+                if self.env.user:
+                    if self.env.user.scoring_column == 'scoring_1':
+                        record.scoring_1 = scoring
+                    elif self.env.user.scoring_column == 'scoring_2':
+                        record.scoring_2 = scoring
+                    elif self.env.user.scoring_column == 'scoring_3':
+                        record.scoring_3 = scoring
+                    elif self.env.user.scoring_column == 'scoring_4':
+                        record.scoring_4 = scoring
+                    elif self.env.user.scoring_column == 'scoring_5':
+                        record.scoring_5 = scoring
 
     @api.model
     def is_global_leave_or_weekend(self, date):
@@ -361,8 +369,6 @@ class HrApplicant(models.Model):
 
     def _compute_activities_count(self):
         for record in self:
-            #raise ValidationError(record.env['mail.activity'].search([('res_model', '=', 'hr.applicant'), ('res_id', '=', record.id), ('active', '=', False)]))
-            #raise ValidationError(record.with_context(active_test=False).activity_ids)
             record.activities_count = len(record.with_context(active_test=False).activity_ids)
 
     def action_show_activities(self):
@@ -482,3 +488,8 @@ class HrApplicant(models.Model):
     def _phone_get_number_fields(self):
         """ Use mobile or phone fields to compute sanitized phone number """
         return ['partner_phone']
+
+    @api.depends('job_id')
+    def _compute_user(self):
+        for applicant in self:
+            applicant.user_id = False

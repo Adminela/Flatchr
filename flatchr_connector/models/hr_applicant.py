@@ -50,9 +50,6 @@ class HrApplicant(models.Model):
         for applicant in applicants:
             applicant.application_count = application_data_mapped.get(applicant.email_from, 1) - 1
 
-            if applicant.application_count > 0:
-                _logger.info("******* New job %s" % applicant.job_id.name)
-
         (self - applicants).application_count = False
 
     def action_applications_email(self):

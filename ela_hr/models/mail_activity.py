@@ -6,6 +6,8 @@ from odoo.exceptions import ValidationError
 from odoo.tools.misc import clean_context
 from collections import defaultdict
 from dateutil.relativedelta import relativedelta
+from datetime import timedelta, date, datetime
+from odoo.tools import is_html_empty
 
 class MailActivity(models.Model):
     _inherit = 'mail.activity'
@@ -33,6 +35,31 @@ class MailActivity(models.Model):
 
     nrp_recommended_activity_type_id = fields.Many2one('mail.activity.type', string="NRP Recommended Activity Type")
 
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        for values in vals_list:
+            if 'date_deadline' in values:
+                if type(values['date_deadline']) == "<class 'str'>":
+                    date_deadline = datetime.strptime(values['date_deadline'], '%Y-%m-%d').date()
+                    while self.env['hr.applicant'].is_global_leave_or_weekend(date_deadline):
+                        date_deadline += timedelta(days=1)
+
+                    values['date_deadline'] =  date_deadline
+
+        return super(MailActivity, self).create(vals_list)
+
+    def write(self, vals):
+        if 'date_deadline' in vals:
+            if type(vals['date_deadline']) == "<class 'str'>":
+                date_deadline = datetime.strptime(vals['date_deadline'], '%Y-%m-%d').date()
+                while self.env['hr.applicant'].is_global_leave_or_weekend(date_deadline):
+                    date_deadline += timedelta(days=1)
+
+                vals['date_deadline'] =  date_deadline
+
+        return super(MailActivity, self).write(vals)
+
     def _compute_res_model_origin(self):
         for record in self:
             if record.previous_activity_type_id:
@@ -45,7 +72,7 @@ class MailActivity(models.Model):
     def _compute_required_field(self):
         for record in self:
             test = record.res_model_origin
-            #raise ValidationError("HELLO %s" %record.res_model_origin)
+
             if record.res_model and record.previous_activity_type_id.res_model and record.previous_activity_type_id.res_model != record.res_model:
                 record.required_field = True
             else:
@@ -207,6 +234,9 @@ class MailActivity(models.Model):
             else:
                 self.res_id = self.res_id_origin
 
+        if self.required_field:
+            self.res_field = self.env['ir.model.fields'].search([('model_id', '=', self.res_model_origin), ('relation', '=', self.res_model)], limit=1)
+
     def action_nrp_feedback_schedule_next(self, feedback=False):
         ctx = dict(
             clean_context(self.env.context),
@@ -252,3 +282,26 @@ class MailActivity(models.Model):
 
         return action
     
+    @api.model
+    def is_global_leave_or_weekend(self, date):
+        if date.weekday() == 5 or date.weekday() == 6:
+            return True
+
+        global_leaves = self.env['resource.calendar.leaves'].search([('date_from', '<=', date),('date_to', '>=', date),('resource_id', '=', False)])
+
+        if global_leaves:
+            return True
+
+        return False
+
+    def action_create_calendar_event(self):
+        self.ensure_one()
+        action = super(MailActivity, self).action_create_calendar_event()
+        
+        name = self.res_name
+        if self.summary:
+            name += " - " + self.summary
+        
+        action['context'] = {'default_name': name}
+
+        return action

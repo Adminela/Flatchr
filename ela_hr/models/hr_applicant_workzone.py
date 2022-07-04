@@ -7,6 +7,6 @@ from odoo import fields, models
 class HrApplicantWorkzone(models.Model):
     _name = "hr.applicant.workzone"
     _description = "Hr applicant workzone"
-    _order = "id"
+    _order = "name"
 
     name = fields.Char("Name", required=True)
