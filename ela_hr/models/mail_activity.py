@@ -7,7 +7,6 @@ from odoo.tools.misc import clean_context
 from collections import defaultdict
 from dateutil.relativedelta import relativedelta
 from datetime import timedelta, date, datetime
-from odoo.tools import is_html_empty
 
 class MailActivity(models.Model):
     _inherit = 'mail.activity'
