@@ -105,7 +105,6 @@ class CrmLead(models.Model):
             search_view_arch += """
                 <filter string="Zones de travail contient %s" name="workzone_ids_filter" domain="[('workzone_ids', 'in', %s)]"/>
             """%(self.workzone_ids.mapped("name"), self.workzone_ids.ids)
-            #context.update({'search_default_workzone_ids_filter' : 1})
             context.update({'search_default_workzone_ids' : self.workzone_ids.ids})
 
         if self.code_postal_score:
@@ -116,7 +115,7 @@ class CrmLead(models.Model):
             context.update({'search_default_code_postal_filter' : 1})
 
         if self.workhour_ids_score:
-            search_domain = expression.AND([search_domain, [('workhour_ids', 'in', self.workhour_ids.ids)]])
+            search_domain = expression.OR([search_domain, [('workhour_ids', 'in', self.workhour_ids.ids)]])
             search_view_arch += """
                 <filter string="Horaires de travail contient %s" name="workhour_ids_filter" domain="[('workhour_ids', 'in', %s)]"/>
             """%(self.workhour_ids.mapped("name"), self.workhour_ids.ids)
@@ -224,7 +223,6 @@ class CrmLead(models.Model):
         if self.env.user:
             if self.env.user.scoring_column == 'scoring_1':
                 context.update({'show_scoring_1' : True})
-                #domain = [('scoring_1', '!=', 0)]
                 domain = expression.OR([domain, [('scoring_1', '!=', 0)]])
                 search_view_arch += """
                     <filter string="Expérience par métier" name="scoring_filter" domain="[('scoring_1', '!=', 0)]"/>
@@ -232,28 +230,24 @@ class CrmLead(models.Model):
                 context.update({'scoring_filter' : 1})
             elif self.env.user.scoring_column == 'scoring_2':
                 context.update({'show_scoring_2' : True})
-                #domain = [('scoring_2', '!=', 0)]
                 domain = expression.OR([domain, [('scoring_2', '!=', 0)]])
                 search_view_arch += """
                     <filter string="Expérience par métier" name="scoring_filter" domain="[('scoring_2', '!=', 0)]"/>
                 """
             elif self.env.user.scoring_column == 'scoring_3':
                 context.update({'show_scoring_3' : True})
-                #domain = [('scoring_3', '!=', 0)]
                 domain = expression.OR([domain, [('scoring_3', '!=', 0)]])
                 search_view_arch += """
                     <filter string="Expérience par métier" name="scoring_filter" domain="[('scoring_3', '!=', 0)]"/>
                 """
             elif self.env.user.scoring_column == 'scoring_4':
                 context.update({'show_scoring_4' : True})
-                #domain = [('scoring_4', '!=', 0)]
                 domain = expression.OR([domain, [('scoring_4', '!=', 0)]])
                 search_view_arch += """
                     <filter string="Expérience par métier" name="scoring_filter" domain="[('scoring_4', '!=', 0)]"/>
                 """
             elif self.env.user.scoring_column == 'scoring_5':
                 context.update({'show_scoring_5' : True})
-                #domain = [('scoring_5', '!=', 0)]
                 domain = expression.OR([domain, [('scoring_5', '!=', 0)]])
                 search_view_arch += """
                     <filter string="Expérience par métier" name="scoring_filter" domain="[('scoring_5', '!=', 0)]"/>
@@ -277,8 +271,8 @@ class CrmLead(models.Model):
 
         #if search_domain:
         #    self.env['hr.applicant'].search(search_domain).with_context(crm_id=self.id)._compute_scoring()
+
         #self.env['hr.applicant'].search([(1, '=', 1)]).with_context(crm_id=self.id)._compute_scoring()
-        #raise ValidationError("%s" %domain)
         self.env['hr.applicant'].search(domain).with_context(crm_id=self.id)._compute_scoring()
 
         return {
