@@ -8,6 +8,6 @@ from odoo import fields, models
 class HrApplicantBenefit(models.Model):
     _name = "hr.applicant.benefit"
     _description = "Hr applicant benefit"
-    _order = "id"
+    _order = "name"
 
     name = fields.Char("Name", required=True)

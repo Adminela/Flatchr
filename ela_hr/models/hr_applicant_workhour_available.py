@@ -8,6 +8,6 @@ from odoo import fields, models
 class HrApplicantWorkourAvailable(models.Model):
     _name = "hr.applicant.workhour.available"
     _description = "Hr applicant workhour available"
-    _order = "id"
+    _order = "name"
 
     name = fields.Char("Name", required=True)
