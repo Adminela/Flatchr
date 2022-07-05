@@ -266,20 +266,6 @@ class MailActivity(models.Model):
                 record.has_recommended_activities = bool(record.previous_activity_type_id.nrp_suggested_next_type_ids)
             else:
                 record.has_recommended_activities = bool(record.previous_activity_type_id.suggested_next_type_ids)
-
-    def action_create_calendar_event(self):
-        action = super(MailActivity, self).action_create_calendar_event()
-        
-        if self.activity_type_id.default_user_id:
-            if self.activity_type_id.default_user_id.partner_id:
-                action['context'].update({
-                    'default_user_id': self.activity_type_id.default_user_id.id,
-                    'default_partner_ids': [(6, 0, [self.activity_type_id.default_user_id.partner_id.id])],
-                })
-            else:
-                raise ValidationError("Il y a une erreur avec l'utilisateur choisis dans le type d'activité")
-
-        return action
     
     @api.model
     def is_global_leave_or_weekend(self, date):
@@ -294,13 +280,21 @@ class MailActivity(models.Model):
         return False
 
     def action_create_calendar_event(self):
-        self.ensure_one()
         action = super(MailActivity, self).action_create_calendar_event()
-        
+
         name = self.res_name
         if self.summary:
             name += " - " + self.summary
         
-        action['context'] = {'default_name': name}
+        action['context'].update({'default_name': name})
+
+        if self.activity_type_id.default_user_id:
+            if self.activity_type_id.default_user_id.partner_id:
+                action['context'].update({
+                    'default_user_id': self.activity_type_id.default_user_id.id,
+                    'default_partner_ids': [(6, 0, [self.activity_type_id.default_user_id.partner_id.id])],
+                })
+            else:
+                raise ValidationError("Il y a une erreur avec l'utilisateur choisis dans le type d'activité")
 
         return action
