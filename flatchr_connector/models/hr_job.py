@@ -177,7 +177,8 @@ class HrJob(models.Model):
         # Retrieve and parse applicants
         url = f'https://api.flatchr.io/company/{company_key}/search/applicants?fields=candidate,vacancy,candidate.consent'
         start_from = datetime.strptime(last_sync_date, '%Y-%m-%d') - timedelta(days=int(sync_period))
-        data = f'{{"start": "{start_from}"}}'
+        end_from = datetime.strptime(last_sync_date, '%Y-%m-%d'))
+        data = f'{{"start": "{start_from}", "end":"{end_from}"}}'
 
         response = requests.post(url, headers=headers, data=data)
         
