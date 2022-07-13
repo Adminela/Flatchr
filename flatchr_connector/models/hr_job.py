@@ -131,7 +131,7 @@ class HrJob(models.Model):
 
                 if not existing_applicants:
                     hr_applicant_id = self.env['hr.applicant'].sudo().create(content_dict)
-                    #hr_applicant_id.user_id = False
+                    hr_applicant_id.user_id = False
 
                     self.env.cr.execute("UPDATE hr_applicant SET create_date = '%s' WHERE id = %s" %(str(datetime.strptime(applicant['created_at'], "%d/%m/%y")), hr_applicant_id.id))
                 #else:
