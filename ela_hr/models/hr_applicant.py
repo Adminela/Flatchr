@@ -323,7 +323,6 @@ class HrApplicant(models.Model):
             return True
 
         global_leaves = self.env['resource.calendar.leaves'].search([('date_from', '<=', my_datetime),('date_to', '>=', my_datetime),('resource_id', '=', False)])
-        _logger.info("9************************* %s - %s - %s" %(global_leaves.date_from, date, global_leaves.date_to))
 
         if global_leaves:
             return True
@@ -336,16 +335,16 @@ class HrApplicant(models.Model):
             if record.date_inscription:
                 count = 1
                 record.date_entree = record.date_inscription
-                _logger.info("0************************* %s" %record.date_entree)
+
                 while count <= 11:
                     record.date_entree += timedelta(days=1)
-                    _logger.info("1************************* %s - %s" %(record.date_entree, record.env['hr.applicant'].is_global_leave_or_weekend(record.date_entree)))
+
                     if not record.env['hr.applicant'].is_global_leave_or_weekend(record.date_entree):
                         count += 1
                 
                 while record.env['hr.applicant'].is_global_leave_or_weekend(record.date_entree):
                     record.date_entree += timedelta(days=1)
-                    _logger.info("2************************* %s - %s" %(record.date_entree, record.env['hr.applicant'].is_global_leave_or_weekend(record.date_entree)))
+
             else:
                 record.date_entree = False
 
@@ -500,11 +499,3 @@ class HrApplicant(models.Model):
     def _compute_user(self):
         for applicant in self:
             applicant.user_id = False
-
-    def archive_copy(self):
-        self.write({'active': False})
-        #wiz_id = self._context.get('wiz_id', False)
-        wiz_id = self.env['hr.applicant.duplicate.wizard'].browse(self._context.get('wiz_id', False))
-        wiz_id._next_screen()
-        #raise ValidationError("HELO %s" %wiz_id)
-        
