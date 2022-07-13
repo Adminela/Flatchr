@@ -10,6 +10,7 @@ class HrApplicantDuplicateWizard(models.TransientModel):
     _name = 'hr.applicant.duplicate.wizard'
     _description = 'Assistance doublons candidats'
 
+    
     applicant_ids = fields.Many2many('hr.applicant', string='Candidats')
     remaining_applicant_ids = fields.Many2many('hr.applicant', 'remaining_applicant_rel', string='Duplicate candidats')
     state = fields.Selection([

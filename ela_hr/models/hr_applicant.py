@@ -74,6 +74,7 @@ class HrApplicant(models.Model):
     )
     lieu_naissance = fields.Char(string='Lieu de naissance', tracking=True)
     skill_ids = fields.Many2many("hr.applicant.skill", string='Hard skills', ondelete="restrict", tracking=True)
+    categ_ids = fields.Many2many(tracking=True)
     metier_experience_ids = fields.One2many('hr.applicant.metier.experience', inverse_name='applicant_id', string='Expériences')
     # Recrutement
     workzone_ids = fields.Many2many("hr.applicant.workzone", string='Zone de travail', ondelete="restrict", tracking=True)
@@ -174,8 +175,8 @@ class HrApplicant(models.Model):
     def _compute_nb_nrp(self):
         for record in self:
             if record.with_context(active_test=False).activity_ids:
-                record.nb_nrp = 0 #len(record.with_context(active_test=False).activity_ids.filtered(lambda act: 'Appeler' in act.activity_type_id.name))
-                record.nb_nrp_rappel = 0 #len(record.with_context(active_test=False).activity_ids.filtered(lambda act: 'Rappeler' in act.activity_type_id.name))
+                record.nb_nrp = len(record.with_context(active_test=False).activity_ids.filtered(lambda act: act.nrp and 'Appel' in act.activity_type_id.name))
+                record.nb_nrp_rappel = len(record.with_context(active_test=False).activity_ids.filtered(lambda act: act.nrp and 'Rappel' in act.activity_type_id.name))
 
     @api.depends("crm_ids", "crm_ids.stage_id")
     def _compute_nbs(self):
@@ -315,10 +316,14 @@ class HrApplicant(models.Model):
 
     @api.model
     def is_global_leave_or_weekend(self, date):
+        
+        my_datetime = datetime.combine(date, datetime.min.time()) + timedelta(hours=12)
+
         if date.weekday() == 5 or date.weekday() == 6:
             return True
 
-        global_leaves = self.env['resource.calendar.leaves'].search([('date_from', '<=', date),('date_to', '>=', date),('resource_id', '=', False)])
+        global_leaves = self.env['resource.calendar.leaves'].search([('date_from', '<=', my_datetime),('date_to', '>=', my_datetime),('resource_id', '=', False)])
+        _logger.info("9************************* %s - %s - %s" %(global_leaves.date_from, date, global_leaves.date_to))
 
         if global_leaves:
             return True
@@ -331,13 +336,16 @@ class HrApplicant(models.Model):
             if record.date_inscription:
                 count = 1
                 record.date_entree = record.date_inscription
+                _logger.info("0************************* %s" %record.date_entree)
                 while count <= 11:
                     record.date_entree += timedelta(days=1)
+                    _logger.info("1************************* %s - %s" %(record.date_entree, record.env['hr.applicant'].is_global_leave_or_weekend(record.date_entree)))
                     if not record.env['hr.applicant'].is_global_leave_or_weekend(record.date_entree):
                         count += 1
                 
                 while record.env['hr.applicant'].is_global_leave_or_weekend(record.date_entree):
                     record.date_entree += timedelta(days=1)
+                    _logger.info("2************************* %s - %s" %(record.date_entree, record.env['hr.applicant'].is_global_leave_or_weekend(record.date_entree)))
             else:
                 record.date_entree = False
 
@@ -492,3 +500,11 @@ class HrApplicant(models.Model):
     def _compute_user(self):
         for applicant in self:
             applicant.user_id = False
+
+    def archive_copy(self):
+        self.write({'active': False})
+        #wiz_id = self._context.get('wiz_id', False)
+        wiz_id = self.env['hr.applicant.duplicate.wizard'].browse(self._context.get('wiz_id', False))
+        wiz_id._next_screen()
+        #raise ValidationError("HELO %s" %wiz_id)
+        

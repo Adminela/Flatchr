@@ -131,7 +131,7 @@ class HrJob(models.Model):
 
                 if not existing_applicants:
                     hr_applicant_id = self.env['hr.applicant'].sudo().create(content_dict)
-                    hr_applicant_id.user_id = False
+                    #hr_applicant_id.user_id = False
 
                     self.env.cr.execute("UPDATE hr_applicant SET create_date = '%s' WHERE id = %s" %(str(datetime.strptime(applicant['created_at'], "%d/%m/%y")), hr_applicant_id.id))
                 #else:
@@ -170,15 +170,15 @@ class HrJob(models.Model):
                 i = i + 1
 
         archived_vacancy_ids = self.env['hr.job'].search([('state', 'not in', ['open']),('id', 'not in', vacancy_ids.ids)])
-
         #for vacancy_id in archived_vacancy_ids:
         #    vacancy_id.active_ela = False
 
         # Retrieve and parse applicants
         url = f'https://api.flatchr.io/company/{company_key}/search/applicants?fields=candidate,vacancy,candidate.consent'
         start_from = datetime.strptime(last_sync_date, '%Y-%m-%d') - timedelta(days=int(sync_period))
-        end_from = datetime.strptime(last_sync_date, '%Y-%m-%d')
-        data = f'{{"start": "{start_from}", "end":"{end_from}"}}'
+        #end_from = datetime.strptime(last_sync_date, '%Y-%m-%d')
+        #data = f'{{"start": "{start_from}", "end":"{end_from}"}}'
+        data = f'{{"start": "{start_from}"}}'
 
         response = requests.post(url, headers=headers, data=data)
         
@@ -186,6 +186,8 @@ class HrJob(models.Model):
         for applicant in response.json():
             self.parse_applicant(applicant, vacancy_ids)
             j = j + 1
+            if j % 200 == 0:
+                self.env.cr.commit()
 
         self.env['ir.config_parameter'].sudo().set_param('flatchr_connector.last_sync_date', datetime.now().date())
         _logger.info("******* Fin de la synchronisation Flatchr %s" % datetime.now())

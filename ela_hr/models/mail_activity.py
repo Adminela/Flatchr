@@ -272,6 +272,8 @@ class MailActivity(models.Model):
         if date.weekday() == 5 or date.weekday() == 6:
             return True
 
+        my_datetime = datetime.combine(date, datetime.min.time()) + timedelta(hours=12)
+
         global_leaves = self.env['resource.calendar.leaves'].search([('date_from', '<=', date),('date_to', '>=', date),('resource_id', '=', False)])
 
         if global_leaves:
