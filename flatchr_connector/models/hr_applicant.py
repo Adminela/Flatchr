@@ -102,9 +102,14 @@ class HrApplicant(models.Model):
         return True
 
     def has_cv(self):
+        if not self.partner_name:
+            return False
+
         attachment_id = self.attachment_ids.filtered(lambda att: 'cv_' + self.partner_name in att.name)
+
         if attachment_id:
             return True
+
         return False
 
     @staticmethod

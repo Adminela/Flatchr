@@ -299,6 +299,12 @@
                 <field name="to_be_sold_date" optional="hide"/>
                 <field name="sold_date" optional="hide"/>
             </field>
+
+            <field name="user_id" position="before">
+                <field name="skill_ids" optional="hide"/>
+                <field name="metier_ids" widget="many2many_tags" optional="hide"/>
+            </field>
+
             <field name="partner_mobile" position="replace">
                 <field name="partner_phone"/>
                 <field name="date_inscription"/>

@@ -13,9 +13,9 @@
         <field name='arch' type='xml'>
             <form string='Assistance assignation des candidats' create="false" edit="false">
                 <header>
-                    <button name='start_process_cb' string='Démarrer' type='object'  class='oe_highlight' attrs="{'invisible': [('state', '!=', 'start')]}"/>
+                    <button name='start_process_cb' string='Démarrer' type='object' class='oe_highlight' attrs="{'invisible': [('state', '!=', 'start')]}"/>
                     <button name='assign_applicant' string='Ajouter recruteur' class='oe_highlight' type='object' attrs="{'invisible': [('state', '!=', 'pending')]}"/>
-                    <button name='next_cb' string='Passer ces candidats' type='object'  class='oe_link' attrs="{'invisible': [('state', 'in', ('start', 'finished'))]}"/>
+                    <button name='next_cb' string='Passer ces candidats' type='object' class='oe_link' attrs="{'invisible': [('state', 'in', ('start', 'finished'))]}"/>
                     <button name="close_cb" string="Annuler" type="object" class="oe_link oe_inline" attrs="{'invisible': [('state', '=', 'finished')]}"/>
                     <button name="close_cb" string="Terminer" type="object" class="oe_highlight" attrs="{'invisible': [('state', '!=', 'finished')]}"/>
                 </header>
@@ -38,8 +38,8 @@
                         </group>
                     </group>
                     <group>
-                        <field name="applicant_ids" colspan="2" nolabel="1" attrs="{'invisible': [('state', 'in', ('start', 'finished'))]}">
-                            <tree string="Candidats" create="false" edit="false" delete="false">
+                        <field name="applicant_ids" widget="one2many_selectable" colspan="2" nolabel="1"  attrs="{'invisible': [('state', 'in', ('start', 'finished'))]}">
+                            <tree string="Candidats">
                                 <field name="id"/>
                                 <field name="create_date"/>
                                 <field name="name"/>
@@ -47,6 +47,8 @@
                                 <field name="user_id"/>
                                 <field name="stage_id" optional="hide"/>
                                 <field name="job_id" optional="hide"/>
+                                <field name="active" optional="hide"/>
+                                <!--<button name='archive_copy' context="{'wiz_id': id}" string='Archiver' class='oe_highlight' type='object'/>-->
                             </tree>
                         </field>
                     </group>
