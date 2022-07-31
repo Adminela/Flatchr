@@ -600,9 +600,9 @@
             <field name="ks_dashboard_default_template" ref="ks_dashboard_ninja.ks_blank"/>
         </record>
 
-        <!--<record forcecreate="True" id="ks_dashboard_ninja_precision" model="decimal.precision">
+        <record forcecreate="True" id="ks_dashboard_ninja_precision" model="decimal.precision">
             <field name="name">Dashboard Ninja Decimal Precision</field>
             <field name="digits" eval="2"/>
-        </record>-->
+        </record>
     </data>
 </odoo>
