@@ -44,6 +44,8 @@ class ProjectTask(models.Model):
 
     meeting_count = fields.Integer(compute='_compute_meeting_count', help='Meeting Count')
     active_ela = fields.Boolean(related="applicant_id.active_ela", readonly=False, tracking=True)
+    
+    user_id = fields.Many2one(related="applicant_id.user_id", readonly=False, tracking=True, store=True)
 
     @api.onchange("stage_id", "in_formation")
     def _onchange_stage_id(self):
@@ -56,7 +58,7 @@ class ProjectTask(models.Model):
     @api.onchange("stage_id")
     def _onchange_new_stage_id(self):
         for record in self:
-            if record.create_date > datetime.strptime('01/07/22', '%d/%m/%y'):
+            if record.create_date and record.create_date > datetime.strptime('01/07/22', '%d/%m/%y'):
                 if record.stage_id.to_paiement:
                     if not record.payment_state:
                         record.payment_state = 'to_be_sold'
